@@ -1,15 +1,24 @@
 from typing import List, Tuple
 import csv
+import random
+
 
 class Board:
 
     def __init__(self):
         self._board: List[Tile] = list()             # list of all tile objects on the board
-        self._current_player: int = 1                # number of current player
+        self._current_player: int = 0                # number of current player
         self._players: List[Player] = list()         # list of all current player objects
         self._cards: List[Card] = list()             # list of all card objects
         self._roll: int = 0                          # value of current dice roll
         # add the rest of the board attributes and class methods
+
+    def roll_dice(self):
+        self._roll = random.randint(1, 12)
+        self._players[self._current_player].advance(self._roll)
+
+    def add_player(self, player):
+        self._players.append(player)
 
     def create_board(self):
         with open('monopoly_squares.csv') as csv_data_file:
@@ -37,6 +46,16 @@ class Player:
         self._location = 0
         self._inventory = list()
         # add class methods
+
+    def advance(self, distance: int):
+        if self._location + distance <= 39:
+            self._location += distance
+        else:
+            self._location = (self._location + distance) % 39
+
+    def get_location(self) -> int:
+        return self._location
+
 
 
 class Tile:
