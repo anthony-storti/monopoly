@@ -27,6 +27,10 @@ class Tile:
     name: str
     color: str
 
+    def land_on(self, player: Player):
+        pass
+
+
 @dataclass
 class Property(Tile):
     owner:  Player
@@ -49,6 +53,9 @@ class Go(Tile):
     action: str
     value: int
 
+    def land_on(self, player: Player):
+        player.wallet += 200
+
 
 @dataclass
 class GoToJail(Tile):
@@ -64,8 +71,12 @@ class FreeParking(Tile):
 @dataclass
 class RailRoad(Tile):
     owner: Player
-    cost: int
+    cost: 200
     mortgage: int
+
+    def land_on(self, player: Player):
+        if self.owner is None:
+            print("Would you like to buy " + self.name + " for " + self.cost + "? (Y/N)")
 
 
 @dataclass
@@ -80,9 +91,11 @@ class Utility(Tile):
     cost: int
     value: int
 
+
 @dataclass
 class Card(Tile):
     action: str
+
 
 @dataclass
 class Jail(Tile):
