@@ -1,7 +1,7 @@
 from Model import *
-import csv
 import random
 import pickle
+import random
 
 
 def roll_dice(board: Board):
@@ -13,11 +13,13 @@ def add_player(player: Player, board: Board):
     board.players.append(player)
 
 
-def load_board():
+def load_game() -> tuple:
     open_file = open("board.pkl", "rb")
-    board = pickle.load(open_file)
+    game = pickle.load(open_file)
     open_file.close()
-    return board
+    random.shuffle(game[1])
+    random.shuffle(game[2])
+    return game[0], game[1], game[2]
 
 
 def lands_on(tile: Tile):

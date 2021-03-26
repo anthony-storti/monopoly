@@ -27,6 +27,7 @@ class Tile:
     name: str
     color: str
 
+
 @dataclass
 class Property(Tile):
     owner:  Player
@@ -80,10 +81,26 @@ class Utility(Tile):
     cost: int
     value: int
 
+
 @dataclass
-class Card(Tile):
+class CardTile(Tile):
     action: str
 
 @dataclass
 class Jail(Tile):
     action: str
+
+
+@dataclass
+class Card():
+    action: str
+    value: str
+
+
+@dataclass
+class CommunityChest(Card):
+    message: str
+
+@dataclass
+class Chance(Card):
+    message: str
