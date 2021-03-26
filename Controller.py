@@ -13,7 +13,7 @@ def add_player(player: Player, board: Board):
 
 
 def load_game() -> tuple:
-    open_file = open("board.pkl", "rb")
+    open_file = open("game.pkl", "rb")
     game = pickle.load(open_file)
     open_file.close()
     random.shuffle(game[1])

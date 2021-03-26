@@ -55,7 +55,7 @@ with open('monopoly_chance.csv') as csv_data_file:
         card = Chance(action=row[2], message=row[1], value=row[3])
         chance.append(card)
 
-file_name = "board.pkl"
+file_name = "game.pkl"
 game = (board, com_chest, chance)
 open_file = open(file_name, "wb")
 pickle.dump(game, open_file)
