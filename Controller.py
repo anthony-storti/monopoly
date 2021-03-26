@@ -1,5 +1,4 @@
 from Model import *
-import random
 import pickle
 import random
 
@@ -25,7 +24,19 @@ def load_game() -> tuple:
 def lands_on(tile: Tile):
     if isinstance(tile, Property):
         pass
-    if isinstance(tile, Card):
+    elif isinstance(tile, Card):
+        pass
+    elif isinstance(tile, GoToJail):
+        pass
+    elif isinstance(tile, Go):
+        pass
+    elif isinstance(tile, Tax):
+        pass
+    elif isinstance(tile, FreeParking):
+        pass
+    elif isinstance(tile, RailRoad):
+        pass
+    elif isinstance(tile, Utility):
         pass
 
 
