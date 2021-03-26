@@ -25,13 +25,12 @@ class Player:
 class Tile:
     purchasable: bool
     name: str
-
+    color: str
 
 @dataclass
 class Property(Tile):
     owner:  Player
     mortgaged: bool
-    color: str
     cost: int
     house_cost: int
     rent: int
@@ -46,6 +45,45 @@ class Property(Tile):
 
 
 @dataclass
+class Go(Tile):
+    action: str
+    value: int
+
+
+@dataclass
+class GoToJail(Tile):
+    action: str
+    value: int
+
+
+@dataclass
+class FreeParking(Tile):
+    action: str
+
+
+@dataclass
+class RailRoad(Tile):
+    owner: Player
+    cost: int
+    mortgage: int
+
+
+@dataclass
+class Tax(Tile):
+    action: str
+    value: int
+
+
+@dataclass
+class Utility(Tile):
+    owner: Player
+    cost: int
+    value: int
+
+@dataclass
 class Card(Tile):
     action: str
-    color: str
+
+@dataclass
+class Jail(Tile):
+    action: str
