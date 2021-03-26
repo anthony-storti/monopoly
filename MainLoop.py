@@ -1,8 +1,7 @@
 from Controller import *
 from Model import Tile, Property, Card, Player, Board
 
-board = Board(tiles=list(), current_player=0, players=list(), cards=list(), roll=0)
-create_board(board)
+board = load_board()
 player_1 = Player(name="Anthony", machine_player=False, board=board, piece="hat", location=0, wallet=1500, inventory=list())
 player_2 = Player(name="Monopolizer 3000", machine_player=True, board=board, piece="hat", location=0, wallet=1500, inventory=list())
 add_player(player_1, board)
