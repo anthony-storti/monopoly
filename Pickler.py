@@ -45,9 +45,3 @@ file_name = "board.pkl"
 open_file = open(file_name, "wb")
 pickle.dump(board, open_file)
 open_file.close()
-
-open_file = open(file_name, "rb")
-loaded_list = pickle.load(open_file)
-open_file.close()
-
-print(loaded_list)
