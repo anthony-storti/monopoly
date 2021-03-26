@@ -1,5 +1,5 @@
-from Game import *
-from Data_Classes import Tile, Property, Card, Player, Board
+from Controller import *
+from Model import Tile, Property, Card, Player, Board
 
 board = Board(tiles=list(), current_player=0, players=list(), cards=list(), roll=0)
 create_board(board)

@@ -1,4 +1,4 @@
-from Data_Classes import *
+from Model import *
 import csv
 import random
 
