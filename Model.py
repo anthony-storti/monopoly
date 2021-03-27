@@ -85,9 +85,24 @@ class Utility(Tile):
     value: int
 
 @dataclass
-class Card(Tile):
+class CardTile(Tile):
     action: str
 
 @dataclass
 class Jail(Tile):
     action: str
+
+@dataclass
+class Card():
+    action: str
+    value: str
+
+
+@dataclass
+class CommunityChest(Card):
+    message: str
+
+
+@dataclass
+class Chance(Card):
+    message: str
