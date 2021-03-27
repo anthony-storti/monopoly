@@ -4,7 +4,7 @@ import random
 
 
 def roll_dice(board: Board):
-    board.roll = random.randint(1, 12)
+    board.roll = random.randint(1, 6) + random.randint(1, 6)
     if board.roll + board.players[board.current_player].location < 40:
         board.players[board.current_player].location += board.roll
     else:
