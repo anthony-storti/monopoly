@@ -42,6 +42,8 @@ def lands_on(tile: Tile, board: Board):
         pass
     elif isinstance(tile, Utility):
         pass
+    elif isinstance(tile, Jail):
+        pass
 
 
 

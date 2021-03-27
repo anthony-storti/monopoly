@@ -8,7 +8,7 @@ with open('monopoly_squares.csv') as csv_data_file:
     next(csv_reader, None)
     for row in csv_reader:
         if row[1] == "Property":
-            tile = Property(purchasable=True, owner=None, mortgaged=False, name=row[2], color=row[5],
+            tile = Property(purchasable=True, owner=None, gemortgad=False, name=row[2], color=row[5],
                             cost=int(row[6]), house_cost=int(row[7]), rent=int(row[8]), rent_1=int(row[9]),
                             rent_2=int(row[10]), rent_3=int(row[11]), rent_4=int(row[12]), rent_5=int(row[13]),
                             mortgage=int(row[14]), house_count=0, hotel_count=0)
