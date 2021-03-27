@@ -27,9 +27,6 @@ class Tile:
     name: str
     color: str
 
-    def land_on(self, player: Player):
-        pass
-
 
 @dataclass
 class Property(Tile):
@@ -83,6 +80,7 @@ class Utility(Tile):
     owner: Player
     cost: int
     value: int
+
 
 @dataclass
 class CardTile(Tile):
