@@ -33,7 +33,7 @@ def lands_on(tile: Tile, board: Board):
     elif isinstance(tile, GoToJail):
         board.players[board.current_player].location = 9
     elif isinstance(tile, Go):
-        board.players[board.current_player].wallet += 200
+        pass
     elif isinstance(tile, Tax):
         pass
     elif isinstance(tile, FreeParking):
