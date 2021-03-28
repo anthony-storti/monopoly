@@ -13,9 +13,6 @@ player_2 = Player(name="Monopolizer 3000", machine_player=True, board=board, pie
 add_player(player_1, board)
 add_player(player_2, board)
 game_on = True
-for card in chance:
-    print(card)
-
 
 while game_on:
     val = input(board.players[board.current_player].name + " Press R to Roll: ")
@@ -26,6 +23,7 @@ while game_on:
     for key, value in opt.items():
         usr_in = input(key)
         if usr_in == value:
+            # need to implement the actual action here may need to make dictionary a str: tuple(str, action)
             print("congrats you purchased the property")
     val = input("press q to quit or e to end turn")
     if val == "q":
