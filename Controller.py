@@ -1,4 +1,5 @@
 from Model import *
+from typing import Dict
 import pickle
 import random
 
@@ -25,25 +26,29 @@ def load_game() -> tuple:
     return game[0], game[1], game[2]
 
 
-def lands_on(tile: Tile, board: Board):
+def lands_on(tile: Tile, board: Board) -> Dict:
+    ret: Dict[str: str] = {}
     if isinstance(tile, Property):
-        pass
+        if tile.purchasable:
+            ret[f"{tile.name} is purchasable press p to purchase for {tile.cost}"] = "p"
+            return ret
     elif isinstance(tile, Card):
         pass
     elif isinstance(tile, GoToJail):
         board.players[board.current_player].location = 9
+        return ret
     elif isinstance(tile, Go):
-        pass
+        return ret
     elif isinstance(tile, Tax):
-        pass
+        return ret
     elif isinstance(tile, FreeParking):
-        pass
+        return ret
     elif isinstance(tile, RailRoad):
-        pass
+        return ret
     elif isinstance(tile, Utility):
-        pass
+        return ret
     elif isinstance(tile, Jail):
-        pass
+        return ret
 
 
 

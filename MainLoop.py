@@ -16,13 +16,17 @@ game_on = True
 for card in chance:
     print(card)
 
-'''    
+
 while game_on:
     val = input(board.players[board.current_player].name + " Press R to Roll: ")
     if val == "r":
         roll_dice(board)
     print(board.tiles[board.roll].name)
+    opt = lands_on(board.tiles[board.roll], board)
+    for key, value in opt.items():
+        usr_in = input(key)
+        if usr_in == value:
+            print("congrats you purchased the property")
     val = input("press q to quit or e to end turn")
     if val == "q":
         game_on = False
-'''
