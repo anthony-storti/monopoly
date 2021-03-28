@@ -33,7 +33,7 @@ def lands_on(tile: Tile, board: Board) -> Dict:
             ret[f"{tile.name} is purchasable press p to purchase for {tile.cost}"] = "p"
             return ret
     elif isinstance(tile, Card):
-        pass
+        return ret
     elif isinstance(tile, GoToJail):
         board.players[board.current_player].location = 9
         return ret
