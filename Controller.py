@@ -26,28 +26,27 @@ def load_game() -> tuple:
     return game[0], game[1], game[2]
 
 
-def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]) -> Dict:
-    ret = {}
+def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]) -> List:
+    ret = []
     if isinstance(tile, Property):
 
         if tile.purchasable:
-            ret[f"{tile.name} is purchasable \n press p to purchase for ${tile.cost}"] = ["p", purchase(player, tile)]
-            return ret
-        if not tile.purchasable and tile.owner != player:
+            return ["p", [f"To purchase {tile.name} for ${tile.cost} press P", purchase]]
+        elif not tile.purchasable and tile.owner != player:
             rent = get_rent(tile)
-            ret[f"{tile.name} is owned by {tile.owner.name} \n pay ${rent}"] = ["p", pay_rent(player, tile, rent)]
+            return ["p", [f"To pay ${rent} to {tile.owner.name} press P", pay_rent]]
+        else:
+            return ret
 
     elif isinstance(tile, CardTile) and tile.name == "Community Chest":
 
         card = chance.pop()
-        ret[f"{card.message} press enter to play card"] = ["", play_card(player, card)]
-        return ret
+        return ["p", [f"{card.message} press P to play card: ", play_card, card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
 
         card = comm_chest.pop()
-        ret[f"{card.message} press enter to play card"] = ["", play_card(player, card)]
-        return ret
+        return ["p", [f"{card.message} press P to play card: ", play_card, card]]
 
     elif isinstance(tile, GoToJail):
         return ret
@@ -72,9 +71,10 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         player.wallet -= tile.cost
         player.inventory.append(tile)
         tile.purchasable = False
-        return "successfully purchased"
+        tile.owner = player
+        return "successfully purchased \n"
     else:
-        return "insufficient funds"
+        return "insufficient funds \n"
 
 
 def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
@@ -90,14 +90,23 @@ def get_rent(tile: Property):
         return tile.rent_5
 
 
-def pay_rent(player: Player, tile: (Property, RailRoad, Utility), rent: int) -> str:
+def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
+    rent = get_rent(tile)
     if isinstance(tile, (Property, RailRoad)):
         if player.wallet < rent:
-            return "Insufficient Funds Mortgage Property or Go Bankrupt"
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
         else:
             player.wallet -= rent
             tile.owner.wallet += rent
 
 
-def change_player(board):
+def change_player(board: Board):
     board.current_player = (board.current_player + 1) % len(board.players)
+
+
+def mortgage():
+    pass
+
+
+def build():
+    pass
