@@ -1,6 +1,7 @@
 from Controller import *
 from Model import Tile, Property, Card, Player, Board
 
+
 game = load_game()
 board = game[0]
 comm_chest = game[1]
@@ -15,16 +16,29 @@ add_player(player_2, board)
 game_on = True
 
 while game_on:
-    val = input(board.players[board.current_player].name + " Press R to Roll: ")
-    if val == "r":
-        roll_dice(board)
-    print(board.tiles[board.roll].name)
-    opt = lands_on(board.tiles[board.roll], board)
-    for key, value in opt.items():
-        usr_in = input(key)
-        if usr_in == value:
-            # need to implement the actual action here may need to make dictionary a str: tuple(str, action)
-            print("congrats you purchased the property")
-    val = input("press q to quit or e to end turn")
-    if val == "q":
-        game_on = False
+    player = board.players[board.current_player]
+    valid_input = False
+    while not valid_input:
+        val = input(player.name + " Press R to Roll: ")
+        if val == "r":
+            valid_input = True
+            roll_dice(board, player)
+
+            tile = board.tiles[player.location]
+
+            print(f"{player.name} rolled {board.roll} and advanced to {tile.name}")
+            print(f"{player.name}\'s Bank Balance: {player.wallet}")
+
+            opt = lands_on(tile, player, comm_chest, chance)
+            for prompt, value in opt.items():
+                valid_input = False
+                while not valid_input:
+                    usr_in = input(prompt)
+                    if usr_in == "":
+                        valid_input = True
+                    elif usr_in == value[0]:
+                        print(value[1])
+                        valid_input = True
+                    else:
+                        print(f"invalid input:")
+        change_player(board)
