@@ -69,7 +69,7 @@ while game_on:
                             valid_input = True
                         elif usr_in == "q" and "p" in instr:
                             valid_input = True
-                            print(opt[1] + "*is not optional*")
+                            print(instr["p"][0] + "*is not optional*")
                         elif usr_in == "q":
                             valid_input = True
                             turn = False
