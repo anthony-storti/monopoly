@@ -51,8 +51,10 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
     elif isinstance(tile, GoToJail):
         return ret
     elif isinstance(tile, Go):
+        # this is also probably good enough
         return ret
     elif isinstance(tile, Tax):
+        # this will be tricky if we decide to allow the 10% option
         return ret
     elif isinstance(tile, FreeParking):
         # this is probably good enough
@@ -78,7 +80,7 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
     return "done"
 
 
-def get_rent(tile: Property):
+def get_rent(tile: (Property, RailRoad, Utility)):
     rent = [tile.rent, tile.rent_1, tile.rent_2, tile.rent_3, tile.rent_4]
     if tile.hotel_count < 1:
         return rent[tile.house_count]
@@ -87,8 +89,8 @@ def get_rent(tile: Property):
 
 
 def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
-    rent = get_rent(tile)
-    if isinstance(tile, (Property, RailRoad)):
+    if isinstance(tile, Property):
+        rent = get_rent(tile)
         if player.wallet < rent:
             return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
         else:
@@ -128,6 +130,15 @@ def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
 
 def change_player(board: Board):
     board.current_player = (board.current_player + 1) % len(board.players)
+
+
+def machine_algo(options: Dict, player: Player) -> str:
+    if "p" in options:
+        return "p"
+    elif "a" in options:
+        return "a"
+    else:
+        return "q"
 
 
 def mortgage():

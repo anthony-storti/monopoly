@@ -8,6 +8,7 @@ comm_chest = game[1]
 chance = game[2]
 
 '''
+# this needs input validation
 tokens = ["1: ship", "2: thimble", "3: hat", "4: car", "5: iron", "6. boot", "7: Dog", "8: wheel barrel"]
 num_players = int(input("enter number of human players: "))
 while num_players > 0:
@@ -35,44 +36,55 @@ while game_on:
     player = board.players[board.current_player]
     valid_input = False
     while not valid_input:
-        val = input(player.name + " Press r to Roll: ")
-        if val == "r":
-            valid_input = True
+        if player.machine_player:
             roll_dice(player)
-            tile = board.tiles[player.location]
+            valid_input = True
+        else:
+            val = input(player.name + " Press r to Roll: ")
+            if val == "r":
+                valid_input = True
+                roll_dice(player)
 
-            print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")
-            print(f"{player.name}\'s Bank Balance: {player.wallet}")
+    tile = board.tiles[player.location]
 
-            opt = lands_on(tile, player, comm_chest, chance)
-            if len(opt) > 0:
-                instr[opt[0]] = opt[1]
-            instr["q"] = ["To end turn press q"]
-            turn = True
-            while turn:
-                for vals in instr.values():
-                    print(vals[0])
-                valid_input = False
-                while not valid_input:
+    print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")
+    print(f"{player.name}\'s Bank Balance: {player.wallet}")
+
+    opt = lands_on(tile, player, comm_chest, chance)
+    if len(opt) > 0:
+        instr[opt[0]] = opt[1]
+        instr["q"] = ["To end turn press q"]
+        turn = True
+        while turn:
+            for vals in instr.values():
+                print(vals[0])
+            valid_input = False
+            while not valid_input:
+                if player.machine_player:
+                    usr_in = machine_algo(instr, player)
+                else:
                     usr_in = input("Make Selection: ")
-                    if usr_in in instr:
-                        if usr_in == "m" or usr_in == "b":
-                            print(instr[usr_in][1])
-                            valid_input = True
-                        elif usr_in == "p" and len(opt) > 2:
-                            print(instr[usr_in][1](player, opt[3]))
-                            instr.pop(usr_in)
-                            valid_input = True
-                        elif usr_in == "p" or usr_in == "a":
-                            print(instr[usr_in][1](player, tile))
-                            instr.pop(usr_in)
-                            valid_input = True
-                        elif usr_in == "q" and "p" in instr:
-                            valid_input = True
-                            print(instr["p"][0] + "*is not optional*")
-                        elif usr_in == "q":
-                            valid_input = True
-                            turn = False
-                    else:
-                        print("invalid input")
+                if usr_in in instr:
+                    if usr_in == "m" or usr_in == "b":
+                        print(instr[usr_in][1])
+                        valid_input = True
+                    elif usr_in == "p" and len(opt) > 2:
+                        print(instr[usr_in][1](player, opt[3]))
+                        instr.pop(usr_in)
+                        valid_input = True
+                    elif usr_in == "p" or usr_in == "a":
+                        print(instr[usr_in][1](player, tile))
+                        instr.pop(usr_in)
+                        valid_input = True
+                    elif usr_in == "q" and "p" in instr:
+                        valid_input = True
+                        print(instr["p"][0] + "*is not optional*")
+                    elif usr_in == "q":
+                        valid_input = True
+                        turn = False
+                else:
+                    print("invalid input")
     change_player(board)
+
+
+
