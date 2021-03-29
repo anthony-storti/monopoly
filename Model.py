@@ -67,6 +67,7 @@ class RailRoad(Tile):
     owner: Player
     cost: int
     mortgage: int
+    mortgaged: bool
 
 
 @dataclass
@@ -80,6 +81,7 @@ class Utility(Tile):
     owner: Player
     cost: int
     value: int
+    mortgaged: bool
 
 
 @dataclass

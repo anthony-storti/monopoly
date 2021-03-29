@@ -54,7 +54,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         # this is also probably good enough
         return ret
     elif isinstance(tile, Tax):
-        # this will be tricky if we decide to allow the 10% option
+        # this will be tricky if we decide to allow the 10% option if so we will need a way to calculate net worth
         return ret
     elif isinstance(tile, FreeParking):
         # this is probably good enough
@@ -70,14 +70,22 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         player.inventory.append(tile)
         tile.purchasable = False
         tile.owner = player
-        return "successfully purchased \n"
+        return "successfully purchased"
     else:
-        return "insufficient funds \n"
+        return "insufficient funds"
 
 
 def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
-    # this will need some work to figure out the mechanism to handle harder cards
-    return "done"
+    '''
+    if card.action == "move_to":
+        player.location = card.value
+        if card.value != 0 and player.location > card.value:
+            player.wallet += 200
+        return f"You have advanced to {player.location}"
+    else:
+        # this will need some work to figure out the mechanism to handle harder cards
+    '''
+    return "Card Played"
 
 
 def get_rent(tile: (Property, RailRoad, Utility), player: Player):
@@ -96,6 +104,7 @@ def get_rent(tile: (Property, RailRoad, Utility), player: Player):
             rent = 4 * player.roll
         else:
             rent = 10 * player.roll
+        return rent
     elif isinstance(tile, RailRoad):
         rr = 0
         rent = 25
@@ -104,7 +113,7 @@ def get_rent(tile: (Property, RailRoad, Utility), player: Player):
                 rr += 1
                 if rr > 1:
                     rent *= 2
-
+        return rent
 
 
 def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
@@ -131,9 +140,19 @@ def machine_algo(options: Dict, player: Player) -> str:
         return "q"
 
 
-def mortgage():
-    pass
-
+def mortgage(tile: Tile, player: Player):
+    if isinstance(tile, (Property, RailRoad, Utility)) and not tile.mortgaged:
+        player.wallet += tile.mortgage
+        tile.mortgaged = True
+        return f"{tile.name} has been mortgaged for ${tile.mortgage}"
+    else:
+        if isinstance(tile, (Property, RailRoad, Utility)) and tile.mortgaged:
+            if player.wallet >= tile.mortgage:
+                player.wallet -= tile.mortgage
+                tile.mortgaged = False
+                return f"{tile.name} has been restored to your active inventory"
+            else:
+                return "insufficient funds"
 
 def build():
     pass

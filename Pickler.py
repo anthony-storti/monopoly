@@ -2,13 +2,13 @@ from Model import *
 import csv
 import pickle
 
-board = Board(tiles=list(), current_player=0, players=list(), cards=list(), roll=0)
+board = Board(tiles=list(), current_player=0, players=list(), cards=list())
 with open('monopoly_squares.csv') as csv_data_file:
     csv_reader = csv.reader(csv_data_file)
     next(csv_reader, None)
     for row in csv_reader:
         if row[1] == "Property":
-            tile = Property(purchasable=True, owner=None, gemortgad=False, name=row[2], color=row[5],
+            tile = Property(purchasable=True, owner=None, mortgaged=False, name=row[2], color=row[5],
                             cost=int(row[6]), house_cost=int(row[7]), rent=int(row[8]), rent_1=int(row[9]),
                             rent_2=int(row[10]), rent_3=int(row[11]), rent_4=int(row[12]), rent_5=int(row[13]),
                             mortgage=int(row[14]), house_count=0, hotel_count=0)
@@ -27,11 +27,11 @@ with open('monopoly_squares.csv') as csv_data_file:
             board.tiles.append(tile)
         elif row[1] == "Train":
             tile = RailRoad(purchasable=True, name=row[2], color=row[5], cost=int(row[6]), mortgage=int(row[14]),
-                            owner=None)
+                            owner=None, mortgaged=False)
             board.tiles.append(tile)
         elif row[1] == "Utility":
             tile = RailRoad(purchasable=True, name=row[2], color=row[5], cost=int(row[6]), mortgage=int(row[14]),
-                            owner=None)
+                            owner=None, mortgaged=False)
             board.tiles.append(tile)
         elif row[1] == "Free Parking":
             tile = FreeParking(purchasable=False, name=row[2], color=row[5], action=row[3])
