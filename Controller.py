@@ -28,25 +28,25 @@ def load_game() -> tuple:
 
 def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]) -> List:
     ret = []
-    if isinstance(tile, Property):
+    if isinstance(tile, (Property, RailRoad)):
 
         if tile.purchasable:
-            return ["p", [f"To purchase {tile.name} for ${tile.cost} press P", purchase]]
+            return ["a", [f"To acquire {tile.name} for ${tile.cost} press a", purchase]]
         elif not tile.purchasable and tile.owner != player:
             rent = get_rent(tile)
-            return ["p", [f"To pay ${rent} to {tile.owner.name} press P", pay_rent]]
+            return ["p", [f"To pay ${rent} to {tile.owner.name} press p", pay_rent]]
         else:
             return ret
 
     elif isinstance(tile, CardTile) and tile.name == "Community Chest":
 
         card = chance.pop()
-        return ["p", [f"{card.message} press P to play card: ", play_card, card]]
+        return ["p", [f"{card.message} press p to play card: ", play_card, card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
 
         card = comm_chest.pop()
-        return ["p", [f"{card.message} press P to play card: ", play_card, card]]
+        return ["p", [f"{card.message} press p to play card: ", play_card, card]]
 
     elif isinstance(tile, GoToJail):
         return ret
@@ -56,8 +56,6 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         return ret
     elif isinstance(tile, FreeParking):
         # this is probably good enough
-        return ret
-    elif isinstance(tile, RailRoad):
         return ret
     elif isinstance(tile, Utility):
         return ret
