@@ -75,7 +75,7 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
 
 def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
     # this will need some work to figure out the mechanism to handle harder cards
-    return card.message
+    return "done"
 
 
 def get_rent(tile: Property):

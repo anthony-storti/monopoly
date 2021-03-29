@@ -18,8 +18,8 @@ while num_players > 0:
     tokens.remove(tokens[token - 1])
     num_players -= 1
 '''
-player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500, inventory=list())
-player_2 = Player(name="Monopolizer 3000", machine_player=True, piece="hat", location=0, wallet=1500, inventory=list())
+player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500, inventory=list(), roll=0)
+player_2 = Player(name="Monopolizer 3000", machine_player=True, piece="hat", location=0, wallet=1500, inventory=list(), roll=0)
 
 add_player(player_1, board)
 add_player(player_2, board)
@@ -38,7 +38,7 @@ while game_on:
         val = input(player.name + " Press r to Roll: ")
         if val == "r":
             valid_input = True
-            roll_dice(board, player)
+            roll_dice(player)
             tile = board.tiles[player.location]
 
             print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")
@@ -69,7 +69,7 @@ while game_on:
                             valid_input = True
                         elif usr_in == "q" and "p" in instr:
                             valid_input = True
-                            print(opt[0] + "*is not optional*")
+                            print(opt[1] + "*is not optional*")
                         elif usr_in == "q":
                             valid_input = True
                             turn = False
