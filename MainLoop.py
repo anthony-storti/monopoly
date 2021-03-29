@@ -41,7 +41,7 @@ while game_on:
             roll_dice(board, player)
             tile = board.tiles[player.location]
 
-            print(f"{player.name} rolled {board.roll} and advanced to {tile.name}")
+            print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")
             print(f"{player.name}\'s Bank Balance: {player.wallet}")
 
             opt = lands_on(tile, player, comm_chest, chance)

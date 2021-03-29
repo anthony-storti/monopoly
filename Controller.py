@@ -4,12 +4,12 @@ import pickle
 import random
 
 
-def roll_dice(board: Board, player: Player):
-    board.roll = random.randint(1, 6) + random.randint(1, 6)
-    if board.roll + player.location < 40:
-        player.location += board.roll
+def roll_dice(player: Player):
+    player.roll = random.randint(1, 6) + random.randint(1, 6)
+    if player.roll + player.location < 40:
+        player.location += player.roll
     else:
-        player.location = (board.roll + player.location) - 40
+        player.location = (player.roll + player.location) - 40
         player.wallet += 200
 
 
@@ -28,7 +28,7 @@ def load_game() -> tuple:
 
 def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]) -> List:
     ret = []
-    if isinstance(tile, (Property, RailRoad)):
+    if isinstance(tile, (Property, RailRoad, Utility)):
 
         if tile.purchasable:
             return ["a", [f"To acquire {tile.name} for ${tile.cost} press a", purchase]]
@@ -56,8 +56,6 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         return ret
     elif isinstance(tile, FreeParking):
         # this is probably good enough
-        return ret
-    elif isinstance(tile, Utility):
         return ret
     elif isinstance(tile, Jail):
         # this is probably good enough
@@ -96,6 +94,36 @@ def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         else:
             player.wallet -= rent
             tile.owner.wallet += rent
+            return "Rent Payed"
+    elif isinstance(tile, Utility):
+        util = 0
+        for props in tile.owner.inventory:
+            if isinstance(props, Utility):
+                util += 1
+        if util == 1:
+            rent = 4 * player.roll
+        else:
+            rent = 10 * player.roll
+        if player.wallet < rent:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt "
+        else:
+            player.wallet -= rent
+            tile.owner.wallet += rent
+            return "Utility Payed"
+    elif isinstance(tile, RailRoad):
+        rr = 0
+        rent = 25
+        for props in tile.owner.inventory:
+            if isinstance(props, RailRoad):
+                rr += 1
+                if rr > 1:
+                    rent *= 2
+        if player.wallet < rent:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt "
+        else:
+            player.wallet -= rent
+            tile.owner.wallet += rent
+            return "RailRoad Payed"
 
 
 def change_player(board: Board):

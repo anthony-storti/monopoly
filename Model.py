@@ -7,7 +7,7 @@ class Board:
     current_player: int
     players: list
     cards: list
-    roll: int
+
 
 
 @dataclass
@@ -18,6 +18,7 @@ class Player:
     piece: str
     location: int
     inventory: list
+    roll: int
 
 
 @dataclass
