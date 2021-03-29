@@ -33,7 +33,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         if tile.purchasable:
             return ["a", [f"To acquire {tile.name} for ${tile.cost} press a", purchase]]
         elif not tile.purchasable and tile.owner != player:
-            rent = get_rent(tile)
+            rent = get_rent(tile, player)
             return ["p", [f"To pay ${rent} to {tile.owner.name} press p", pay_rent]]
         else:
             return ret
@@ -80,23 +80,13 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
     return "done"
 
 
-def get_rent(tile: (Property, RailRoad, Utility)):
-    rent = [tile.rent, tile.rent_1, tile.rent_2, tile.rent_3, tile.rent_4]
-    if tile.hotel_count < 1:
-        return rent[tile.house_count]
-    else:
-        return tile.rent_5
-
-
-def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
+def get_rent(tile: (Property, RailRoad, Utility), player: Player):
     if isinstance(tile, Property):
-        rent = get_rent(tile)
-        if player.wallet < rent:
-            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        rent = [tile.rent, tile.rent_1, tile.rent_2, tile.rent_3, tile.rent_4]
+        if tile.hotel_count < 1:
+            return rent[tile.house_count]
         else:
-            player.wallet -= rent
-            tile.owner.wallet += rent
-            return "Rent Payed"
+            return tile.rent_5
     elif isinstance(tile, Utility):
         util = 0
         for props in tile.owner.inventory:
@@ -106,12 +96,6 @@ def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
             rent = 4 * player.roll
         else:
             rent = 10 * player.roll
-        if player.wallet < rent:
-            return "Insufficient Funds Mortgage Property or Go Bankrupt "
-        else:
-            player.wallet -= rent
-            tile.owner.wallet += rent
-            return "Utility Payed"
     elif isinstance(tile, RailRoad):
         rr = 0
         rent = 25
@@ -120,12 +104,18 @@ def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
                 rr += 1
                 if rr > 1:
                     rent *= 2
+
+
+
+def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
+    if isinstance(tile, Property):
+        rent = get_rent(tile, player)
         if player.wallet < rent:
-            return "Insufficient Funds Mortgage Property or Go Bankrupt "
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
         else:
             player.wallet -= rent
             tile.owner.wallet += rent
-            return "RailRoad Payed"
+            return "Paid"
 
 
 def change_player(board: Board):
