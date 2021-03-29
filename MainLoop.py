@@ -18,7 +18,7 @@ game_on = True
 while game_on:
     print("\n")
     instr = {}
-    instr["m"] = ["To Morgage available Properties press M", mortgage()]
+    instr["m"] = ["To Mortgage available Properties press M", mortgage()]
     instr["b"] = ["To Build on available Properties press B", build()]
     instr["q"] = ["To end turn press Q"]
     player = board.players[board.current_player]
