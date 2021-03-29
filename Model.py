@@ -14,7 +14,6 @@ class Board:
 class Player:
     name: str
     machine_player: bool
-    board: Board
     wallet: int
     piece: str
     location: int

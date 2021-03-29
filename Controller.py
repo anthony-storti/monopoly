@@ -108,3 +108,8 @@ def mortgage():
 
 def build():
     pass
+
+
+def create_player(name: str, token: str, board: Board, machine: bool = False):
+    player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500, inventory=list())
+    board.players.append(player)

@@ -7,12 +7,24 @@ board = game[0]
 comm_chest = game[1]
 chance = game[2]
 
-
-player_1 = Player(name="Anthony", machine_player=False, board=board, piece="hat", location=0, wallet=1500, inventory=list())
-player_2 = Player(name="Monopolizer 3000", machine_player=True, board=board, piece="hat", location=0, wallet=1500, inventory=list())
+'''
+tokens = ["1: ship", "2: thimble", "3: hat", "4: car", "5: iron", "6. boot", "7: Dog", "8: wheel barrel"]
+num_players = int(input("enter number of human players: "))
+while num_players >= 0:
+    name = input("Enter Player Name: ")
+    print(tokens)
+    token = int(input('select token number:'))
+    create_player(name, tokens[token - 1], board)
+    tokens.remove(tokens[token - 1])
+    num_players -= 1
+'''
+player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500, inventory=list())
+player_2 = Player(name="Monopolizer 3000", machine_player=True, piece="hat", location=0, wallet=1500, inventory=list())
 
 add_player(player_1, board)
 add_player(player_2, board)
+
+
 game_on = True
 
 while game_on:
@@ -62,5 +74,5 @@ while game_on:
                             valid_input = True
                             turn = False
                     else:
-                        print(f"invalid input:")
+                        print("invalid input")
     change_player(board)
