@@ -3,9 +3,12 @@ import csv
 import pickle
 
 board = Board(tiles=list(), current_player=0, players=list(), cards=list())
+'''Create Board Object to all all the tiles to'''
 with open('monopoly_squares.csv') as csv_data_file:
     csv_reader = csv.reader(csv_data_file)
     next(csv_reader, None)
+    '''Open monopoly_squares.csv, Skip First row and parse through each row 
+    adding the appropriate tile object to the board'''
     for row in csv_reader:
         if row[1] == "Property":
             tile = Property(purchasable=True, owner=None, mortgaged=False, name=row[2], color=row[5],
@@ -43,20 +46,22 @@ with open('monopoly_squares.csv') as csv_data_file:
 com_chest = list()
 with open('community_chest.csv') as csv_data_file:
     csv_reader = csv.reader(csv_data_file)
-    next(csv_reader, None)
+    ''' open community_chest.csv and add a Community Chest object to comm_chest list for each line in the csv '''
     for row in csv_reader:
         card = CommunityChest(action=row[2], message=row[1], value=row[3])
         com_chest.append(card)
 chance = list()
 with open('monopoly_chance.csv') as csv_data_file:
     csv_reader = csv.reader(csv_data_file)
-    next(csv_reader, None)
+    ''' open chance.csv and add a chance object to chance list for each line in the csv '''
     for row in csv_reader:
         card = Chance(action=row[2], message=row[1], value=row[3])
         chance.append(card)
 
 file_name = "game.pkl"
+''' create a tuple called came to store the board, com_chest list, and chance list'''
 game = (board, com_chest, chance)
 open_file = open(file_name, "wb")
+'''pickle game tuple to game.pkl for later use'''
 pickle.dump(game, open_file)
 open_file.close()
