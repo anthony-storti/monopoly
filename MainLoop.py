@@ -10,7 +10,7 @@ chance = game[2]
 '''
 tokens = ["1: ship", "2: thimble", "3: hat", "4: car", "5: iron", "6. boot", "7: Dog", "8: wheel barrel"]
 num_players = int(input("enter number of human players: "))
-while num_players >= 0:
+while num_players > 0:
     name = input("Enter Player Name: ")
     print(tokens)
     token = int(input('select token number:'))
