@@ -57,38 +57,95 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
     """
     ret = []
     if isinstance(tile, (Property, RailRoad, Utility)):
-
         if tile.purchasable:
+            '''
+            if Property, Railroad or Utility and is Purchasable
+            command: a
+            prompt: To acquire tile for $cost press a
+            function: purchase
+            '''
             return ["a", [f"To acquire {tile.name} for ${tile.cost} press a", purchase]]
         elif not tile.purchasable and tile.owner != player and not tile.mortgaged:
+            '''
+            if Property, Railroad or Utility and is owned by another player, and not mortgaged
+            command: p
+            prompt: To pay $rent to name press p
+            function: pay_rent
+            '''
             rent = get_rent(tile, player)
             return ["p", [f"To pay ${rent} to {tile.owner.name} press p", pay_rent]]
         else:
             return ret
-
     elif isinstance(tile, CardTile) and tile.name == "Community Chest":
-
+        '''
+        if Community Chest
+        command: p
+        prompt: card script press p to play card
+        function: play_card
+        note: returns card drawn
+        '''
         card = chance.pop()
+        chance.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
-
+        '''
+        if Chance
+        command: p
+        prompt: card script press p to play card
+        function: play_card
+        note: returns card drawn
+        '''
         card = comm_chest.pop()
+        comm_chest.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
-
-    elif isinstance(tile, GoToJail):
+     elif isinstance(tile, GoToJail):
+        # TODO: Implement
+        '''
+        if Go To Jail
+        command: 
+        prompt: 
+        function: 
+        note: 
+        '''
         return ret
     elif isinstance(tile, Go):
-        # this is also probably good enough
+        '''
+        if Go
+        command: nothing
+        prompt: nothing
+        function: nothing
+        note: collect $200 is taken care of in roll dice
+        '''
         return ret
     elif isinstance(tile, Tax):
-        # this will be tricky if we decide to allow the 10% option if so we will need a way to calculate net worth
-        return ret
+        # TODO: Implement
+        '''
+        if Tax
+        command:  
+        prompt: 
+        function: 
+        note: This could be tricky, we will need a case for Luxury and Income Tax,
+        Income tax traditionally is 10% net worth or $200
+        '''
     elif isinstance(tile, FreeParking):
-        # this is probably good enough
+        '''
+        if Free Parking
+        command: nothing
+        prompt: nothing
+        function: nothing
+        note: This should do and does nothing if a player lands on it
+        '''
         return ret
     elif isinstance(tile, Jail):
-        # this is probably good enough
+        # TODO: Implement
+        '''
+        if Jail
+        command: 
+        prompt: 
+        function: 
+        note: Who ever designs Go To Jail may decide to use this for something or it will literally do nothing
+        '''
         return ret
 
 
@@ -117,7 +174,7 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
     :param card: the actual card from the deck to be executed
     :return: str: str informing user of what happened
     """
-
+    # TODO: Implement, will need to adjust csv files more than likely to fit what you need
     '''
     if card.action == "move_to":
         player.location = card.value
@@ -196,6 +253,7 @@ def machine_algo(options: Dict, player: Player) -> str:
     :param player: Player object of machine player
     :return: str: choice made by machine
     """
+    # TODO: Implement a Real Machine Player ALGO
     if "p" in options:
         return "p"
     elif "a" in options:
@@ -233,6 +291,7 @@ def build():
     :param
     :return: str: information about action performed.
     """
+    # TODO: Implement
     pass
 
 
