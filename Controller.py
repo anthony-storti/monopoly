@@ -99,7 +99,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         card = comm_chest.pop()
         comm_chest.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
-     elif isinstance(tile, GoToJail):
+    elif isinstance(tile, GoToJail):
         # TODO: Implement
         '''
         if Go To Jail
