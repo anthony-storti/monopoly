@@ -9,16 +9,17 @@ class Board:
     cards: list
 
 
-
 @dataclass
 class Player:
+    wallet: int
     name: str
     machine_player: bool
-    wallet: int
     piece: str
     location: int
     inventory: list
     roll: int
+    in_jail: bool
+    jail_counter: int
 
 
 @dataclass

@@ -100,14 +100,16 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         comm_chest.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
     elif isinstance(tile, GoToJail):
-        # TODO: Implement
         '''
         if Go To Jail
-        command: 
-        prompt: 
-        function: 
-        note: 
+        command: nothing
+        prompt: nothing
+        function: nothing
+        note: the "in jail" functionality still has to be handled elsewhere
         '''
+        player.in_jail = True
+        player.jail_counter = 3
+        player.location = 10
         return ret
     elif isinstance(tile, Go):
         '''
@@ -119,15 +121,31 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         '''
         return ret
     elif isinstance(tile, Tax):
-        # TODO: Implement
         '''
         if Tax
-        command:  
-        prompt: 
-        function: 
-        note: This could be tricky, we will need a case for Luxury and Income Tax,
-        Income tax traditionally is 10% net worth or $200
+        command: p
+        prompt: to pay $tax press p
+        function: pay_rent
+        note: Income tax takes either $200 or 10% of the player's net worth, whichever is lower
         '''
+        if tile.name == "Income Tax":
+            player_net_worth = player.wallet
+            for item in player.inventory:
+                if isinstance(item, Tile):
+                    player_net_worth += item.cost
+                    if isinstance(tile, Property):
+                        player_net_worth += tile.house_cost * tile.house_count
+                        player_net_worth += tile.house_cost * tile.hotel_count
+                else:
+                    player_net_worth += item.value
+            player_net_worth = player_net_worth // 10
+            if player_net_worth > 200:
+                return ["p", [f"To pay $200 in taxes press p", pay_tax]]
+            else:
+                return ["p", [f"To pay ${player_net_worth} in taxes press p", pay_tax]]
+        else:
+            return ["p", [f"To pay $75 in taxes press p", pay_tax]]
+
     elif isinstance(tile, FreeParking):
         '''
         if Free Parking
@@ -138,15 +156,33 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         '''
         return ret
     elif isinstance(tile, Jail):
-        # TODO: Implement
+        # TODO: finish the return button prompts, may need to tweak some things if
+        # TODO: we can come back to the function after a user input
         '''
         if Jail
-        command: 
-        prompt: 
-        function: 
-        note: Who ever designs Go To Jail may decide to use this for something or it will literally do nothing
+        command: u, p, r
+        prompt: to use card press u, to pay bail press p, to try to roll doubles press r
+        function: use_jail_card, pay_bail, jail_roll
+        note: The "in jail" functionality is handled here
         '''
-        return ret
+        if player.in_jail:
+            if player.jail_counter > 1:
+                player.jail_counter -= 1
+                for item in player.inventory:
+                    if isinstance(item, Card):
+                        if "Get out of Jail" in item.message:
+                            return ["u", [f"To use your Get out of Jail Free card press u", use_jail_card]]  # not done
+                return ["p", [f"To pay $50 and get out of jail press f", pay_bail]]  # not done
+            elif player.jail_counter == 1:
+                return ["r", [f"To try to roll doubles press r", jail_roll]]
+            else:
+                for item in player.inventory:
+                    if isinstance(item, Card):
+                        if "Get out of Jail" in item.message:
+                            return ["u", [f"To use your Get out of Jail Free card press u", use_jail_card]]  # not done
+                return ["p", [f"To pay $50 and get out of jail press f", pay_bail]]
+        else:
+            return ret
 
 
 def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
@@ -185,6 +221,39 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
         # this will need some work to figure out the mechanism to handle harder cards
     '''
     return "Card Played"
+
+
+def use_jail_card(player: Player):
+    player.in_jail = False
+    for item in player.inventory:
+        if isinstance(item, Card):
+            if "Get out of Jail" in item.message:
+                player.inventory.remove(item)
+                break
+
+
+def pay_bail(player: Player):
+    if player.wallet < 50:
+        return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+    else:
+        player.wallet -= 50
+        player.in_jail = False
+        return "Paid"
+
+
+def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
+    # TODO: make this function call land_on if doubles is rolled
+    roll1 = random.randint(1, 6)
+    roll2 = random.randint(1, 6)
+    if roll1 == roll2:
+        player.in_jail = False
+        player.roll = roll1 + roll2
+        player.location += player.roll
+    else:
+        if player.jail_counter == 1:
+            player.jail_counter = 0
+            lands_on(tile, player, comm_chest, chance)
+
 
 
 def get_rent(tile: (Property, RailRoad, Utility), player: Player):
@@ -235,6 +304,41 @@ def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         player.wallet -= rent
         tile.owner.wallet += rent
         return "Paid"
+
+
+def pay_tax(player: Player, tile: Tax) -> str:
+    """
+    Pay Tax - After this call if a player has sufficient funds the owed tax will be deducted from their wallet
+    :param player: The player paying the tax
+    :param tile: Tile object the tax is paid on
+    :return: str: str of payment confirmation or insufficient funds
+    """
+    if tile.name == "Income Tax":
+        player_net_worth = player.wallet
+        for item in player.inventory:
+            player_net_worth += item.cost
+            if isinstance(tile, Property):
+                player_net_worth += tile.house_cost * tile.house_count
+                player_net_worth += tile.house_cost * tile.hotel_count
+        player_net_worth = player_net_worth // 10
+        if player_net_worth > 200:
+            if player.wallet < 200:
+                return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+            else:
+                player.wallet -= 200
+                return "Paid"
+        else:
+            if player.wallet < player_net_worth:
+                return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+            else:
+                player.wallet -= player_net_worth
+                return "Paid"
+    else:
+        if player.wallet < 75:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            player.wallet -= 75
+            return "Paid"
 
 
 def change_player(board: Board):
@@ -304,5 +408,6 @@ def create_player(name: str, token: str, board: Board, machine: bool = False):
     :param machine: bool indicating if player is a machine player
     :return: nothing
     """
-    player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500, inventory=list(), roll=0)
+    player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
+                    inventory=list(), roll=0, in_jail=False, jail_counter=0)
     board.players.append(player)

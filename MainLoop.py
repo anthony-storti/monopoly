@@ -19,10 +19,12 @@ while num_players > 0:
     num_players -= 1
 '''
 
-''' The Player Init below is deprecated and we will delete later on but for now we dont want to manually create
+''' The Player Init below is deprecated and we will delete later on but for now we don't want to manually create
 a new player every time we test mainloop, in the future we will use the above code to initialize players'''
-player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500, inventory=list(), roll=0)
-player_2 = Player(name="Machine", machine_player=True, piece="hat", location=0, wallet=1500, inventory=list(), roll=0)
+player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500,
+                  inventory=list(), roll=0, in_jail=False, jail_counter=0)
+player_2 = Player(name="Machine", machine_player=True, piece="hat", location=0, wallet=1500,
+                  inventory=list(), roll=0, in_jail=False, jail_counter=0)
 add_player(player_1, board)
 add_player(player_2, board)
 
