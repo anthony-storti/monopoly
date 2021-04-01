@@ -22,9 +22,9 @@ while num_players > 0:
 ''' The Player Init below is deprecated and we will delete later on but for now we don't want to manually create
 a new player every time we test mainloop, in the future we will use the above code to initialize players'''
 player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500,
-                  inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0)
+                  inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
 player_2 = Player(name="Machine", machine_player=True, piece="hat", location=0, wallet=1500,
-                  inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0)
+                  inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
 add_player(player_1, board)
 add_player(player_2, board)
 
@@ -55,7 +55,12 @@ while game_on:
                     valid_input = True
                     roll_dice(player)
     tile = board.tiles[player.location]  # current tile
-    print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")  # displays current tile
+    if player.location == 10:
+        print(f"{player.name} is in Jail")
+    else:
+        print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")  # displays current tile
+    if player.extra_turn:
+        print(f"{player.name} Rolled Double {player.roll/2}'s You Get an extra turn")
     print(f"{player.name}\'s Bank Balance: {player.wallet}")  # displays current wallet value
     opt = lands_on(tile, player, comm_chest, chance)  # call lands on function
     if len(opt) > 0:  # check to see if lands on returned a prompt, if yes add it to instr
