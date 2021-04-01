@@ -22,9 +22,9 @@ while num_players > 0:
 ''' The Player Init below is deprecated and we will delete later on but for now we don't want to manually create
 a new player every time we test mainloop, in the future we will use the above code to initialize players'''
 player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500,
-                  inventory=list(), roll=0, in_jail=False, jail_counter=0)
+                  inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0)
 player_2 = Player(name="Machine", machine_player=True, piece="hat", location=0, wallet=1500,
-                  inventory=list(), roll=0, in_jail=False, jail_counter=0)
+                  inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0)
 add_player(player_1, board)
 add_player(player_2, board)
 
@@ -97,7 +97,7 @@ while game_on:
                     instr.pop(usr_in)
                     valid_input = True
                 elif usr_in == "r":
-                    if instr[usr_in][1](tile, player, comm_chest, chance) == "Out Of Jail":
+                    if instr[usr_in][1](tile, player, comm_chest, chance) == "You got out of jail":
                         tile = board[player.location]
                         lst = lands_on(tile, player, comm_chest, chance)
                         instr[lst[0]] = lst[1]

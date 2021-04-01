@@ -11,7 +11,20 @@ def roll_dice(player: Player):
     :param player: current player object from board
     :return: nothing
     """
-    player.roll = random.randint(1, 6) + random.randint(1, 6)
+    roll1 = random.randint(1, 6)
+    roll2 = random.randint(1, 6)
+    player.roll = roll1 + roll2
+    if roll1 == roll2:
+        if player.extra_turns < 3:
+            player.extra_turns += 1
+            player.extra_turn = True
+        else:
+            player.in_jail = True
+            player.location = 10
+            player.jail_counter = 4
+            player.extra_turns = 0
+    else:
+        player.extra_turns = 0
     if player.roll + player.location < 40:
         player.location += player.roll
     else:
@@ -164,6 +177,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: The "in jail" functionality is handled here
         '''
         if player.in_jail:
+            if player.jail_counter == 4:
+                player.jail_counter -= 1
             if player.jail_counter > 0:
                 player.jail_counter -= 1
                 for item in player.inventory:
@@ -239,14 +254,13 @@ def pay_bail(player: Player):
 
 
 def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
-    # TODO: make this function call land_on if doubles is rolled
     roll1 = random.randint(1, 6)
     roll2 = random.randint(1, 6)
     if roll1 == roll2:
         player.in_jail = False
         player.roll = roll1 + roll2
         player.location += player.roll
-        return "You made it out of jail"
+        return "You got out of jail"
     else:
         if player.jail_counter == 0:
             lands_on(tile, player, comm_chest, chance)
@@ -312,10 +326,12 @@ def pay_tax(player: Player, tile: Tax) -> str:
     if tile.name == "Income Tax":
         player_net_worth = player.wallet
         for item in player.inventory:
-            player_net_worth += item.cost
             if isinstance(tile, Property):
+                player_net_worth += item.cost
                 player_net_worth += tile.house_cost * tile.house_count
                 player_net_worth += tile.house_cost * tile.hotel_count
+            elif isinstance(item, Card):
+                player_net_worth += 50
         player_net_worth = player_net_worth // 10
         if player_net_worth > 200:
             if player.wallet < 200:
@@ -405,5 +421,5 @@ def create_player(name: str, token: str, board: Board, machine: bool = False):
     :return: nothing
     """
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
-                    inventory=list(), roll=0, in_jail=False, jail_counter=0)
+                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0)
     board.players.append(player)

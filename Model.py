@@ -20,6 +20,8 @@ class Player:
     roll: int
     in_jail: bool
     jail_counter: int
+    extra_turns: int
+    extra_turn: bool
 
 
 @dataclass
