@@ -44,21 +44,23 @@ while game_on:
     player = board.players[board.current_player]  # current player
     valid_input = False
     while not valid_input:
-        '''ROLL VALIDATION LOOP'''
-        if player.machine_player:  # if machine player auto-roll
-            roll_dice(player)
-            valid_input = True
-        else:  # repeat loop until user enters r
-            val = input(player.name + " Press r to Roll: ")
-            if val == "r":
-                valid_input = True
+        if not player.in_jail:
+            '''ROLL VALIDATION LOOP'''
+            if player.machine_player:  # if machine player auto-roll
                 roll_dice(player)
+                valid_input = True
+            else:  # repeat loop until user enters r
+                val = input(player.name + " Press r to Roll: ")
+                if val == "r":
+                    valid_input = True
+                    roll_dice(player)
     tile = board.tiles[player.location]  # current tile
     print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")  # displays current tile
     print(f"{player.name}\'s Bank Balance: {player.wallet}")  # displays current wallet value
     opt = lands_on(tile, player, comm_chest, chance)  # call lands on function
     if len(opt) > 0:  # check to see if lands on returned a prompt, if yes add it to instr
         instr[opt[0]] = opt[1]
+    # TODO: add ability to take two commands from lands on
     instr["q"] = ["To end turn press q"]  # add quit turn prompt to instr
     turn = True
     while turn:
@@ -117,4 +119,7 @@ while game_on:
                     turn = False
             else:
                 print("invalid input")
-    change_player(board)
+    if not player.extra_turn:
+        change_player(board)
+    else:
+        player.extra_turn = False

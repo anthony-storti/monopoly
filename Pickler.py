@@ -48,7 +48,7 @@ with open('community_chest.csv') as csv_data_file:
     csv_reader = csv.reader(csv_data_file)
     ''' open community_chest.csv and add a Community Chest object to comm_chest list for each line in the csv '''
     for row in csv_reader:
-        card = CommunityChest(action=row[2], message=row[1], value=row[3])
+        card = CommunityChest(action=row[2], message=row[1], value=row[3])  # this is where the data is loaded
         com_chest.append(card)
 chance = list()
 with open('monopoly_chance.csv') as csv_data_file:
