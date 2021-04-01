@@ -156,8 +156,6 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         '''
         return ret
     elif isinstance(tile, Jail):
-        # TODO: finish the return button prompts, may need to tweak some things if
-        # TODO: we can come back to the function after a user input
         '''
         if Jail
         command: u, p, r
@@ -166,21 +164,20 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: The "in jail" functionality is handled here
         '''
         if player.in_jail:
-            if player.jail_counter > 1:
+            if player.jail_counter > 0:
                 player.jail_counter -= 1
                 for item in player.inventory:
                     if isinstance(item, Card):
                         if "Get out of Jail" in item.message:
-                            return ["u", [f"To use your Get out of Jail Free card press u", use_jail_card]]  # not done
-                return ["p", [f"To pay $50 and get out of jail press f", pay_bail]]  # not done
-            elif player.jail_counter == 1:
-                return ["r", [f"To try to roll doubles press r", jail_roll]]
+                            return [["u", [f"To use your Get out of Jail Free card press u", use_jail_card]],
+                                    ["r", [f"To try to roll doubles press r", jail_roll]]]
+                return [["r", [f"To try to roll doubles press r", jail_roll]], ["p", [f"To pay $50 and get out of jail press p", pay_bail]]]
             else:
                 for item in player.inventory:
                     if isinstance(item, Card):
                         if "Get out of Jail" in item.message:
-                            return ["u", [f"To use your Get out of Jail Free card press u", use_jail_card]]  # not done
-                return ["p", [f"To pay $50 and get out of jail press f", pay_bail]]
+                            return ["u", [f"To use your Get out of Jail Free card press u", use_jail_card]]
+                return ["p", [f"To pay $50 and get out of jail press p", pay_bail]]
         else:
             return ret
 
@@ -249,11 +246,10 @@ def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chan
         player.in_jail = False
         player.roll = roll1 + roll2
         player.location += player.roll
+        return "You made it out of jail"
     else:
-        if player.jail_counter == 1:
-            player.jail_counter = 0
+        if player.jail_counter == 0:
             lands_on(tile, player, comm_chest, chance)
-
 
 
 def get_rent(tile: (Property, RailRoad, Utility), player: Player):
