@@ -112,6 +112,7 @@ while game_on:
                     print(ret_val)
                     valid_input = True
                 elif usr_in == "q" and ("p" in instr or "u" in instr):  # Prohibit quitting turn without playing card or paying rent
+                    # TODO: if the player inserts 'u', the function call must include card decks as parameters
                     valid_input = True
                     print(instr["p"][0] + "*is not optional*")
                 elif usr_in == "q":     # Quit Turn
