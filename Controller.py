@@ -131,7 +131,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         if tile.name == "Income Tax":
             player_net_worth = player.wallet
             for item in player.inventory:
-                if isinstance(item, Tile):
+                if isinstance(item, (Property, RailRoad, Utility)):
                     player_net_worth += item.cost
                     if isinstance(tile, Property):
                         player_net_worth += tile.house_cost * tile.house_count
@@ -169,7 +169,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
             if player.jail_counter > 1:
                 player.jail_counter -= 1
                 for item in player.inventory:
-                    if isinstance(item, Card):
+                    if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
                             return ["u", [f"To use your Get out of Jail Free card press u", use_jail_card]]  # not done
                 return ["p", [f"To pay $50 and get out of jail press f", pay_bail]]  # not done
@@ -177,7 +177,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                 return ["r", [f"To try to roll doubles press r", jail_roll]]
             else:
                 for item in player.inventory:
-                    if isinstance(item, Card):
+                    if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
                             return ["u", [f"To use your Get out of Jail Free card press u", use_jail_card]]  # not done
                 return ["p", [f"To pay $50 and get out of jail press f", pay_bail]]
@@ -253,7 +253,6 @@ def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chan
         if player.jail_counter == 1:
             player.jail_counter = 0
             lands_on(tile, player, comm_chest, chance)
-
 
 
 def get_rent(tile: (Property, RailRoad, Utility), player: Player):

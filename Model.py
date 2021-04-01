@@ -89,12 +89,14 @@ class Utility(Tile):
 class CardTile(Tile):
     action: str
 
+
 @dataclass
 class Jail(Tile):
     action: str
 
+
 @dataclass
-class Card():
+class Card:
     action: str
     value: str
 
