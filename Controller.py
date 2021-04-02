@@ -235,13 +235,17 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
     return "Card Played"
 
 
-def use_jail_card(player: Player):
+def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
     player.in_jail = False
     for item in player.inventory:
-        if isinstance(item, Card):
-            if "Get out of Jail" in item.message:
-                player.inventory.remove(item)
-                break
+        if isinstance(item, Chance):
+            player.inventory.remove(item)
+            chance.insert(0, item)
+            break
+        elif isinstance(item, CommunityChest):
+            player.inventory.remove(item)
+            comm_chest.insert(0, item)
+            break
 
 
 def pay_bail(player: Player):
