@@ -258,7 +258,7 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
         return f"You have gained {card.value}"
     elif card.action == "finance_player":
         player.wallet -= card.value
-        #TODO: add money for the AI player
+        # TODO: add money for the AI player
         return f"You have paid {card.value} for each players in the game"
     elif card.action == "Finance_house":
         player.wallet += card.value
@@ -268,8 +268,8 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
         return f"You have moved {abs(card.value)} steps back"
     elif card.action == "special":
         player.inventory.append(card)
-        #TODO: how many jail cards can the whole deck have?
-        #TODO: should we add abilities to delete it?
+        # TODO: how many jail cards can the whole deck have?
+        # TODO: should we add abilities to delete it?
         return f"You have gained a jail card"
     return "Card Played"
 
@@ -414,7 +414,11 @@ def machine_algo(options: Dict, player: Player) -> str:
     :return: str: choice made by machine
     """
     # TODO: Implement a Real Machine Player ALGO
-    if "p" in options:
+    if "u" in options:
+        return "u"
+    elif "r" in options:
+        return "r"
+    elif "p" in options:
         return "p"
     elif "a" in options:
         return "a"
