@@ -97,8 +97,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
-        card = chance.pop()
-        chance.insert(0, card)
+        card = comm_chest.pop()
+        comm_chest.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
@@ -109,8 +109,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
-        card = comm_chest.pop()
-        comm_chest.insert(0, card)
+        card = chance.pop()
+        chance.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
     elif isinstance(tile, GoToJail):
         '''
@@ -214,12 +214,6 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         return "successfully purchased"
     else:
         return "insufficient funds"
-
-
-def pick_a_card(card_list) -> Chance:
-    random_num = random.randint(0, len(card_list))
-    print("You have picked a card, and the message is: ", card_list[random_num].message)
-    return card_list[random_num]
 
 
 def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
