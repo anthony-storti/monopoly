@@ -186,7 +186,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                         if "Get out of Jail" in item.message:
                             return [["u", [f"To use your Get out of Jail Free card press u", use_jail_card]],
                                     ["r", [f"To try to roll doubles press r", jail_roll]]]
-                return [["r", [f"To try to roll doubles press r", jail_roll]], ["p", [f"To pay $50 and get out of jail press p", pay_bail]]]
+                return [["r", [f"To try to roll doubles press r", jail_roll]],
+                        ["p", [f"To pay $50 and get out of jail press p", pay_bail]]]
             else:
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
@@ -215,6 +216,12 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         return "insufficient funds"
 
 
+def pick_a_card(card_list) -> Chance:
+    random_num = random.randint(0, len(card_list))
+    print("You have picked a card, and the message is: ", card_list[random_num].message)
+    return card_list[random_num]
+
+
 def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
     """
     Play Card  - After this call whatever functionality of a community chest or chance card will be executed
@@ -222,16 +229,54 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
     :param card: the actual card from the deck to be executed
     :return: str: str informing user of what happened
     """
-    # TODO: Implement, will need to adjust csv files more than likely to fit what you need
-    '''
+    # initialize values
+    value_list = []
+    smallest = int(value_list[0])
+    small_value = 10000
+    card.value = card.value.rstrip('\n')
+    for i in card.value:
+        if i == ";":
+            value_list = card.value.split(";")
+
     if card.action == "move_to":
-        player.location = card.value
         if card.value != 0 and player.location > card.value:
             player.wallet += 200
+        player.location = card.value
         return f"You have advanced to {player.location}"
-    else:
-        # this will need some work to figure out the mechanism to handle harder cards
-    '''
+    elif card.action == "move_to_closest":
+        for i in value_list:
+            if player.location - int(value_list[i]) < small_value:
+                smallest = int(value_list[i])
+                small_value = player.location - int(value_list)
+            elif player.location - int(value_list) == small_value:
+                choice = random.randint(0, len(value_list))
+                smallest = int(value_list[choice])
+        player.location = smallest
+        return f"You have advanced to {player.location}"
+    elif card.action == "Finance_1":
+        player.wallet += card.value
+        if card.value < 0:
+            return f"You have paid {abs(card.value)} for tax"
+        else:
+            return f"You have gained {card.value}"
+    elif card.action == "finance":
+        player.wallet += card.value
+        return f"You have gained {card.value}"
+    elif card.action == "finance_player":
+        player.wallet -= card.value
+        #TODO: add money for the AI player
+        return f"You have paid {card.value} for each players in the game"
+    elif card.action == "Finance_house":
+        player.wallet += card.value
+        return f"You have paid {abs(card.value)} for repairing the houses"
+    elif card.action == "move_steps":
+        player.location += card.value
+        return f"You have moved {abs(card.value)} steps back"
+    elif card.action == "special":
+        player.inventory.append(card)
+        #TODO: how many jail cards can the whole deck have?
+        #TODO: should we add abilities to delete it?
+        return f"You have gained a jail card"
     return "Card Played"
 
 

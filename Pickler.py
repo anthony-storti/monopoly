@@ -55,7 +55,7 @@ with open('monopoly_chance.csv') as csv_data_file:
     csv_reader = csv.reader(csv_data_file)
     ''' open chance.csv and add a chance object to chance list for each line in the csv '''
     for row in csv_reader:
-        card = Chance(action=row[2], message=row[1], value=row[3])
+        card = Chance(message=row[1], action=row[2], value=row[3])
         chance.append(card)
 
 file_name = "game.pkl"
