@@ -122,16 +122,15 @@ while game_on:
                     valid_input = True
                 elif usr_in == "p" or usr_in == "a":         # Purchase Tile or Pay Rent
                     ret_val = instr[usr_in][1](player, tile)
-                    if ret_val != "insufficient funds":
+                    if "Go Bankrupt" in ret_val:
+                        instr += ["g", ["To go bankrupt press g", go_bankrupt]]
+                    elif ret_val != "insufficient funds":
                         instr.pop(usr_in)  # remove instruction if rent payed or tile purchased
                     print(ret_val)
                     valid_input = True
                 elif usr_in == "q" and ("p" in instr or "u" in instr):  # Prohibit quitting turn without playing card or paying rent
                     valid_input = True
-                    result = (instr[usr_in][0] + "*is not optional*")
-                    print(result)
-                    if "Go Bankrupt" in result:         # TODO: this isn't quite done yet, need to finish g handling
-                        instr += ["g", ["To go bankrupt press g", go_bankrupt]]
+                    print(instr[usr_in][0] + "*is not optional*")
                 elif usr_in == "g":     # Go bankrupt
                     valid_input = True
                     print(instr[usr_in][1](player, comm_chest, chance))
