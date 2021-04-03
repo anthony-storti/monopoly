@@ -55,7 +55,7 @@ while game_on:
                     valid_input = True
                     roll_dice(player)
     tile = board.tiles[player.location]  # current tile
-    if player.location == 10:
+    if player.in_jail:
         print(f"{player.name} is in Jail")
     else:
         print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")  # displays current tile
