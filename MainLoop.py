@@ -55,7 +55,12 @@ while game_on:
                     valid_input = True
                     roll_dice(player)
     tile = board.tiles[player.location]  # current tile
-    print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")  # displays current tile
+    if player.in_jail:
+        print(f"{player.name} is in Jail")
+    else:
+        print(f"{player.name} rolled {player.roll} and advanced to {tile.name}")  # displays current tile
+    if player.extra_turn:
+        print(f"{player.name} Rolled Double {player.roll/2}'s You Get an extra turn")
     print(f"{player.name}\'s Bank Balance: {player.wallet}")  # displays current wallet value
     opt = lands_on(tile, player, comm_chest, chance)  # call lands on function
     if len(opt) > 0:  # check to see if lands on returned a prompt, if yes add it to instr
@@ -94,8 +99,8 @@ while game_on:
                     else:
                         print("Current Inventory Empty")
                     valid_input = True
-                elif usr_in == "p" and len(opt) > 2:  # Play Card
-                    print(instr[usr_in][1](player, opt[3]))
+                elif usr_in == "p" and len(opt[1]) > 2:  # Play Card
+                    print(instr[usr_in][1](player, opt[1][2], board.players))
                     instr.pop(usr_in)
                     valid_input = True
                 elif usr_in == "r":  # Jail roll

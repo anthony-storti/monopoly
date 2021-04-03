@@ -110,7 +110,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: returns card drawn
         '''
         card = chance.pop()
-        chance.insert(0, card)
+        if card.action != "special":
+            chance.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
     elif isinstance(tile, GoToJail):
         '''
@@ -216,7 +217,7 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         return "insufficient funds"
 
 
-def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
+def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player]) -> str:
     """
     Play Card  - After this call whatever functionality of a community chest or chance card will be executed
     :param player: Player playing card
@@ -225,7 +226,6 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
     """
     # initialize values
     value_list = []
-    smallest = int(value_list[0])
     small_value = 10000
     card.value = card.value.rstrip('\n')
     for i in card.value:
@@ -233,11 +233,12 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
             value_list = card.value.split(";")
 
     if card.action == "move_to":
-        if card.value != 0 and player.location > card.value:
+        if int(card.value) != 0 and player.location > int(card.value):
             player.wallet += 200
-        player.location = card.value
+        player.location = int(card.value)
         return f"You have advanced to {player.location}"
     elif card.action == "move_to_closest":
+        smallest = int(value_list[0])
         for i in value_list:
             if player.location - int(value_list[i]) < small_value:
                 smallest = int(value_list[i])
@@ -248,28 +249,28 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
         player.location = smallest
         return f"You have advanced to {player.location}"
     elif card.action == "Finance_1":
-        player.wallet += card.value
-        if card.value < 0:
-            return f"You have paid {abs(card.value)} for tax"
+        player.wallet += int(card.value)
+        if int(card.value) < 0:
+            return f"You have paid {abs(int(card.value))} for tax"
         else:
-            return f"You have gained {card.value}"
+            return f"You have gained {int(card.value)}"
     elif card.action == "finance":
-        player.wallet += card.value
-        return f"You have gained {card.value}"
+        player.wallet += int(card.value)
+        return f"You have gained {int(card.value)}"
     elif card.action == "finance_player":
-        player.wallet -= card.value
-        # TODO: add money for the AI player
-        return f"You have paid {card.value} for each players in the game"
+        player.wallet -= int(card.value)
+        for p in player_list:
+            if p.name != player.name:
+                p.wallet -= int(card.value)
+        return f"You have paid {int(card.value)} for each players in the game"
     elif card.action == "Finance_house":
-        player.wallet += card.value
-        return f"You have paid {abs(card.value)} for repairing the houses"
+        player.wallet += int(card.value)
+        return f"You have paid {abs(int(card.value))} for repairing the houses"
     elif card.action == "move_steps":
-        player.location += card.value
-        return f"You have moved {abs(card.value)} steps back"
+        player.location += int(card.value)
+        return f"You have moved {abs(int(card.value))} steps back"
     elif card.action == "special":
         player.inventory.append(card)
-        # TODO: how many jail cards can the whole deck have?
-        # TODO: should we add abilities to delete it?
         return f"You have gained a jail card"
     return "Card Played"
 
