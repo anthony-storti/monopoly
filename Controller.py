@@ -249,7 +249,10 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
                 choice = random.randint(0, len(value_list))
                 smallest = int(value_list[choice])
         player.location = smallest
-        return f"You have advanced to {tile_list[player.location].name}"  # say tile name
+        return f"You have advanced to {tile_list[player.location].name}"
+    elif card.action == "Finance":
+        player.wallet += int(card.value)
+        return f"You have gained ${int(card.value)}"
     elif card.action == "Finance_1":
         player.wallet += int(card.value)
         if int(card.value) < 0:
