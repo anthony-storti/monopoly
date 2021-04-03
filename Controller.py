@@ -236,15 +236,16 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     if card.action == "move_to":
         if int(card.value) != 0 and player.location > int(card.value):
             player.wallet += 200
+            print("You have passed the go, collect $200 as reward")
         player.location = int(card.value)
         return f"You have advanced to {tile_list[player.location].name}"
     elif card.action == "move_to_closest":
         smallest = int(value_list[0])
         for i in value_list:
-            if player.location - int(value_list[i]) < small_value:
-                smallest = int(value_list[i])
+            if player.location - int(i) < small_value:
+                smallest = int(i)
                 small_value = player.location - int(value_list)
-            elif player.location - int(value_list) == small_value:
+            elif player.location - int(i) == small_value:
                 choice = random.randint(0, len(value_list))
                 smallest = int(value_list[choice])
         player.location = smallest
@@ -257,7 +258,10 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
             return f"You have gained ${int(card.value)}"
     elif card.action == "finance":
         player.wallet += int(card.value)
-        return f"You have gained ${int(card.value)}"
+        if int(card.value) < 0:
+            return f"You have paid ${abs(int(card.value))}"
+        else:
+            return f"You have gained ${int(card.value)}"
     elif card.action == "finance_player":
         player.wallet -= int(card.value)
         for p in player_list:
