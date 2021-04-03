@@ -217,11 +217,13 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         return "insufficient funds"
 
 
-def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player]) -> str:
+def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player], tile_list: List[Tile]) -> str:
     """
     Play Card  - After this call whatever functionality of a community chest or chance card will be executed
     :param player: Player playing card
     :param card: the actual card from the deck to be executed
+    :param player_list: all the players that is on the board
+    :param tile_list: all the tiles that is on the board
     :return: str: str informing user of what happened
     """
     # initialize values
@@ -234,37 +236,41 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     if card.action == "move_to":
         if int(card.value) != 0 and player.location > int(card.value):
             player.wallet += 200
+            print("You have passed the go, collect $200 as reward")
         player.location = int(card.value)
-        return f"You have advanced to {player.location}"
+        return f"You have advanced to {tile_list[player.location].name}"
     elif card.action == "move_to_closest":
         smallest = int(value_list[0])
         for i in value_list:
-            if player.location - int(value_list[i]) < small_value:
-                smallest = int(value_list[i])
+            if player.location - int(i) < small_value:
+                smallest = int(i)
                 small_value = player.location - int(value_list)
-            elif player.location - int(value_list) == small_value:
+            elif player.location - int(i) == small_value:
                 choice = random.randint(0, len(value_list))
                 smallest = int(value_list[choice])
         player.location = smallest
-        return f"You have advanced to {player.location}"  # say tile name
+        return f"You have advanced to {tile_list[player.location].name}"  # say tile name
     elif card.action == "Finance_1":
         player.wallet += int(card.value)
         if int(card.value) < 0:
-            return f"You have paid {abs(int(card.value))} for tax"
+            return f"You have paid ${abs(int(card.value))} for tax"
         else:
-            return f"You have gained {int(card.value)}"
+            return f"You have gained ${int(card.value)}"
     elif card.action == "finance":
         player.wallet += int(card.value)
-        return f"You have gained {int(card.value)}"
+        if int(card.value) < 0:
+            return f"You have paid ${abs(int(card.value))}"
+        else:
+            return f"You have gained ${int(card.value)}"
     elif card.action == "finance_player":
         player.wallet -= int(card.value)
         for p in player_list:
             if p.name != player.name:
                 p.wallet -= int(card.value)
-        return f"You have paid {int(card.value)} for each players in the game"
+        return f"You have paid ${int(card.value)} for each players in the game"
     elif card.action == "Finance_house":
         player.wallet += int(card.value)
-        return f"You have paid {abs(int(card.value))} for repairing the houses"
+        return f"You have paid ${abs(int(card.value))} for repairing the houses"
     elif card.action == "move_steps":
         player.location += int(card.value)
         return f"You have moved {abs(int(card.value))} steps back"
