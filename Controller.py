@@ -228,9 +228,8 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     value_list = []
     small_value = 10000
     card.value = card.value.rstrip('\n')
-    for i in card.value:
-        if i == ";":
-            value_list = card.value.split(";")
+    if ";" in card.value:
+        value_list = card.value.split(";")
 
     if card.action == "move_to":
         if int(card.value) != 0 and player.location > int(card.value):
