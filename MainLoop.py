@@ -100,7 +100,11 @@ while game_on:
                         print("Current Inventory Empty")
                     valid_input = True
                 elif usr_in == "p" and len(opt[1]) > 2:  # Play Card
-                    print(instr[usr_in][1](player, opt[1][2], board.players))
+                    ret = instr[usr_in][1](player, opt[1][2], board.players)
+                    print(ret)
+                    if "You have advanced to" in ret:
+                        opt = lands_on(tile, player, comm_chest, chance)
+                        instr[opt[0]] = opt[1]
                     instr.pop(usr_in)
                     valid_input = True
                 elif usr_in == "r":  # Jail roll
