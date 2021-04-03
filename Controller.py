@@ -290,11 +290,14 @@ def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List
 
 def pay_bail(player: Player):
     if player.wallet < 50:
-        return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        if player.jail_counter == 0:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            return "Insufficient Funds"
     else:
         player.wallet -= 50
         player.in_jail = False
-        return "Paid"
+        return "You paid bail and are out of jail"
 
 
 def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
@@ -371,9 +374,10 @@ def pay_tax(player: Player, tile: Tax) -> str:
         player_net_worth = player.wallet
         for item in player.inventory:
             if isinstance(tile, Property):
-                player_net_worth += item.cost
-                player_net_worth += tile.house_cost * tile.house_count
-                player_net_worth += tile.house_cost * tile.hotel_count
+                if not tile.mortgaged:
+                    player_net_worth += item.cost
+                    player_net_worth += tile.house_cost * tile.house_count
+                    player_net_worth += tile.house_cost * tile.hotel_count
             elif isinstance(item, Card):
                 player_net_worth += 50
         player_net_worth = player_net_worth // 10
@@ -446,6 +450,21 @@ def mortgage(tile: Tile, player: Player):
                 return f"{tile.name} has been restored to your active inventory"
             else:
                 return "insufficient funds"
+
+
+def go_bankrupt(player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
+    for item in player.inventory:
+        if isinstance(item, Card):
+            if isinstance(item, Chance):
+                chance.insert(0, item)
+            else:
+                comm_chest.insert(0, item)
+        else:
+            item.owner = None
+            if isinstance(item, property):
+                item.mortgaged = False
+                item.house_count = 0
+                item.hotel_count = 0
 
 
 def build():
