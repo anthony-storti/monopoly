@@ -474,6 +474,7 @@ def go_bankrupt(player: Player, comm_chest: List[CommunityChest], chance: List[C
                 item.mortgaged = False
                 item.house_count = 0
                 item.hotel_count = 0
+    return "You have gone bankrupt and are out of the game"
 
 
 def build():

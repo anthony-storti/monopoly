@@ -134,7 +134,9 @@ while game_on:
                         instr += ["g", ["To go bankrupt press g", go_bankrupt]]
                 elif usr_in == "g":     # Go bankrupt
                     valid_input = True
-
+                    print(instr[usr_in][1](player, comm_chest, chance))
+                    board.players.remove(player)
+                    turn = False
                 elif usr_in == "q":     # Quit Turn
                     valid_input = True
                     turn = False
