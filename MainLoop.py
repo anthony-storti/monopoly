@@ -99,8 +99,8 @@ while game_on:
                     else:
                         print("Current Inventory Empty")
                     valid_input = True
-                elif usr_in == "p" and len(opt) > 2:  # Play Card
-                    print(instr[usr_in][1](player, opt[3], board.players))
+                elif usr_in == "p" and len(opt[1]) > 2:  # Play Card
+                    print(instr[usr_in][1](player, opt[1][2], board.players))
                     instr.pop(usr_in)
                     valid_input = True
                 elif usr_in == "r":
