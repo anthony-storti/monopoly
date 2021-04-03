@@ -105,7 +105,8 @@ while game_on:
                         print("test")
                         tile = board.tiles[player.location]
                         add = lands_on(tile, player, comm_chest, chance)
-                        instr[add[0]] = add[1]
+                        if len(add) > 0:
+                            instr[add[0]] = add[1]
                     instr.pop(usr_in)
                     valid_input = True
                 elif usr_in == "r":  # Jail roll
