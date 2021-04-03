@@ -98,7 +98,7 @@ while game_on:
                     print(instr[usr_in][1](player, opt[3]))
                     instr.pop(usr_in)
                     valid_input = True
-                elif usr_in == "r":
+                elif usr_in == "r":  # Jail roll
                     if instr[usr_in][1](tile, player, comm_chest, chance) == "You got out of jail":
                         tile = board[player.location]
                         lst = lands_on(tile, player, comm_chest, chance)
@@ -117,7 +117,13 @@ while game_on:
                     valid_input = True
                 elif usr_in == "q" and ("p" in instr or "u" in instr):  # Prohibit quitting turn without playing card or paying rent
                     valid_input = True
-                    print(instr["p"][0] + "*is not optional*")
+                    result = (instr[usr_in][0] + "*is not optional*")
+                    print(result)
+                    if "Go Bankrupt" in result:         # TODO: this isn't quite done yet, need to finish g handling
+                        instr += ["g", ["To go bankrupt press g", go_bankrupt]]
+                elif usr_in == "g":     # Go bankrupt
+                    valid_input = True
+
                 elif usr_in == "q":     # Quit Turn
                     valid_input = True
                     turn = False
