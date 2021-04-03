@@ -23,7 +23,7 @@ while num_players > 0:
 a new player every time we test mainloop, in the future we will use the above code to initialize players'''
 player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500,
                   inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
-player_2 = Player(name="Machine", machine_player=True, piece="hat", location=0, wallet=1500,
+player_2 = Player(name="Machine", machine_player=False, piece="hat", location=0, wallet=1500,
                   inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
 add_player(player_1, board)
 add_player(player_2, board)
@@ -100,11 +100,12 @@ while game_on:
                         print("Current Inventory Empty")
                     valid_input = True
                 elif usr_in == "p" and len(opt[1]) > 2:  # Play Card
-                    ret = instr[usr_in][1](player, opt[1][2], board.players)
-                    print(ret)
-                    if "You have advanced to" in ret:
-                        opt = lands_on(tile, player, comm_chest, chance)
-                        instr[opt[0]] = opt[1]
+                    print(instr[usr_in][1](player, opt[1][2], board.players))
+                    if opt[1][2].action == "move_to" or opt[1][2].action == "move_to_closest":
+                        print("test")
+                        tile = board.tiles[player.location]
+                        add = lands_on(tile, player, comm_chest, chance)
+                        instr[add[0]] = add[1]
                     instr.pop(usr_in)
                     valid_input = True
                 elif usr_in == "r":  # Jail roll
