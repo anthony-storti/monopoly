@@ -226,7 +226,6 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     """
     # initialize values
     value_list = []
-    smallest = int(value_list[0])
     small_value = 10000
     card.value = card.value.rstrip('\n')
     for i in card.value:
@@ -239,6 +238,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         player.location = card.value
         return f"You have advanced to {player.location}"
     elif card.action == "move_to_closest":
+        smallest = int(value_list[0])
         for i in value_list:
             if player.location - int(value_list[i]) < small_value:
                 smallest = int(value_list[i])
