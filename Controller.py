@@ -97,8 +97,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
-        card = chance.pop()
-        chance.insert(0, card)
+        card = comm_chest.pop()
+        comm_chest.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
@@ -109,8 +109,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
-        card = comm_chest.pop()
-        comm_chest.insert(0, card)
+        card = chance.pop()
+        chance.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
     elif isinstance(tile, GoToJail):
         '''
@@ -186,7 +186,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                         if "Get out of Jail" in item.message:
                             return [["u", [f"To use your Get out of Jail Free card press u", use_jail_card]],
                                     ["r", [f"To try to roll doubles press r", jail_roll]]]
-                return [["r", [f"To try to roll doubles press r", jail_roll]], ["p", [f"To pay $50 and get out of jail press p", pay_bail]]]
+                return [["r", [f"To try to roll doubles press r", jail_roll]],
+                        ["p", [f"To pay $50 and get out of jail press p", pay_bail]]]
             else:
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
@@ -222,16 +223,54 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
     :param card: the actual card from the deck to be executed
     :return: str: str informing user of what happened
     """
-    # TODO: Implement, will need to adjust csv files more than likely to fit what you need
-    '''
+    # initialize values
+    value_list = []
+    smallest = int(value_list[0])
+    small_value = 10000
+    card.value = card.value.rstrip('\n')
+    for i in card.value:
+        if i == ";":
+            value_list = card.value.split(";")
+
     if card.action == "move_to":
-        player.location = card.value
         if card.value != 0 and player.location > card.value:
             player.wallet += 200
+        player.location = card.value
         return f"You have advanced to {player.location}"
-    else:
-        # this will need some work to figure out the mechanism to handle harder cards
-    '''
+    elif card.action == "move_to_closest":
+        for i in value_list:
+            if player.location - int(value_list[i]) < small_value:
+                smallest = int(value_list[i])
+                small_value = player.location - int(value_list)
+            elif player.location - int(value_list) == small_value:
+                choice = random.randint(0, len(value_list))
+                smallest = int(value_list[choice])
+        player.location = smallest
+        return f"You have advanced to {player.location}"
+    elif card.action == "Finance_1":
+        player.wallet += card.value
+        if card.value < 0:
+            return f"You have paid {abs(card.value)} for tax"
+        else:
+            return f"You have gained {card.value}"
+    elif card.action == "finance":
+        player.wallet += card.value
+        return f"You have gained {card.value}"
+    elif card.action == "finance_player":
+        player.wallet -= card.value
+        # TODO: add money for the AI player
+        return f"You have paid {card.value} for each players in the game"
+    elif card.action == "Finance_house":
+        player.wallet += card.value
+        return f"You have paid {abs(card.value)} for repairing the houses"
+    elif card.action == "move_steps":
+        player.location += card.value
+        return f"You have moved {abs(card.value)} steps back"
+    elif card.action == "special":
+        player.inventory.append(card)
+        # TODO: how many jail cards can the whole deck have?
+        # TODO: should we add abilities to delete it?
+        return f"You have gained a jail card"
     return "Card Played"
 
 
@@ -246,6 +285,7 @@ def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List
             player.inventory.remove(item)
             comm_chest.insert(0, item)
             break
+    return "You used your Get out of jail free card"
 
 
 def pay_bail(player: Player):
@@ -374,7 +414,11 @@ def machine_algo(options: Dict, player: Player) -> str:
     :return: str: choice made by machine
     """
     # TODO: Implement a Real Machine Player ALGO
-    if "p" in options:
+    if "u" in options:
+        return "u"
+    elif "r" in options:
+        return "r"
+    elif "p" in options:
         return "p"
     elif "a" in options:
         return "a"

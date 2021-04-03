@@ -110,6 +110,10 @@ while game_on:
                         instr[lst[0]] = lst[1]
                     instr.pop(usr_in)
                     valid_input = True
+                elif usr_in == "u":
+                    print(instr[usr_in][1](player, comm_chest, chance))
+                    instr.pop(usr_in)
+                    valid_input = True
                 elif usr_in == "p" or usr_in == "a":         # Purchase Tile or Pay Rent
                     ret_val = instr[usr_in][1](player, tile)
                     if ret_val != "insufficient funds":
@@ -117,7 +121,6 @@ while game_on:
                     print(ret_val)
                     valid_input = True
                 elif usr_in == "q" and ("p" in instr or "u" in instr):  # Prohibit quitting turn without playing card or paying rent
-                    # TODO: if the player inserts 'u', the function call must include card decks as parameters
                     valid_input = True
                     print(instr["p"][0] + "*is not optional*")
                 elif usr_in == "q":     # Quit Turn
