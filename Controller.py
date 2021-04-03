@@ -222,7 +222,6 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     Play Card  - After this call whatever functionality of a community chest or chance card will be executed
     :param player: Player playing card
     :param card: the actual card from the deck to be executed
-    :param player_list: the list of all players
     :return: str: str informing user of what happened
     """
     # initialize values
@@ -287,6 +286,7 @@ def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List
             player.inventory.remove(item)
             comm_chest.insert(0, item)
             break
+    return "You used your Get out of jail free card"
 
 
 def pay_bail(player: Player):
@@ -415,7 +415,11 @@ def machine_algo(options: Dict, player: Player) -> str:
     :return: str: choice made by machine
     """
     # TODO: Implement a Real Machine Player ALGO
-    if "p" in options:
+    if "u" in options:
+        return "u"
+    elif "r" in options:
+        return "r"
+    elif "p" in options:
         return "p"
     elif "a" in options:
         return "a"
@@ -466,5 +470,5 @@ def create_player(name: str, token: str, board: Board, machine: bool = False):
     :return: nothing
     """
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
-                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0)
+                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
     board.players.append(player)
