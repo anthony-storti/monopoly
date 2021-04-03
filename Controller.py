@@ -233,9 +233,9 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
             value_list = card.value.split(";")
 
     if card.action == "move_to":
-        if card.value != 0 and player.location > card.value:
+        if int(card.value) != 0 and player.location > int(card.value):
             player.wallet += 200
-        player.location = card.value
+        player.location = int(card.value)
         return f"You have advanced to {player.location}"
     elif card.action == "move_to_closest":
         smallest = int(value_list[0])
@@ -249,26 +249,26 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         player.location = smallest
         return f"You have advanced to {player.location}"
     elif card.action == "Finance_1":
-        player.wallet += card.value
-        if card.value < 0:
-            return f"You have paid {abs(card.value)} for tax"
+        player.wallet += int(card.value)
+        if int(card.value) < 0:
+            return f"You have paid {abs(int(card.value))} for tax"
         else:
-            return f"You have gained {card.value}"
+            return f"You have gained {int(card.value)}"
     elif card.action == "finance":
-        player.wallet += card.value
-        return f"You have gained {card.value}"
+        player.wallet += int(card.value)
+        return f"You have gained {int(card.value)}"
     elif card.action == "finance_player":
-        player.wallet -= card.value
+        player.wallet -= int(card.value)
         for p in player_list:
             if p.name != player.name:
-                p.wallet -= card.value
-        return f"You have paid {card.value} for each players in the game"
+                p.wallet -= int(card.value)
+        return f"You have paid {int(card.value)} for each players in the game"
     elif card.action == "Finance_house":
-        player.wallet += card.value
-        return f"You have paid {abs(card.value)} for repairing the houses"
+        player.wallet += int(card.value)
+        return f"You have paid {abs(int(card.value))} for repairing the houses"
     elif card.action == "move_steps":
-        player.location += card.value
-        return f"You have moved {abs(card.value)} steps back"
+        player.location += int(card.value)
+        return f"You have moved {abs(int(card.value))} steps back"
     elif card.action == "special":
         player.inventory.append(card)
         return f"You have gained a jail card"
