@@ -110,7 +110,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: returns card drawn
         '''
         card = chance.pop()
-        chance.insert(0, card)
+        if card.action != "special":
+            chance.insert(0, card)
         return ["p", [f"{card.message} press p to play card: ", play_card, card]]
     elif isinstance(tile, GoToJail):
         '''
@@ -216,11 +217,12 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         return "insufficient funds"
 
 
-def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
+def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player]) -> str:
     """
     Play Card  - After this call whatever functionality of a community chest or chance card will be executed
     :param player: Player playing card
     :param card: the actual card from the deck to be executed
+    :param player_list: the list of all players
     :return: str: str informing user of what happened
     """
     # initialize values
@@ -258,7 +260,9 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
         return f"You have gained {card.value}"
     elif card.action == "finance_player":
         player.wallet -= card.value
-        #TODO: add money for the AI player
+        for p in player_list:
+            if p.name != player.name:
+                p.wallet -= card.value
         return f"You have paid {card.value} for each players in the game"
     elif card.action == "Finance_house":
         player.wallet += card.value
@@ -268,8 +272,6 @@ def play_card(player: Player, card: (CommunityChest, Chance)) -> str:
         return f"You have moved {abs(card.value)} steps back"
     elif card.action == "special":
         player.inventory.append(card)
-        #TODO: how many jail cards can the whole deck have?
-        #TODO: should we add abilities to delete it?
         return f"You have gained a jail card"
     return "Card Played"
 
