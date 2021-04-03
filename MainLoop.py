@@ -100,7 +100,7 @@ while game_on:
                         print("Current Inventory Empty")
                     valid_input = True
                 elif usr_in == "p" and len(opt[1]) > 2:  # Play Card
-                    print(instr[usr_in][1](player, opt[1][2], board.players))
+                    print(instr[usr_in][1](player, opt[1][2], board.players, board.tiles))
                     if opt[1][2].action == "move_to" or opt[1][2].action == "move_to_closest":
                         print("test")
                         tile = board.tiles[player.location]
