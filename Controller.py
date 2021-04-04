@@ -497,6 +497,8 @@ def build(tile: Property, player: Player):
                 player.wallet -= tile.house_cost
                 return f"Built 1 hotel on {tile.name} for ${tile.house_cost}"
         elif item.color == tile.color and not item.mortgaged:
+            if item.name != tile.name and (item.house_count > tile.house_count or item.hotel_count > tile.hotel_count): # Does "item != tile" work the same way?
+                break
             count += 1
 
 def demolish(tile: Property, player: Player):
@@ -511,6 +513,9 @@ def demolish(tile: Property, player: Player):
         player.wallet += tile.house_cost
         return f"Demolished 1 hotel on {tile.name}"
     elif tile.house_count > 0:
+        for item in player.inventory:
+            if item.color == tile.color and item.name != tile.name and item.house_count < tile.house_count:
+                return
         tile.house_count -= 1
         player.wallet += tile.house_cost
         return f"Demolished 1 house on {tile.name}"
