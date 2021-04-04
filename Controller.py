@@ -477,15 +477,43 @@ def go_bankrupt(player: Player, comm_chest: List[CommunityChest], chance: List[C
     return "You have gone bankrupt and are out of the game"
 
 
-def build():
+def build(tile: Property, player: Player, num: int):
     """
     Build - After this call a house or hotel will be added to a tile if a player can afford it and
     it is a legal game action
-    :param
+    :param tile: tile object to be acted on
+    :param player: Player object making call
+    :param num: number of houses to build
     :return: str: information about action performed.
     """
-    # TODO: Implement
-    pass
+    pass # until below comment is resolved
+    if not # ALL PROPERTIES OF SAME COLOR AS tile ARE OWNED BY player and ALL PROPERTIES OF SAME COLOR AS tile ARE UNMORTGAGED:
+        if tile.house_count + num <= 4 and player.wallet >= tile.house_cost * num:
+            tile.house_count += num
+            player.wallet -= tile.house_cost * num
+            return f"Built {num} house(s) on {tile.name} for ${tile.house_cost * num}"
+        elif tile.house_count + num == 5 and player.wallet >= tile.house_cost * (num - 1) + tile.hotel_cost:
+            tile.house_count += num - 1
+            tile.hotel_count += 1
+            player.wallet -= tile.house_cost * (num - 1) + tile.hotel_cost
+            return f"Built 1 hotel on {tile.name} for a total of ${tile.house_cost * (num - 1) + tile.hotel_cost}"
+
+def demolish(tile: Property, player: Player, num: int):
+    """
+    Demolish - After this call a house or hotel will be removed from a tile if it is a legal game action
+    :param tile: tile object to be acted on
+    :param player: Player object making call
+    :return: str: information about action performed.
+    """
+    if tile.hotel_count > 0 and num <= 5:
+        tile.hotel_count -= 1
+        tile.house_count -= num - 1
+        player.wallet += tile.hotel_cost + tile.house_cost * (num - 1)
+        return f"Demolished 1 hotel on {tile.name}"
+    elif tile.hotel_count == 0 and tile.house_count >= num:
+        tile.house_count -= num
+        player.wallet += tile.house_cost * num
+        return f"Demolished {num} house(s) on {tile.name}"
 
 
 def create_player(name: str, token: str, board: Board, machine: bool = False):
