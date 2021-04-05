@@ -470,9 +470,7 @@ def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad,
     :return: str: choice made by machine
     """
     # TODO: Implement a Real Machine Player ALGO
-    if "g" in options:
-        return "g"
-    elif "u" in options:
+    if "u" in options:
         return "u"
     elif "r" in options:
         return "r"
