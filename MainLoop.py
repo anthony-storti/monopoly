@@ -8,28 +8,51 @@ def main():
     comm_chest = game[1]  # gets shuffled deck of community chest cards
     chance = game[2]      # gets shuffled deck of chance cards
 
-    # TODO: Validate user input in below code block
-    '''
     tokens = ["1: ship", "2: thimble", "3: hat", "4: car", "5: iron", "6. boot", "7: Dog", "8: wheel barrel"]
-    num_players = int(input("enter number of human players: "))
-    while num_players > 0:
+    valid = False
+    num_players = 0
+    while not valid:
+        num_players = int(input("enter number of human players between 0 and 8: "))
+        if num_players > len(tokens) or num_players < 0:
+            print("Invalid Selection, Select 0 - 8")
+        else:
+            valid = True
+    for i in range(num_players):
         name = input("Enter Player Name: ")
         print(tokens)
-        token = int(input('select token number:'))
+        valid = False
+        token: int = 10
+        while not valid:
+            token = int(input('select token number: '))
+            if token > (len(tokens) - 1) or token < 1:
+                print(f"Invalid Selection, select a token between 0 and {len(tokens) - 1}")
+            else:
+                valid = True
         create_player(name, tokens[token - 1], board)
         tokens.remove(tokens[token - 1])
-        num_players -= 1
-    '''
+    valid = False
+    machines = 0
+    while not valid:
+        machines = int(input(f"enter number of machine players between 0 and {len(tokens)}: "))
+        if machines > (len(tokens)) or machines < 0:
+            print(f"Invalid Selection, select between 0 and {len(tokens)}")
+        else:
+            valid = True
+    for j in range(machines):
+        create_player(f"machine{j}", tokens[0], board, True)
+        tokens.remove(tokens[0])
+
+
 
     ''' The Player Init below is deprecated and we will delete later on but for now we don't want to manually create
-    a new player every time we test mainloop, in the future we will use the above code to initialize players'''
+    a new player every time we test mainloop, in the future we will use the above code to initialize players
     player_1 = Player(name="Anthony", machine_player=True, piece="hat", location=0, wallet=1500,
                       inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
     player_2 = Player(name="Machine", machine_player=True, piece="hat", location=0, wallet=1500,
                       inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
     add_player(player_1, board)
     add_player(player_2, board)
-
+    '''
     while len(board.players) > 1:
         ''' Game Loop'''
         print("\n")

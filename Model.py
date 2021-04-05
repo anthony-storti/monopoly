@@ -33,7 +33,7 @@ class Tile:
 
 @dataclass
 class Property(Tile):
-    owner:  Player
+    owner: Player
     mortgaged: bool
     cost: int
     house_cost: int
