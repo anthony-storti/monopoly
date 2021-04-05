@@ -63,8 +63,11 @@ def main():
         if player.extra_turn:
             print(f"{player.name} Rolled Double {player.roll/2}'s You Get an extra turn")
         opt = lands_on(tile, player, comm_chest, chance)  # call lands on function
-        if len(opt) > 0:  # check to see if lands on returned a prompt, if yes add it to instr
+        if len(opt) == 2:  # check to see if lands on returned a prompt, if yes add it to instr
             instr[opt[0]] = opt[1]
+        if len(opt) == 4:
+            instr[opt[0]] = opt[1]
+            instr[opt[2]] = opt[3]
         # TODO: add ability to take two commands from lands on
         instr["q"] = ["To end turn press q"]  # add quit turn prompt to instr
         turn = True
@@ -102,21 +105,26 @@ def main():
                                                            player))  # call the function for mortgage and build
                         valid_input = True
                     elif usr_in == "c" and len(opt[1]) > 2:  # Play Card
-                        print(instr[usr_in][1](player, opt[1][2], board.players, board.tiles))
+                        ret_val = (instr[usr_in][1](player, opt[1][2], board.players, board.tiles))
+                        if "Go Bankrupt" in ret_val:
+                            instr["g"] = ["To go bankrupt press g", go_bankrupt]
+                        print(ret_val)
+                        valid_input = True
                         if opt[1][2].action == "move_to" or opt[1][2].action == "move_to_closest" \
                                 or opt[1][2].action == "move_steps":
-                            print("test")
                             tile = board.tiles[player.location]
                             add = lands_on(tile, player, comm_chest, chance)
                             if len(add) > 0:
                                 instr[add[0]] = add[1]
-                        instr.pop(usr_in)
+                        if ret_val != "insufficient funds":
+                            instr.pop(usr_in)
                         valid_input = True
                     elif usr_in == "r":  # Jail roll
                         if instr[usr_in][1](tile, player, comm_chest, chance) == "You got out of jail":
-                            tile = board[player.location]
+                            tile = board.tiles[player.location]
                             lst = lands_on(tile, player, comm_chest, chance)
-                            instr[lst[0]] = lst[1]
+                            if len(lst) > 0:
+                                instr[lst[0]] = lst[1]
                         instr.pop(usr_in)
                         valid_input = True
                     elif usr_in == "u":
@@ -130,8 +138,8 @@ def main():
                     elif usr_in == "p" or usr_in == "a":         # Purchase Tile or Pay Rent
                         ret_val = instr[usr_in][1](player, tile)
                         if "Go Bankrupt" in ret_val:
-                            instr += ["g", ["To go bankrupt press g", go_bankrupt]]
-                        elif ret_val != "insufficient funds":
+                            instr["g"] = ["To go bankrupt press g", go_bankrupt]
+                        elif ret_val != "Insufficient Funds Mortgage Property or Go Bankrupt \n":
                             instr.pop(usr_in)  # remove instruction if rent payed or tile purchased
                         print(ret_val)
                         valid_input = True
@@ -152,7 +160,7 @@ def main():
             change_player(board)
         else:
             player.extra_turn = False
-    print(f"Game Over, {board.players[0]} Won. ")
+    print(f"Game Over, {board.players[0].name} Won. ")
 
 
 main()

@@ -185,16 +185,16 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return [["u", [f"To use your Get out of Jail Free card press u", use_jail_card]],
-                                    ["r", [f"To try to roll doubles press r", jail_roll]]]
-                return [["r", [f"To try to roll doubles press -r-", jail_roll]],
-                        ["p", [f"To pay $50 and get out of jail press -p-", pay_bail]]]
+                            return ["u", [f"To use your Get out of Jail Free card press -u-", use_jail_card],
+                                    "r", [f"To try to roll doubles press -r-", jail_roll]]
+                return ["r", [f"To try to roll doubles press -r-", jail_roll],
+                        "p", [f"To pay $50 and get out of jail press -p-", pay_bail]]
             else:
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return ["u", [f"To use your Get out of Jail Free card press u", use_jail_card]]
-                return ["p", [f"To pay $50 and get out of jail press p", pay_bail]]
+                            return ["u", [f"To use your Get out of Jail Free card press -u-", use_jail_card]]
+                return ["p", [f"To pay $50 and get out of jail press -p-", pay_bail]]
         else:
             return ret
 
@@ -232,8 +232,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     card.value = card.value.rstrip('\n')
     if ";" in card.value:
         value_list = card.value.split(";")
-        for i in value_list:
-            i = int(i)
+    value_list = [int(i) for i in value_list]
 
     if card.action == "move_to":
         if int(card.value) != 0 and player.location > int(card.value):
@@ -246,7 +245,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         for i in value_list:
             if player.location - int(i) < small_value:
                 smallest = int(i)
-                small_value = player.location - int(value_list)
+                small_value = player.location - int(i)
             elif player.location - int(i) == small_value:
                 choice = random.randint(0, len(value_list))
                 smallest = int(value_list[choice])
@@ -256,26 +255,44 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         player.wallet += int(card.value)
         return f"You have gained ${int(card.value)}"
     elif card.action == "Finance_1":
-        player.wallet += int(card.value)
+        if player.wallet + int(card.value) < 0:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            player.wallet += int(card.value)
         if int(card.value) < 0:
             return f"You have paid ${abs(int(card.value))} for tax"
         else:
             return f"You have gained ${int(card.value)}"
     elif card.action == "finance":
-        player.wallet += int(card.value)
+        if player.wallet + int(card.value) < 0:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            player.wallet += int(card.value)
         if int(card.value) < 0:
             return f"You have paid ${abs(int(card.value))}"
         else:
             return f"You have gained ${int(card.value)}"
     elif card.action == "finance_player":
-        player.wallet -= int(card.value)
-        for p in player_list:
-            if p.name != player.name:
-                p.wallet -= int(card.value)
-        return f"You have paid ${int(card.value)} for each players in the game"
+        if player.wallet + int(card.value) * (len(player_list) - 1) < 0:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            player.wallet -= int(card.value) * (len(player_list) - 1)
+            for p in player_list:
+                if p.name != player.name:
+                    p.wallet -= int(card.value)
+            return f"You have paid ${int(card.value)} for each players in the game"
     elif card.action == "Finance_house":
-        player.wallet += int(card.value)
-        return f"You have paid ${abs(int(card.value))} for repairing the houses"
+        houses = 0
+        hotels = 0
+        for i in player.inventory:
+            if isinstance(i, Property):
+                houses += i.house_count
+                hotels += i.hotel_count
+        if player.wallet < (25 * houses + 50 * hotels):
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            player.wallet -= (25 * houses + 50 * hotels)
+            return f"You have paid ${25 * houses} for repairing the houses and {50 * hotels} for repairing hotels"
     elif card.action == "move_steps":
         player.location -= int(card.value)
         return f"You have moved {abs(int(card.value))} steps back"
@@ -299,7 +316,7 @@ def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List
     return "You used your Get out of jail free card"
 
 
-def pay_bail(player: Player):
+def pay_bail(player: Player, tile: Tile):
     if player.wallet < 50:
         if player.jail_counter == 0:
             return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
@@ -322,6 +339,7 @@ def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chan
     else:
         if player.jail_counter == 0:
             lands_on(tile, player, comm_chest, chance)
+        return "You did not get out of Jail"
 
 
 def get_rent(tile: (Property, RailRoad, Utility), player: Player):
@@ -433,6 +451,8 @@ def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad,
         return "u"
     elif player.in_jail and "r" in options:
         return "r"
+    elif player.in_jail and "p" in options:
+        return "p"
     elif "a" in options and player.wallet >= tile.cost:
         return "a"
     elif "c" in options:
