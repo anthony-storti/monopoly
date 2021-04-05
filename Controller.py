@@ -541,19 +541,20 @@ def build(tile: Property, player: Player):
     """
     count = 0
     for item in player.inventory:
-        if count == 3 or count == 2 and (tile.color == "brown" or tile.color == "blue"):
-            if tile.house_count < 4 and player.wallet >= tile.house_cost:
-                tile.house_count += 1
-                player.wallet -= tile.house_cost
-                return f"Built 1 house on {tile.name} for ${tile.house_cost}"
-            elif tile.house_count == 4 and tile.hotel_count < 1 and player.wallet >= tile.house_cost:
-                tile.hotel_count += 1
-                player.wallet -= tile.house_cost
-                return f"Built 1 hotel on {tile.name} for ${tile.house_cost}"
-        elif item.color == tile.color and not item.mortgaged:
-            if item.name != tile.name and (item.house_count > tile.house_count or item.hotel_count > tile.hotel_count): # Does "item != tile" work the same way?
-                break
-            count += 1
+        if isinstance(item, Property):
+            if count == 3 or (count == 2 and (tile.color == "brown" or tile.color == "blue")):
+                if tile.house_count < 4 and player.wallet >= tile.house_cost:
+                    tile.house_count += 1
+                    player.wallet -= tile.house_cost
+                    return f"Built 1 house on {tile.name} for ${tile.house_cost}"
+                elif tile.house_count == 4 and tile.hotel_count < 1 and player.wallet >= tile.house_cost:
+                    tile.hotel_count += 1
+                    player.wallet -= tile.house_cost
+                    return f"Built 1 hotel on {tile.name} for ${tile.house_cost}"
+            elif item.color == tile.color and not item.mortgaged:
+                if item.name != tile.name and (item.house_count > tile.house_count or item.hotel_count > tile.hotel_count): # Does "item != tile" work the same way?
+                    break
+                count += 1
 
 
 def demolish(tile: Property, player: Player):
@@ -611,3 +612,20 @@ def show_props(player: Player) -> str:
         return "Current Inventory is Empty"
     else:
         return ret_str
+
+
+def buildable(player: Player):
+    can_build = {}
+    for item_check in Player.inventory:
+        if isinstance(item_check, Property):
+            if not item_check.mortgaged and item.hotel_count == 0:
+                count = 0
+                for item in Player.inventory:
+                    if isinstance(item, Property):
+                        if count == 3 or (count == 2 and (item_check.color == "brown" or item_check.color == "blue")):
+                            can_build += item_check
+                            break
+                        elif item.color == item_check.color and not item.mortgaged:
+                            count += 1
+    return can_build
+
