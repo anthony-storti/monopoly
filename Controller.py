@@ -303,6 +303,14 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
 
 
 def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
+    """
+    Use Jail Card  - After this call a player will be freed from jail if they have a get out of jail free card
+    in their inventory and the card will be returned to the appropriate deck
+    :param player: Player object using card
+    :param comm_chest: deck to insert card into
+    :param chance: deck to insert card into
+    :return: str: confirmation of card played
+    """
     player.in_jail = False
     for item in player.inventory:
         if isinstance(item, Chance):
@@ -317,6 +325,12 @@ def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List
 
 
 def pay_bail(player: Player, tile: Tile):
+    """
+    Pay Bail  - After this call a player will be removed from Jail, their jail counter reset, wallet balance
+    adjusted by 50
+    :param player: Player object paying bail
+    :return: str: confirmation of payment or notification of insufficient funds
+    """
     if player.wallet < 50:
         if player.jail_counter == 0:
             return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
@@ -329,6 +343,15 @@ def pay_bail(player: Player, tile: Tile):
 
 
 def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
+    """
+    Jail Roll - After this call a player will either be freed from jail by rolling doubles and then advanced to
+    the tile according to their roll or remain in jail with their roll counter being incremented
+    :param tile: tile: Jail Tile
+    :param player: Player object for player in Jail
+    :param comm_chest: used to call the lands on function - passed through
+    :param chance: used to call the lands on function - passed through
+    :return: str: notification of release or further detainment
+    """
     roll1 = random.randint(1, 6)
     roll2 = random.randint(1, 6)
     if roll1 == roll2:
@@ -486,6 +509,13 @@ def mortgage(tile: Tile, player: Player):
 
 
 def go_bankrupt(player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
+    """
+    Go Bankrupt - After this call a players inventory will be returned to its original state
+    :param player: Player object going bankrupt
+    :param comm_chest: Community Chest deck to return cards to if in player possession
+    :param chance: Chance deck to return cards to if in player possession
+    :return: str: information about action performed.
+    """
     for item in player.inventory:
         if isinstance(item, Card):
             if isinstance(item, Chance):
@@ -573,6 +603,12 @@ def create_player(name: str, token: str, board: Board, machine: bool = False):
 
 
 def show_props(player: Player) -> str:
+    """
+    Show Props - After this call the caller will be returned an indexed list of the players current inventory
+    of tiles
+    :param player: Player object seeking inventory
+    :return: string of current properties in an indexed list
+    """
     count = 0
     ret_str = "Current Inventory\n"
     for tile in player.inventory:  # Display Player Inventory
