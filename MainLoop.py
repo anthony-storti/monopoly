@@ -39,9 +39,9 @@ def main():
         This is what will be used to prompt a user for action on their turn
         We always add the option to build or mortgage on every turn, except jail but that hasn't been implemented yet
         '''
-        instr["m"] = ["To Mortgage/Restore available Properties press m", mortgage]
-        instr["b"] = ["To Build on available Properties press b", build]
-        instr["s"] = ["To show current inventory press s", show_props]
+        instr["m"] = ["To Mortgage/Restore available Properties press -m-", mortgage]
+        instr["b"] = ["To Build on available Properties press -b-", build]
+        instr["s"] = ["To show current inventory press -s-", show_props]
         player = board.players[board.current_player]  # current player
         valid_input = False
         if not player.in_jail:
@@ -51,7 +51,7 @@ def main():
                     roll_dice(player)
                     valid_input = True
                 else:  # repeat loop until user enters r
-                    val = input(player.name + " Press r to Roll: ")
+                    val = input(player.name + " Press -r- to Roll: ")
                     if val == "r":
                         valid_input = True
                         roll_dice(player)
@@ -69,7 +69,7 @@ def main():
             instr[opt[0]] = opt[1]
             instr[opt[2]] = opt[3]
         # TODO: add ability to take two commands from lands on
-        instr["q"] = ["To end turn press q"]  # add quit turn prompt to instr
+        instr["q"] = ["To end turn press -q-"]  # add quit turn prompt to instr
         turn = True
         while turn:
             '''PLAYER PROMPT LOOP'''
@@ -85,6 +85,7 @@ def main():
                 else:
                     usr_in = input("Make Selection: ")
                 if usr_in in instr:
+                    print(usr_in)
                     if usr_in == "m" or usr_in == "b":  # Mortgage of Build
                         prop_list = show_props(player)
                         print(prop_list)
@@ -92,7 +93,7 @@ def main():
                             valid_prop = False
                             prop = ""
                             while not valid_prop:
-                                prop = input("Select Property or press e to escape: ")
+                                prop = input("Select Property or press -e- to escape: ")
                                 if prop.isdigit() and int(prop) <= len(player.inventory) - 1:
                                     valid_prop = True
                                 elif prop == "e":
@@ -104,14 +105,14 @@ def main():
                                     print(instr[usr_in][1](player.inventory[int(prop)],
                                                            player))  # call the function for mortgage and build
                         valid_input = True
-                    elif usr_in == "c" and len(opt[1]) > 2:  # Play Card
-                        ret_val = (instr[usr_in][1](player, opt[1][2], board.players, board.tiles))
+                    elif usr_in == "c":  # Play Card
+                        ret_val = (instr[usr_in][1](player, instr[usr_in][2], board.players, board.tiles))
                         if "Go Bankrupt" in ret_val:
-                            instr["g"] = ["To go bankrupt press g", go_bankrupt]
+                            instr["g"] = ["To go bankrupt press -g-", go_bankrupt]
                         print(ret_val)
                         valid_input = True
-                        if opt[1][2].action == "move_to" or opt[1][2].action == "move_to_closest" \
-                                or opt[1][2].action == "move_steps":
+                        if instr[usr_in][2].action == "move_to" or instr[usr_in][2].action == "move_to_closest" \
+                                or instr[usr_in][2].action == "move_steps":
                             tile = board.tiles[player.location]
                             add = lands_on(tile, player, comm_chest, chance)
                             if len(add) > 0:
@@ -138,7 +139,7 @@ def main():
                     elif usr_in == "p" or usr_in == "a":         # Purchase Tile or Pay Rent
                         ret_val = instr[usr_in][1](player, tile)
                         if "Go Bankrupt" in ret_val:
-                            instr["g"] = ["To go bankrupt press g", go_bankrupt]
+                            instr["g"] = ["To go bankrupt press -g-", go_bankrupt]
                         elif ret_val != "Insufficient Funds Mortgage Property or Go Bankrupt \n":
                             instr.pop(usr_in)  # remove instruction if rent payed or tile purchased
                         print(ret_val)

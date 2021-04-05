@@ -447,12 +447,10 @@ def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad,
     :return: str: choice made by machine
     """
     # TODO: cannot mortgage or buy properties
-    if player.in_jail and "u" in options:
+    if "u" in options:
         return "u"
-    elif player.in_jail and "r" in options:
+    elif "r" in options:
         return "r"
-    elif player.in_jail and "p" in options:
-        return "p"
     elif "a" in options and player.wallet >= tile.cost:
         return "a"
     elif "c" in options:
