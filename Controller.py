@@ -509,7 +509,6 @@ def build(tile: Property, player: Player):
     it is a legal game action
     :param tile: tile object to be acted on
     :param player: Player object making call
-    :param num: number of houses to build
     :return: str: information about action performed.
     """
     color = tile.color
@@ -548,15 +547,17 @@ def demolish(tile: Property, player: Player, num: int):
     :param player: Player object making call
     :return: str: information about action performed.
     """
-    if tile.hotel_count > 0 and num <= 5:
+    if tile.hotel_count > 0:
         tile.hotel_count -= 1
-        tile.house_count -= num - 1
-        player.wallet += tile.hotel_cost + tile.house_cost * (num - 1)
+        player.wallet += tile.house_cost
         return f"Demolished 1 hotel on {tile.name}"
-    elif tile.hotel_count == 0 and tile.house_count >= num:
-        tile.house_count -= num
-        player.wallet += tile.house_cost * num
-        return f"Demolished {num} house(s) on {tile.name}"
+    elif tile.house_count > 0:
+        for item in player.inventory:
+            if item.color == tile.color and item.name != tile.name and item.house_count < tile.house_count:
+                return
+        tile.house_count -= 1
+        player.wallet += tile.house_cost
+        return f"Demolished 1 house on {tile.name}"
 
 
 def create_player(name: str, token: str, board: Board, machine: bool = False):
