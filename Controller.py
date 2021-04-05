@@ -539,36 +539,24 @@ def build(tile: Property, player: Player):
     :param player: Player object making call
     :return: str: information about action performed.
     """
-    color = tile.color
-    buildable = False
     count = 0
-    for property in player.inventory:
-        if tile.color == "blue":
-            if property.color == "blue" and not property.mortgaged:
-                count += 1
-        if count == 2:
-            buildable = True
-            break
-        elif property.color == color and not property.mortgaged:
+    for item in player.inventory:
+        if count == 3 or count == 2 and (tile.color == "brown" or tile.color == "blue"):
+            if tile.house_count < 4 and player.wallet >= tile.house_cost:
+                tile.house_count += 1
+                player.wallet -= tile.house_cost
+                return f"Built 1 house on {tile.name} for ${tile.house_cost}"
+            elif tile.house_count == 4 and tile.hotel_count < 1 and player.wallet >= tile.house_cost:
+                tile.hotel_count += 1
+                player.wallet -= tile.house_cost
+                return f"Built 1 hotel on {tile.name} for ${tile.house_cost}"
+        elif item.color == tile.color and not item.mortgaged:
+            if item.name != tile.name and (item.house_count > tile.house_count or item.hotel_count > tile.hotel_count): # Does "item != tile" work the same way?
+                break
             count += 1
-        if count == 3:
-            buildable = True
-            break
 
-    if buildable:  # ALL PROPERTIES OF SAME COLOR AS tile ARE OWNED BY player and ALL PROPERTIES OF SAME COLOR AS tile ARE UNMORTGAGED:
-        if tile.house_count + num <= 4 and player.wallet >= tile.house_cost * num:
-            tile.house_count += num
-            player.wallet -= tile.house_cost * num
-            return f"Built {num} house(s) on {tile.name} for ${tile.house_cost * num}"
-        elif tile.house_count + num == 5 and player.wallet >= tile.house_cost * (num - 1) + tile.hotel_cost:
-            tile.house_count += num - 1
-            tile.hotel_count += 1
-            player.wallet -= tile.house_cost * (num - 1) + tile.hotel_cost
-            return f"Built 1 hotel on {tile.name} for a total of ${tile.house_cost * (num - 1) + tile.hotel_cost}"
-    else:
-        return "You Must own all properties to build"
 
-def demolish(tile: Property, player: Player, num: int):
+def demolish(tile: Property, player: Player):
     """
     Demolish - After this call a house or hotel will be removed from a tile if it is a legal game action
     :param tile: tile object to be acted on
