@@ -23,7 +23,7 @@ def main():
 
     ''' The Player Init below is deprecated and we will delete later on but for now we don't want to manually create
     a new player every time we test mainloop, in the future we will use the above code to initialize players'''
-    player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500,
+    player_1 = Player(name="Anthony", machine_player=True, piece="hat", location=0, wallet=1500,
                       inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
     player_2 = Player(name="Machine", machine_player=True, piece="hat", location=0, wallet=1500,
                       inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
@@ -82,7 +82,7 @@ def main():
             while not valid_input:
                 '''PLAYER INPUT VALIDATION LOOP'''
                 if player.machine_player:  # if player is a machine call function to return prompt
-                    usr_in = machine_algo(instr, player, tile)
+                    usr_in = machine_algo(instr, player, tile, buildable(player))
                 else:
                     usr_in = input("Make Selection: ")
                 if usr_in in instr:
@@ -155,7 +155,7 @@ def main():
                         instr.pop(usr_in)
                         valid_input = True
                     elif usr_in == "s":
-                        print(instr[usr_in][1](player))
+                        print(instr[usr_in][1](player.inventory))
                         instr.pop(usr_in)
                         valid_input = True
                     elif usr_in == "p" or usr_in == "a":         # Purchase Tile or Pay Rent

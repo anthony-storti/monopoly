@@ -462,7 +462,7 @@ def change_player(board: Board):
     board.current_player = (board.current_player + 1) % len(board.players)
 
 
-def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad, Utility)) -> str:
+def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad, Utility), builds: List[Property]) -> str:
     """
     Machine Algo - After this call the machine player will return a choice based on available options passed in
     :param options: a Dict of available choices
@@ -482,6 +482,8 @@ def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad,
         return "g"
     elif "p" in options:
         return "p"
+    elif "b" in options and player.wallet > builds[0].house_cost:
+        return "b"
     else:
         return "q"
 
@@ -616,16 +618,17 @@ def show_props(list) -> str:
         return ret_str
 
 
+
 def buildable(player: Player):
-    can_build = {}
-    for item_check in Player.inventory:
+    can_build = []
+    for item_check in player.inventory:
         if isinstance(item_check, Property):
-            if not item_check.mortgaged and item.hotel_count == 0:
+            if not item_check.mortgaged and item_check.hotel_count == 0:
                 count = 0
-                for item in Player.inventory:
+                for item in player.inventory:
                     if isinstance(item, Property):
                         if count == 3 or (count == 2 and (item_check.color == "brown" or item_check.color == "blue")):
-                            can_build += item_check
+                            can_build.append(item_check)
                             break
                         elif item.color == item_check.color and not item.mortgaged:
                             count += 1
