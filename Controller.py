@@ -554,6 +554,8 @@ def build(tile: Property, player: Player):
             if item.name != tile.name and (item.house_count > tile.house_count or item.hotel_count > tile.hotel_count): # Does "item != tile" work the same way?
                 break
             count += 1
+    else:
+        return "You Must Own All Properties to Build"
 
 
 def demolish(tile: Property, player: Player):
@@ -590,7 +592,7 @@ def create_player(name: str, token: str, board: Board, machine: bool = False):
     board.players.append(player)
 
 
-def show_props(player: Player) -> str:
+def show_props(list) -> str:
     """
     Show Props - After this call the caller will be returned an indexed list of the players current inventory
     of tiles
@@ -599,7 +601,7 @@ def show_props(player: Player) -> str:
     """
     count = 0
     ret_str = "Current Inventory\n"
-    for tile in player.inventory:  # Display Player Inventory
+    for tile in list:  # Display Player Inventory
         if isinstance(tile, Property):
             ret_str += f"{count} - Property: {tile.name} Mortgaged: {tile.mortgaged} Mortgage Value: {tile.mortgage}" \
                        f" Houses: {tile.house_count} Hotels: {tile.hotel_count} Color: {tile.color}\n"

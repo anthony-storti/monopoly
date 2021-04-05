@@ -23,7 +23,7 @@ def main():
 
     ''' The Player Init below is deprecated and we will delete later on but for now we don't want to manually create
     a new player every time we test mainloop, in the future we will use the above code to initialize players'''
-    player_1 = Player(name="Anthony", machine_player=True, piece="hat", location=0, wallet=1500,
+    player_1 = Player(name="Anthony", machine_player=False, piece="hat", location=0, wallet=1500,
                       inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
     player_2 = Player(name="Machine", machine_player=True, piece="hat", location=0, wallet=1500,
                       inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
@@ -40,7 +40,6 @@ def main():
         We always add the option to build or mortgage on every turn, except jail but that hasn't been implemented yet
         '''
         instr["m"] = ["To Mortgage/Restore available Properties press -m-", mortgage]
-        instr["b"] = ["To Build on available Properties press -b-", build]
         instr["s"] = ["To show current inventory press -s-", show_props]
         player = board.players[board.current_player]  # current player
         valid_input = False
@@ -73,6 +72,8 @@ def main():
         turn = True
         while turn:
             '''PLAYER PROMPT LOOP'''
+            if len(buildable(player)) > 0:
+                instr["b"] = ["To Build on available Properties press -b-", build]
             print(f"Account Balance: {player.wallet}")  # displays current wallet value
             print("OPTIONS:")
             for values in instr.values():  # print all available prompts from instr
@@ -86,8 +87,8 @@ def main():
                     usr_in = input("Make Selection: ")
                 if usr_in in instr:
                     print(usr_in)
-                    if usr_in == "m" or usr_in == "b":  # Mortgage of Build
-                        prop_list = show_props(player)
+                    if usr_in == "m":  # Mortgage of Build
+                        prop_list = show_props(player.inventory)
                         print(prop_list)
                         if prop_list != "Current Inventory is Empty":
                             valid_prop = False
@@ -103,6 +104,27 @@ def main():
                             if prop != "e":
                                 if int(prop) <= len(player.inventory):
                                     print(instr[usr_in][1](player.inventory[int(prop)],
+                                                           player))  # call the function for mortgage and build
+                        valid_input = True
+                    if usr_in == "b":  # Mortgage of Build
+                        build_list = buildable(player)
+                        print(show_props(build_list))
+                        prop = ""
+                        if player.machine_player:
+                            print(instr[usr_in][1](build_list[0], player))
+                        else:
+                            valid_build = False
+                            while not valid_build:
+                                prop = input("Select Property or press -e- to escape: ")
+                                if prop.isdigit() and int(prop) <= len(build_list) - 1:
+                                    valid_build = True
+                                elif prop == "e":
+                                    valid_build = True
+                                else:
+                                    print(f"Enter property from 0 to {len(build_list) - 1} or e to escape")
+                            if prop != "e":
+                                if int(prop) <= len(build_list):
+                                    print(instr[usr_in][1](build_list,
                                                            player))  # call the function for mortgage and build
                         valid_input = True
                     elif usr_in == "c":  # Play Card
