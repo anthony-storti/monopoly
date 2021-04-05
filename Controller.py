@@ -77,7 +77,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
             prompt: To acquire tile for $cost press a
             function: purchase
             '''
-            return ["a", [f"To acquire {tile.name} for ${tile.cost} press a", purchase]]
+            return ["a", [f"To acquire {tile.name} for ${tile.cost} press -a-", purchase]]
         elif not tile.purchasable and tile.owner != player and not tile.mortgaged:
             '''
             if Property, Railroad or Utility and is owned by another player, and not mortgaged
@@ -86,7 +86,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
             function: pay_rent
             '''
             rent = get_rent(tile, player)
-            return ["p", [f"To pay ${rent} to {tile.owner.name} press p", pay_rent]]
+            return ["p", [f"To pay ${rent} to {tile.owner.name} press -p-", pay_rent]]
         else:
             return ret
     elif isinstance(tile, CardTile) and tile.name == "Community Chest":
@@ -99,7 +99,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         '''
         card = comm_chest.pop()
         comm_chest.insert(0, card)
-        return ["p", [f"{card.message} press p to play card: ", play_card, card]]
+        return ["c", [f"{card.message} press -c- to play card: ", play_card, card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
         '''
@@ -112,7 +112,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         card = chance.pop()
         if card.action != "special":
             chance.insert(0, card)
-        return ["p", [f"{card.message} press p to play card: ", play_card, card]]
+        return ["c", [f"{card.message} press -c- to play card: ", play_card, card]]
     elif isinstance(tile, GoToJail):
         '''
         if Go To Jail
@@ -154,11 +154,11 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                     player_net_worth += item.value
             player_net_worth = player_net_worth // 10
             if player_net_worth > 200:
-                return ["p", [f"To pay $200 in taxes press p", pay_tax]]
+                return ["p", [f"To pay $200 in taxes press -p-", pay_tax]]
             else:
-                return ["p", [f"To pay ${player_net_worth} in taxes press p", pay_tax]]
+                return ["p", [f"To pay ${player_net_worth} in taxes press -p-", pay_tax]]
         else:
-            return ["p", [f"To pay $75 in taxes press p", pay_tax]]
+            return ["p", [f"To pay $75 in taxes press -p-", pay_tax]]
 
     elif isinstance(tile, FreeParking):
         '''
@@ -185,16 +185,16 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return [["u", [f"To use your Get out of Jail Free card press u", use_jail_card]],
-                                    ["r", [f"To try to roll doubles press r", jail_roll]]]
-                return [["r", [f"To try to roll doubles press r", jail_roll]],
-                        ["p", [f"To pay $50 and get out of jail press p", pay_bail]]]
+                            return ["u", [f"To use your Get out of Jail Free card press -u-", use_jail_card],
+                                    "r", [f"To try to roll doubles press -r-", jail_roll]]
+                return ["r", [f"To try to roll doubles press -r-", jail_roll],
+                        "p", [f"To pay $50 and get out of jail press -p-", pay_bail]]
             else:
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return ["u", [f"To use your Get out of Jail Free card press u", use_jail_card]]
-                return ["p", [f"To pay $50 and get out of jail press p", pay_bail]]
+                            return ["u", [f"To use your Get out of Jail Free card press -u-", use_jail_card]]
+                return ["p", [f"To pay $50 and get out of jail press -p-", pay_bail]]
         else:
             return ret
 
@@ -232,6 +232,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     card.value = card.value.rstrip('\n')
     if ";" in card.value:
         value_list = card.value.split(";")
+    value_list = [int(i) for i in value_list]
 
     if card.action == "move_to":
         if int(card.value) != 0 and player.location > int(card.value):
@@ -244,7 +245,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         for i in value_list:
             if player.location - int(i) < small_value:
                 smallest = int(i)
-                small_value = player.location - int(value_list)
+                small_value = player.location - int(i)
             elif player.location - int(i) == small_value:
                 choice = random.randint(0, len(value_list))
                 smallest = int(value_list[choice])
@@ -254,28 +255,46 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         player.wallet += int(card.value)
         return f"You have gained ${int(card.value)}"
     elif card.action == "Finance_1":
-        player.wallet += int(card.value)
+        if player.wallet + int(card.value) < 0:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            player.wallet += int(card.value)
         if int(card.value) < 0:
             return f"You have paid ${abs(int(card.value))} for tax"
         else:
             return f"You have gained ${int(card.value)}"
     elif card.action == "finance":
-        player.wallet += int(card.value)
+        if player.wallet + int(card.value) < 0:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            player.wallet += int(card.value)
         if int(card.value) < 0:
             return f"You have paid ${abs(int(card.value))}"
         else:
             return f"You have gained ${int(card.value)}"
     elif card.action == "finance_player":
-        player.wallet -= int(card.value)
-        for p in player_list:
-            if p.name != player.name:
-                p.wallet -= int(card.value)
-        return f"You have paid ${int(card.value)} for each players in the game"
+        if player.wallet + int(card.value) * (len(player_list) - 1) < 0:
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            player.wallet -= int(card.value) * (len(player_list) - 1)
+            for p in player_list:
+                if p.name != player.name:
+                    p.wallet -= int(card.value)
+            return f"You have paid ${int(card.value)} for each players in the game"
     elif card.action == "Finance_house":
-        player.wallet += int(card.value)
-        return f"You have paid ${abs(int(card.value))} for repairing the houses"
+        houses = 0
+        hotels = 0
+        for i in player.inventory:
+            if isinstance(i, Property):
+                houses += i.house_count
+                hotels += i.hotel_count
+        if player.wallet < (25 * houses + 50 * hotels):
+            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        else:
+            player.wallet -= (25 * houses + 50 * hotels)
+            return f"You have paid ${25 * houses} for repairing the houses and {50 * hotels} for repairing hotels"
     elif card.action == "move_steps":
-        player.location += int(card.value)
+        player.location -= int(card.value)
         return f"You have moved {abs(int(card.value))} steps back"
     elif card.action == "special":
         player.inventory.append(card)
@@ -284,6 +303,14 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
 
 
 def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
+    """
+    Use Jail Card  - After this call a player will be freed from jail if they have a get out of jail free card
+    in their inventory and the card will be returned to the appropriate deck
+    :param player: Player object using card
+    :param comm_chest: deck to insert card into
+    :param chance: deck to insert card into
+    :return: str: confirmation of card played
+    """
     player.in_jail = False
     for item in player.inventory:
         if isinstance(item, Chance):
@@ -297,7 +324,13 @@ def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List
     return "You used your Get out of jail free card"
 
 
-def pay_bail(player: Player):
+def pay_bail(player: Player, tile: Tile):
+    """
+    Pay Bail  - After this call a player will be removed from Jail, their jail counter reset, wallet balance
+    adjusted by 50
+    :param player: Player object paying bail
+    :return: str: confirmation of payment or notification of insufficient funds
+    """
     if player.wallet < 50:
         if player.jail_counter == 0:
             return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
@@ -310,6 +343,15 @@ def pay_bail(player: Player):
 
 
 def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
+    """
+    Jail Roll - After this call a player will either be freed from jail by rolling doubles and then advanced to
+    the tile according to their roll or remain in jail with their roll counter being incremented
+    :param tile: tile: Jail Tile
+    :param player: Player object for player in Jail
+    :param comm_chest: used to call the lands on function - passed through
+    :param chance: used to call the lands on function - passed through
+    :return: str: notification of release or further detainment
+    """
     roll1 = random.randint(1, 6)
     roll2 = random.randint(1, 6)
     if roll1 == roll2:
@@ -320,6 +362,7 @@ def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chan
     else:
         if player.jail_counter == 0:
             lands_on(tile, player, comm_chest, chance)
+        return "You did not get out of Jail"
 
 
 def get_rent(tile: (Property, RailRoad, Utility), player: Player):
@@ -419,7 +462,7 @@ def change_player(board: Board):
     board.current_player = (board.current_player + 1) % len(board.players)
 
 
-def machine_algo(options: Dict, player: Player) -> str:
+def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad, Utility)) -> str:
     """
     Machine Algo - After this call the machine player will return a choice based on available options passed in
     :param options: a Dict of available choices
@@ -433,10 +476,14 @@ def machine_algo(options: Dict, player: Player) -> str:
         return "u"
     elif "r" in options:
         return "r"
+    elif "a" in options and player.wallet >= tile.cost:
+        return "a"
+    elif "c" in options:
+        return "c"
+    elif "g" in options:
+        return "g"
     elif "p" in options:
         return "p"
-    elif "a" in options:
-        return "a"
     else:
         return "q"
 
@@ -464,6 +511,13 @@ def mortgage(tile: Tile, player: Player):
 
 
 def go_bankrupt(player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
+    """
+    Go Bankrupt - After this call a players inventory will be returned to its original state
+    :param player: Player object going bankrupt
+    :param comm_chest: Community Chest deck to return cards to if in player possession
+    :param chance: Chance deck to return cards to if in player possession
+    :return: str: information about action performed.
+    """
     for item in player.inventory:
         if isinstance(item, Card):
             if isinstance(item, Chance):
@@ -479,15 +533,61 @@ def go_bankrupt(player: Player, comm_chest: List[CommunityChest], chance: List[C
     return "You have gone bankrupt and are out of the game"
 
 
-def build():
+def build(tile: Property, player: Player):
     """
     Build - After this call a house or hotel will be added to a tile if a player can afford it and
     it is a legal game action
-    :param
+    :param tile: tile object to be acted on
+    :param player: Player object making call
     :return: str: information about action performed.
     """
-    # TODO: Implement
-    pass
+    color = tile.color
+    buildable = False
+    count = 0
+    for property in player.inventory:
+        if tile.color == "blue":
+            if property.color == "blue" and not property.mortgaged:
+                count += 1
+        if count == 2:
+            buildable = True
+            break
+        elif property.color == color and not property.mortgaged:
+            count += 1
+        if count == 3:
+            buildable = True
+            break
+
+    if buildable:  # ALL PROPERTIES OF SAME COLOR AS tile ARE OWNED BY player and ALL PROPERTIES OF SAME COLOR AS tile ARE UNMORTGAGED:
+        if tile.house_count + num <= 4 and player.wallet >= tile.house_cost * num:
+            tile.house_count += num
+            player.wallet -= tile.house_cost * num
+            return f"Built {num} house(s) on {tile.name} for ${tile.house_cost * num}"
+        elif tile.house_count + num == 5 and player.wallet >= tile.house_cost * (num - 1) + tile.hotel_cost:
+            tile.house_count += num - 1
+            tile.hotel_count += 1
+            player.wallet -= tile.house_cost * (num - 1) + tile.hotel_cost
+            return f"Built 1 hotel on {tile.name} for a total of ${tile.house_cost * (num - 1) + tile.hotel_cost}"
+    else:
+        return "You Must own all properties to build"
+
+def demolish(tile: Property, player: Player, num: int):
+    """
+    Demolish - After this call a house or hotel will be removed from a tile if it is a legal game action
+    :param tile: tile object to be acted on
+    :param player: Player object making call
+    :return: str: information about action performed.
+    """
+    if tile.hotel_count > 0:
+        tile.hotel_count -= 1
+        player.wallet += tile.house_cost
+        return f"Demolished 1 hotel on {tile.name}"
+    elif tile.house_count > 0:
+        for item in player.inventory:
+            if item.color == tile.color and item.name != tile.name and item.house_count < tile.house_count:
+                return
+        tile.house_count -= 1
+        player.wallet += tile.house_cost
+        return f"Demolished 1 house on {tile.name}"
 
 
 def create_player(name: str, token: str, board: Board, machine: bool = False):
@@ -502,3 +602,26 @@ def create_player(name: str, token: str, board: Board, machine: bool = False):
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
                     inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
     board.players.append(player)
+
+
+def show_props(player: Player) -> str:
+    """
+    Show Props - After this call the caller will be returned an indexed list of the players current inventory
+    of tiles
+    :param player: Player object seeking inventory
+    :return: string of current properties in an indexed list
+    """
+    count = 0
+    ret_str = "Current Inventory\n"
+    for tile in player.inventory:  # Display Player Inventory
+        if isinstance(tile, Property):
+            ret_str += f"{count} - Property: {tile.name} Mortgaged: {tile.mortgaged} Mortgage Value: {tile.mortgage}" \
+                       f" Houses: {tile.house_count} Hotels: {tile.hotel_count} Color: {tile.color}\n"
+            count += 1
+        elif isinstance(tile, (RailRoad, Utility)):
+            ret_str += f"{count} - Property: {tile.name} Mortgaged: {tile.mortgaged} " \
+                       f"Mortgage Value: {tile.mortgage}\n"
+    if ret_str == "Current Inventory\n":
+        return "Current Inventory is Empty"
+    else:
+        return ret_str
