@@ -2,6 +2,7 @@ from Model import *
 from typing import List, Dict
 import pickle
 import random
+import pygame
 
 
 def roll_dice(player: Player):
@@ -14,6 +15,19 @@ def roll_dice(player: Player):
     roll1 = random.randint(1, 6)
     roll2 = random.randint(1, 6)
     player.roll = roll1 + roll2
+
+    for move in range(player.roll):
+        if player.x > 70 and player.y > 775:
+            player.x -= 70
+        elif player.x == 70 and player.y > 70:
+            player.y -= 70
+        elif player.x < 770 and player.y <= 70:
+            player.x += 70
+            print(player.x, player.y)
+        elif player.x >= 770 and player.y >= 55:
+            player.y += 70
+    player.rolled = True
+
     if roll1 == roll2:
         if player.extra_turns < 3:
             player.extra_turns += 1
@@ -581,7 +595,7 @@ def demolish(tile: Property, player: Player):
         return f"Demolished 1 house on {tile.name}"
 
 
-def create_player(name: str, token: str, board: Board, machine: bool = False):
+def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str, machine: bool = False):
     """
     Create Player - After this call a player object will be created and added to the game board
     :param name: str for player name
@@ -591,7 +605,8 @@ def create_player(name: str, token: str, board: Board, machine: bool = False):
     :return: nothing
     """
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
-                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
+                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0,
+                    extra_turn=False, x=x, y=y, image=pygame.image.load(img), rolled=False)
     board.players.append(player)
 
 
