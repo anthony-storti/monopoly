@@ -30,6 +30,8 @@ class Player:
 
 @dataclass
 class Tile:
+    x: int
+    y: int
     purchasable: bool
     name: str
     color: str

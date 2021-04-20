@@ -5,27 +5,17 @@ import random
 import pygame
 
 
-def roll_dice(player: Player):
+def roll_dice(player: Player, board: Board):
     """
     Roll Dice - After this call player location will be updated, if a player passes or lands on go their
     wallet will be increased by $200.
     :param player: current player object from board
+    :param board: board object to get tile coordinates from
     :return: nothing
     """
     roll1 = random.randint(1, 6)
     roll2 = random.randint(1, 6)
     player.roll = roll1 + roll2
-
-    for move in range(player.roll):
-        if player.x > 70 and player.y > 775:
-            player.x -= 70
-        elif player.x == 70 and player.y > 70:
-            player.y -= 70
-        elif player.x < 770 and player.y <= 70:
-            player.x += 70
-            print(player.x, player.y)
-        elif player.x >= 770 and player.y >= 55:
-            player.y += 70
     player.rolled = True
 
     if roll1 == roll2:
@@ -44,6 +34,10 @@ def roll_dice(player: Player):
     else:
         player.location = (player.roll + player.location) - 40
         player.wallet += 200
+
+    tile = board.tiles[player.location]
+    player.x = tile.x
+    player.y = tile.y
 
 
 def add_player(player: Player, board: Board):
