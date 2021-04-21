@@ -13,31 +13,32 @@ def roll_dice(player: Player, board: Board):
     :param board: board object to get tile coordinates from
     :return: nothing
     """
-    roll1 = random.randint(1, 6)
-    roll2 = random.randint(1, 6)
-    player.roll = roll1 + roll2
-    player.rolled = True
+    if not player.rolled:
+        roll1 = random.randint(1, 6)
+        roll2 = random.randint(1, 6)
+        player.roll = roll1 + roll2
+        player.rolled = True
 
-    if roll1 == roll2:
-        if player.extra_turns < 3:
-            player.extra_turns += 1
-            player.extra_turn = True
+        if roll1 == roll2:
+            if player.extra_turns < 3:
+                player.extra_turns += 1
+                player.extra_turn = True
+            else:
+                player.in_jail = True
+                player.location = 10
+                player.jail_counter = 4
+                player.extra_turns = 0
         else:
-            player.in_jail = True
-            player.location = 10
-            player.jail_counter = 4
             player.extra_turns = 0
-    else:
-        player.extra_turns = 0
-    if player.roll + player.location < 40:
-        player.location += player.roll
-    else:
-        player.location = (player.roll + player.location) - 40
-        player.wallet += 200
+        if player.roll + player.location < 40:
+            player.location += player.roll
+        else:
+            player.location = (player.roll + player.location) - 40
+            player.wallet += 200
 
-    tile = board.tiles[player.location]
-    player.x = tile.x
-    player.y = tile.y
+        tile = board.tiles[player.location]
+        player.x = tile.x
+        player.y = tile.y
 
 
 def add_player(player: Player, board: Board):

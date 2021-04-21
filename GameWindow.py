@@ -80,8 +80,9 @@ def main():
                 if roll.isOver(pos):
                     roll_dice(p1, board)
                     roll.text = f"Roll: {p1.roll}"
-                    p1.rolled = False
+                    p1.rolled = True
                 if end_turn.isOver(pos):
+                    p1.rolled = False
                     change_player(board)
             if event.type == pygame.MOUSEMOTION:
                 if roll.isOver(pos):
