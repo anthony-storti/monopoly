@@ -10,7 +10,6 @@ create_player('player 1', 'Dog', board, 770, 825, "images/dog.png", False)
 create_player('player 1', 'Car', board, 770, 825, "images/dog.png", False)
 
 
-
 width = 855
 height = 900
 win = pygame.display.set_mode((width, height))
@@ -56,17 +55,31 @@ roll = button((0, 0, 0), 755, 855, 100, 45, 'Roll:')
 end_turn = button((0, 0, 0), 630, 855, 125, 45, 'End Turn')
 
 
-def redrawWindow(win, player):
+def redrawWindow(win, player, buttons):
     win.fill((255, 255, 255))
     win.blit(bg, (0, 0))
     roll.draw(win)
     end_turn.draw(win)
     for p in board.players:
         win.blit(p.image, (p.x, p.y))
+    for b in buttons:
+        b.draw(win)
     pygame.display.update()
 
 
+def create_landson_buttons(instr):
+    buttons = [button((0, 0, 0), 0, 855, 175, 45, 'Build'), button((0, 0, 0), 175, 855, 175, 45, "Mortgage")]
+    button_x = 350
+    count = 0
+    for i in instr:
+        buttons.append(button((0, 0, 0), button_x, 855, 175, 45, instr[count][0]))
+        button_x += 175
+        count += 1
+    return buttons
+
+
 def main():
+    buttons = []
     run = True
     while run:
         p1 = board.players[board.current_player]
@@ -80,10 +93,12 @@ def main():
                 if roll.isOver(pos):
                     roll_dice(p1, board)
                     roll.text = f"Roll: {p1.roll}"
+                    buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance, comm_chest))
                     p1.rolled = True
                 if end_turn.isOver(pos):
                     p1.rolled = False
                     change_player(board)
+                    buttons = []
             if event.type == pygame.MOUSEMOTION:
                 if roll.isOver(pos):
                     roll.color = (0, 255, 0)
@@ -97,8 +112,15 @@ def main():
                 else:
                     end_turn.color = (0, 0, 0)
                     end_turn.text_color = (255, 255, 255)
+                for b in buttons:
+                    if b.isOver(pos):
+                        b.color = (0, 255, 0)
+                        b.text_color = (0, 0, 0)
+                    else:
+                        b.color = (0, 0, 0)
+                        b.text_color = (255, 255, 255)
 
-        redrawWindow(win, p1)
+        redrawWindow(win, p1, buttons)
 
 
 main()
