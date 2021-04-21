@@ -1,4 +1,5 @@
 import pygame
+from tkinter import *
 from Controller import *
 
 pygame.init()
@@ -7,7 +8,36 @@ board = game[0]       # gets board from tuple
 comm_chest = game[1]  # gets shuffled deck of community chest cards
 chance = game[2]      # gets shuffled deck of chance cards
 create_player('player 1', 'Dog', board, 770, 825, "images/dog.png", False)
-create_player('player 1', 'Car', board, 770, 825, "images/dog.png", False)
+create_player('player 1', 'Car', board, 770, 825, "images/car.png", False)
+
+
+class Popup:
+    def __init__(self, master, player: Player):
+        self.master = master
+        self.master.geometry("200x200")
+
+        master.title("Selector")
+        options = []
+        if len(player.inventory) == 0:
+            options = ["No Inventory"]
+        else:
+            for prop in player.inventory:
+                assert isinstance(prop, Property)
+                options.append(prop.name)
+
+        self.label = Label(master, text="Select A Property").pack()
+
+        self.clicked = StringVar()
+        self.clicked.set("Select a Property")
+
+        self.drop = OptionMenu(self.master, self.clicked, *options).pack()
+
+        self.greet_button = Button(master, text="Select", command=self.greet).pack()
+
+        self.close_button = Button(master, text="Close", command=master.destroy).pack()
+
+    def greet(self):
+        print("Greetings!")
 
 
 width = 855
@@ -63,16 +93,16 @@ def redrawWindow(win, player, buttons):
     for p in board.players:
         win.blit(p.image, (p.x, p.y))
     for b in buttons:
-        b.draw(win)
+        b[0].draw(win)
     pygame.display.update()
 
 
 def create_landson_buttons(instr):
-    buttons = [button((0, 0, 0), 0, 855, 175, 45, 'Build'), button((0, 0, 0), 175, 855, 175, 45, "Mortgage")]
+    buttons = [[button((0, 0, 0), 0, 855, 175, 45, 'Build'), build], [button((0, 0, 0), 175, 855, 175, 45, "Mortgage"), mortgage]]
     button_x = 350
     count = 0
     for i in instr:
-        buttons.append(button((0, 0, 0), button_x, 855, 175, 45, instr[count][0]))
+        buttons.append([button((0, 0, 0), button_x, 855, 175, 45, instr[count][0]), instr[count][1]])
         button_x += 175
         count += 1
     return buttons
@@ -99,6 +129,16 @@ def main():
                     p1.rolled = False
                     change_player(board)
                     buttons = []
+                for b in buttons:
+                    if b[0].isOver(pos):
+                        if b[0].text == "Build":
+                            root = Tk()
+                            my_gui = Popup(root, p1)
+                            root.mainloop()
+                        elif b[0].text == "Purchase":
+                            purchase(p1, board.tiles[p1.location])
+
+            # TODO: all the button hover and click events should be set to a loop or this will get huge
             if event.type == pygame.MOUSEMOTION:
                 if roll.isOver(pos):
                     roll.color = (0, 255, 0)
@@ -113,12 +153,12 @@ def main():
                     end_turn.color = (0, 0, 0)
                     end_turn.text_color = (255, 255, 255)
                 for b in buttons:
-                    if b.isOver(pos):
-                        b.color = (0, 255, 0)
-                        b.text_color = (0, 0, 0)
+                    if b[0].isOver(pos):
+                        b[0].color = (0, 255, 0)
+                        b[0].text_color = (0, 0, 0)
                     else:
-                        b.color = (0, 0, 0)
-                        b.text_color = (255, 255, 255)
+                        b[0].color = (0, 0, 0)
+                        b[0].text_color = (255, 255, 255)
 
         redrawWindow(win, p1, buttons)
 
