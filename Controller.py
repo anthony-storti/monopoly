@@ -2,43 +2,34 @@ from Model import *
 from typing import List, Dict
 import pickle
 import random
-import pygame
 
 
-def roll_dice(player: Player, board: Board):
+def roll_dice(player: Player):
     """
     Roll Dice - After this call player location will be updated, if a player passes or lands on go their
     wallet will be increased by $200.
     :param player: current player object from board
-    :param board: board object to get tile coordinates from
     :return: nothing
     """
-    if not player.rolled:
-        roll1 = random.randint(1, 6)
-        roll2 = random.randint(1, 6)
-        player.roll = roll1 + roll2
-        player.rolled = True
-
-        if roll1 == roll2:
-            if player.extra_turns < 3:
-                player.extra_turns += 1
-                player.extra_turn = True
-            else:
-                player.in_jail = True
-                player.location = 10
-                player.jail_counter = 4
-                player.extra_turns = 0
+    roll1 = random.randint(1, 6)
+    roll2 = random.randint(1, 6)
+    player.roll = roll1 + roll2
+    if roll1 == roll2:
+        if player.extra_turns < 3:
+            player.extra_turns += 1
+            player.extra_turn = True
         else:
+            player.in_jail = True
+            player.location = 10
+            player.jail_counter = 4
             player.extra_turns = 0
-        if player.roll + player.location < 40:
-            player.location += player.roll
-        else:
-            player.location = (player.roll + player.location) - 40
-            player.wallet += 200
-
-        tile = board.tiles[player.location]
-        player.x = tile.x
-        player.y = tile.y
+    else:
+        player.extra_turns = 0
+    if player.roll + player.location < 40:
+        player.location += player.roll
+    else:
+        player.location = (player.roll + player.location) - 40
+        player.wallet += 200
 
 
 def add_player(player: Player, board: Board):
@@ -86,7 +77,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
             prompt: To acquire tile for $cost press a
             function: purchase
             '''
-            return [["Purchase", purchase]]
+            return ["a", [f"To acquire {tile.name} for ${tile.cost} press -a-", purchase]]
         elif not tile.purchasable and tile.owner != player and not tile.mortgaged:
             '''
             if Property, Railroad or Utility and is owned by another player, and not mortgaged
@@ -95,7 +86,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
             function: pay_rent
             '''
             rent = get_rent(tile, player)
-            return [["Pay Rent", pay_rent]]
+            return ["p", [f"To pay ${rent} to {tile.owner.name} press -p-", pay_rent]]
         else:
             return ret
     elif isinstance(tile, CardTile) and tile.name == "Community Chest":
@@ -108,7 +99,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         '''
         card = comm_chest.pop()
         comm_chest.insert(0, card)
-        return [["Play Card", play_card, card]]
+        return ["c", [f"{card.message} press -c- to play card: ", play_card, card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
         '''
@@ -121,7 +112,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         card = chance.pop()
         if card.action != "special":
             chance.insert(0, card)
-        return [["Play Card", play_card, card]]
+        return ["c", [f"{card.message} press -c- to play card: ", play_card, card]]
     elif isinstance(tile, GoToJail):
         '''
         if Go To Jail
@@ -163,11 +154,11 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                     player_net_worth += item.value
             player_net_worth = player_net_worth // 10
             if player_net_worth > 200:
-                return [["Pay $200 Tax", pay_tax]]
+                return ["p", [f"To pay $200 in taxes press -p-", pay_tax]]
             else:
-                return [[f"Pay ${player_net_worth} Tax", pay_tax]]
+                return ["p", [f"To pay ${player_net_worth} in taxes press -p-", pay_tax]]
         else:
-            return [["pay $75 Tax", pay_tax]]
+            return ["p", [f"To pay $75 in taxes press -p-", pay_tax]]
 
     elif isinstance(tile, FreeParking):
         '''
@@ -194,16 +185,16 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return [["Use GOOJF", use_jail_card],
-                                    ["Roll Doubles", jail_roll]]
-                return [["Roll Doubles", jail_roll],
-                        ["Pay $50 Bail", pay_bail]]
+                            return ["u", [f"To use your Get out of Jail Free card press -u-", use_jail_card],
+                                    "r", [f"To try to roll doubles press -r-", jail_roll]]
+                return ["r", [f"To try to roll doubles press -r-", jail_roll],
+                        "p", [f"To pay $50 and get out of jail press -p-", pay_bail]]
             else:
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return [["Use GOOJF",use_jail_card]]
-                return [["Pay $50 Bail", pay_bail]]
+                            return ["u", [f"To use your Get out of Jail Free card press -u-", use_jail_card]]
+                return ["p", [f"To pay $50 and get out of jail press -p-", pay_bail]]
         else:
             return ret
 
@@ -567,7 +558,7 @@ def build(tile: Property, player: Player):
                     break
                 count += 1
     else:
-        return "You Must Own All Properties to Build"
+        return "You Must Own All Properties of a color to Build"
 
 
 def demolish(tile: Property, player: Player):
@@ -590,7 +581,7 @@ def demolish(tile: Property, player: Player):
         return f"Demolished 1 house on {tile.name}"
 
 
-def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str, machine: bool = False):
+def create_player(name: str, token: str, board: Board, machine: bool = False):
     """
     Create Player - After this call a player object will be created and added to the game board
     :param name: str for player name
@@ -600,8 +591,7 @@ def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str
     :return: nothing
     """
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
-                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0,
-                    extra_turn=False, x=x, y=y, image=pygame.image.load(img), rolled=False)
+                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
     board.players.append(player)
 
 
@@ -628,8 +618,12 @@ def show_props(list) -> str:
         return ret_str
 
 
-
 def buildable(player: Player):
+    """
+        buildable - checks a machine player's inventory for properties that can be built on
+        :param player: the machine Player object being checked
+        :return can_built: a list of properties that can be built on
+        """
     can_build = []
     for item_check in player.inventory:
         if isinstance(item_check, Property):
