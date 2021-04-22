@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-import pygame
+
 
 @dataclass
 class Board:
@@ -22,16 +22,10 @@ class Player:
     jail_counter: int
     extra_turns: int
     extra_turn: bool
-    x: int
-    y: int
-    image: pygame.image
-    rolled: bool
 
 
 @dataclass
 class Tile:
-    x: int
-    y: int
     purchasable: bool
     name: str
     color: str
