@@ -12,32 +12,58 @@ create_player('player 1', 'Car', board, 770, 825, "images/car.png", False)
 
 
 class Popup:
-    def __init__(self, master, player: Player):
+    def __init__(self, master, player: Player, build: bool):
         self.master = master
-        self.master.geometry("200x200")
-
+        self.done = False
+        self.master.geometry("400x200")
+        tile_dict = {}
         master.title("Selector")
         options = []
-        if len(player.inventory) == 0:
-            options = ["No Inventory"]
+        self.clicked = StringVar()
+        if build:
+            tile = buildable(player)
+            if len(tile) == 0:
+                options = ["No Buildable Inventory"]
+            else:
+                tile_dict["Select Property"] = ""
+                for prop in tile:
+                    assert isinstance(prop, (Property, RailRoad, Utility))
+                    tile_dict[prop.name] = prop
+                    options.append(prop.name)
         else:
-            for prop in player.inventory:
-                assert isinstance(prop, Property)
-                options.append(prop.name)
+            tile = player.inventory
+            if len(tile) == 0:
+                options = ["No Inventory"]
+            else:
+                tile_dict["Select Property"] = ""
+                for prop in tile:
+                    assert isinstance(prop, (Property, RailRoad, Utility))
+                    if prop.mortgaged:
+                        m = f"Mortgaged for ${prop.mortgage}"
+                    else:
+                        m = f"Unmortgage for ${prop.mortgage}"
+                    tile_dict[f"{prop.name} | {m}"] = prop
+                    options.append(f"{prop.name} | {m}")
+                    self.clicked.set(prop.name)
+
 
         self.label = Label(master, text="Select A Property").pack()
 
-        self.clicked = StringVar()
-        self.clicked.set("Select a Property")
-
         self.drop = OptionMenu(self.master, self.clicked, *options).pack()
 
-        self.greet_button = Button(master, text="Select", command=self.greet).pack()
+        if len(tile_dict) > 1:
+            self.select_button = Button(master, text="Select", command=lambda:
+                self.execute(tile_dict[self.clicked.get()], player, master)).pack()
+
 
         self.close_button = Button(master, text="Close", command=master.destroy).pack()
 
-    def greet(self):
-        print("Greetings!")
+    def execute(self, tile, player, root):
+        if tile == "":
+            pass
+        else:
+            mortgage(tile, player)
+            root.destroy()
 
 
 width = 855
@@ -65,7 +91,7 @@ class button():
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), 0)
 
         if self.text != '':
-            font = pygame.font.SysFont('comicsans', 40)
+            font = pygame.font.SysFont('comicsans', 30)
             text = font.render(self.text, True, self.text_color)
             win.blit(text, (
             self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
@@ -78,38 +104,32 @@ class button():
 
         return False
 
-#####################################
-# This is where buttons are declared
-######################################
-roll = button((0, 0, 0), 755, 855, 100, 45, 'Roll:')
-end_turn = button((0, 0, 0), 630, 855, 125, 45, 'End Turn')
-
 
 def redrawWindow(win, player, buttons):
     win.fill((255, 255, 255))
     win.blit(bg, (0, 0))
-    roll.draw(win)
-    end_turn.draw(win)
     for p in board.players:
         win.blit(p.image, (p.x, p.y))
-    for b in buttons:
-        b[0].draw(win)
+    for b in buttons.values():
+        b.draw(win)
     pygame.display.update()
 
 
-def create_landson_buttons(instr):
-    buttons = [[button((0, 0, 0), 0, 855, 175, 45, 'Build'), build], [button((0, 0, 0), 175, 855, 175, 45, "Mortgage"), mortgage]]
-    button_x = 350
+def create_landson_buttons(instr, buttons):
+    button_x = 560
     count = 0
     for i in instr:
-        buttons.append([button((0, 0, 0), button_x, 855, 175, 45, instr[count][0]), instr[count][1]])
-        button_x += 175
+        buttons[instr[count][0]] = button((0, 0, 0), button_x, 855, 139, 45, instr[count][0])
+        button_x += 140
         count += 1
     return buttons
 
 
 def main():
-    buttons = []
+    buttons = {"Build": button((0, 0, 0), 140, 855, 139, 45, 'Build'),
+               "Mortgage": button((0, 0, 0), 280, 855, 139, 45, "Mortgage"),
+               "Roll": button((0, 0, 0), 0, 855, 139, 45, "Roll:"),
+               "End Turn": button((0, 0, 0), 420, 855, 139, 45, "End Turn")}
     run = True
     while run:
         p1 = board.players[board.current_player]
@@ -120,45 +140,41 @@ def main():
                 pygame.quit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 assert isinstance(p1, Player)
-                if roll.isOver(pos):
-                    roll_dice(p1, board)
-                    roll.text = f"Roll: {p1.roll}"
-                    buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance, comm_chest))
-                    p1.rolled = True
-                if end_turn.isOver(pos):
-                    p1.rolled = False
-                    change_player(board)
-                    buttons = []
-                for b in buttons:
-                    if b[0].isOver(pos):
-                        if b[0].text == "Build":
+                for b in buttons.values():
+                    if b.isOver(pos):
+                        if b.text == "Build":
                             root = Tk()
-                            my_gui = Popup(root, p1)
+                            my_gui = Popup(root, p1, True)
                             root.mainloop()
-                        elif b[0].text == "Purchase":
+                        elif b.text == "Purchase":
                             purchase(p1, board.tiles[p1.location])
-
-            # TODO: all the button hover and click events should be set to a loop or this will get huge
+                            buttons.pop("Purchase")
+                            break
+                        elif b.text == "Mortgage":
+                            root = Tk()
+                            my_gui = Popup(root, p1, False)
+                            root.mainloop()
+                        elif b.text == "Roll:":
+                            roll_dice(p1, board)
+                            b.text = f"Roll: {p1.roll}"
+                            buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance, comm_chest), buttons)
+                            p1.rolled = True
+                            break
+                        elif b.text == "End Turn":
+                            p1.rolled = False
+                            change_player(board)
+                            buttons = {"Build": button((0, 0, 0), 140, 855, 139, 45, 'Build'),
+                                       "Mortgage": button((0, 0, 0), 280, 855, 139, 45, "Mortgage"),
+                                       "Roll": button((0, 0, 0), 0, 855, 139, 45, "Roll:"),
+                                       "End Turn": button((0, 0, 0), 420, 855, 139, 45, "End Turn")}
             if event.type == pygame.MOUSEMOTION:
-                if roll.isOver(pos):
-                    roll.color = (0, 255, 0)
-                    roll.text_color = (0, 0, 0)
-                else:
-                    roll.color = (0, 0, 0)
-                    roll.text_color = (255, 255, 255)
-                if end_turn.isOver(pos):
-                    end_turn.color = (0, 255, 0)
-                    end_turn.text_color = (0, 0, 0)
-                else:
-                    end_turn.color = (0, 0, 0)
-                    end_turn.text_color = (255, 255, 255)
-                for b in buttons:
-                    if b[0].isOver(pos):
-                        b[0].color = (0, 255, 0)
-                        b[0].text_color = (0, 0, 0)
+                for b in buttons.values():
+                    if b.isOver(pos):
+                        b.color = (0, 255, 0)
+                        b.text_color = (0, 0, 0)
                     else:
-                        b[0].color = (0, 0, 0)
-                        b[0].text_color = (255, 255, 255)
+                        b.color = (0, 0, 0)
+                        b.text_color = (255, 255, 255)
 
         redrawWindow(win, p1, buttons)
 
