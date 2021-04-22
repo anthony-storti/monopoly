@@ -567,7 +567,7 @@ def build(tile: Property, player: Player):
                     break
                 count += 1
     else:
-        return "You Must Own All Properties of a color to Build"
+        return "You Must Own All Properties to Build"
 
 
 def demolish(tile: Property, player: Player):
@@ -628,12 +628,8 @@ def show_props(list) -> str:
         return ret_str
 
 
+
 def buildable(player: Player):
-    """
-        buildable - checks a machine player's inventory for properties that can be built on
-        :param player: the machine Player object being checked
-        :return can_built: a list of properties that can be built on
-        """
     can_build = []
     for item_check in player.inventory:
         if isinstance(item_check, Property):
