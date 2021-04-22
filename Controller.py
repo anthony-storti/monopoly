@@ -86,7 +86,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
             prompt: To acquire tile for $cost press a
             function: purchase
             '''
-            return [["Purchase", purchase]]
+            return [[f"Purchase ${tile.cost}", "purchase"]]
         elif not tile.purchasable and tile.owner != player and not tile.mortgaged:
             '''
             if Property, Railroad or Utility and is owned by another player, and not mortgaged
@@ -95,7 +95,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
             function: pay_rent
             '''
             rent = get_rent(tile, player)
-            return [["Pay Rent", pay_rent]]
+            return [[f"Rent Due ${get_rent(tile, player)}", "rent"]]
         else:
             return ret
     elif isinstance(tile, CardTile) and tile.name == "Community Chest":
@@ -108,7 +108,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         '''
         card = comm_chest.pop()
         comm_chest.insert(0, card)
-        return [["Play Card", play_card, card]]
+        return [["Play Card", "card", card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
         '''
@@ -121,7 +121,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         card = chance.pop()
         if card.action != "special":
             chance.insert(0, card)
-        return [["Play Card", play_card, card]]
+        return [["Play Card", "card", card]]
     elif isinstance(tile, GoToJail):
         '''
         if Go To Jail
@@ -163,11 +163,11 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                     player_net_worth += item.value
             player_net_worth = player_net_worth // 10
             if player_net_worth > 200:
-                return [["Pay $200 Tax", pay_tax]]
+                return [["Pay $200 Tax", "tax", pay_tax]]
             else:
-                return [[f"Pay ${player_net_worth} Tax", pay_tax]]
+                return [[f"Pay ${player_net_worth} Tax", "tax", pay_tax]]
         else:
-            return [["pay $75 Tax", pay_tax]]
+            return [["pay $75 Tax", "tax", pay_tax]]
 
     elif isinstance(tile, FreeParking):
         '''
@@ -194,16 +194,16 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return [["Use GOOJF", use_jail_card],
-                                    ["Roll Doubles", jail_roll]]
-                return [["Roll Doubles", jail_roll],
-                        ["Pay $50 Bail", pay_bail]]
+                            return [["Use GOOJF", "jail_card", use_jail_card],
+                                    ["Roll Doubles", "jail_roll", jail_roll]]
+                return [["Roll Doubles", "jail_roll", jail_roll],
+                        ["Pay $50 Bail", "bail",  pay_bail]]
             else:
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return [["Use GOOJF",use_jail_card]]
-                return [["Pay $50 Bail", pay_bail]]
+                            return [["Use GOOJF", "jail_card", use_jail_card]]
+                return [["Pay $50 Bail", "bail",  pay_bail]]
         else:
             return ret
 
