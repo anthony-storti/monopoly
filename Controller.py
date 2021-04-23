@@ -497,7 +497,7 @@ def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad,
         return "q"
 
 
-def mortgage(tile: Tile, player: Player):
+def mortgage(tile: Tile, player: Player, idx):
     """
     Mortgage - After this call either a tile mortgaged property set to True and the wallet of the player increased or
     if the player has sufficient funds their wallet deducted and the tile mortgaged value set to False
@@ -507,12 +507,14 @@ def mortgage(tile: Tile, player: Player):
     """
     if isinstance(tile, (Property, RailRoad, Utility)) and not tile.mortgaged:
         player.wallet += tile.mortgage
+        player.inventory[idx].mortgaged = True
         tile.mortgaged = True
         return f"{tile.name} has been mortgaged for ${tile.mortgage}"
     else:
         if isinstance(tile, (Property, RailRoad, Utility)) and tile.mortgaged:
             if player.wallet >= tile.mortgage:
                 player.wallet -= tile.mortgage
+                player.inventory[idx].mortgaged = True
                 tile.mortgaged = False
                 return f"{tile.name} has been restored to your active inventory"
             else:

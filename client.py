@@ -32,21 +32,22 @@ class PropertyPopup:
                     tile_dict[prop.name] = prop
                     options.append(prop.name)
         else:
-            tile = player.inventory
-            if len(tile) == 0:
+            inv = player.inventory
+            if len(inv) == 0:
                 options = ["No Inventory"]
             else:
                 tile_dict["Select Property"] = ""
-                for prop in tile:
+                count = 0
+                for prop in inv:
                     assert isinstance(prop, (Property, RailRoad, Utility))
                     if not prop.mortgaged:
                         m = f"Mortgage for ${prop.mortgage}"
                     else:
                         m = f"Unmortgage for ${prop.mortgage}"
-                    tile_dict[f"{prop.name} | {m}"] = prop
+                    tile_dict[f"{prop.name} | {m}"] = count
+                    count += 1
                     options.append(f"{prop.name} | {m}")
                     self.clicked.set(f"{prop.name} | {m}")
-
 
         self.label = Label(master, text="Select A Property").pack()
         self.label_1 = Label(master, text=f"Wallet: ${player.wallet}").pack()
@@ -55,16 +56,16 @@ class PropertyPopup:
 
         if len(tile_dict) > 1:
             self.select_button = Button(master, text="Select", command=lambda:
-                self.execute(tile_dict[self.clicked.get()], player, master)).pack()
+                self.execute(tile_dict[self.clicked.get()], player, master, n)).pack()
 
 
         self.close_button = Button(master, text="Close", command=master.destroy).pack()
 
-    def execute(self, tile, player, root):
-        if tile == "":
+    def execute(self, idx, player, root, n):
+        if idx == "":
             pass
         else:
-            mortgage(tile, player)
+            n.send(["mortgage", idx])
             root.destroy()
 
 class button():
@@ -111,7 +112,7 @@ def create_landson_buttons(instr, buttons):
 
 
 def redrawWindow(win, game, player, buttons):
-    win.fill((0, 255, 255))
+    win.fill((0, 0, 0))
     win.blit(bg, (0, 0))
     for button in buttons.values():
         button.draw(win)
@@ -199,8 +200,9 @@ def main():
                                     buttons.pop('purchase')
                                 elif butn.call == "mortgage":
                                     root = Tk()
-                                    my_gui = PropertyPopup(root, p, n,  False)
+                                    my_gui = PropertyPopup(root, game.board.players[player], n,  False)
                                     root.mainloop()
+                                    game = n.send(['get'])
                                 else:
                                     n.send([butn.call])
                                 break

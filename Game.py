@@ -20,11 +20,13 @@ class Game:
         tile = self.board.tiles[p.location]
 
         if str(call[0]) == "roll":
-            roll_dice(self.board.players[player], self.board)
+            return roll_dice(self.board.players[player], self.board)
         elif str(call[0]) == "end_turn":
             self.board.players[player].rolled = False
             change_player(self.board)
         elif str(call[0]) == "purchase":
-            purchase(p, tile)
+            return purchase(p, tile)
+        elif str(call[0]) == "mortgage":
+            return mortgage(p.inventory[call[1]], p, call[1])
         else:
             pass
