@@ -213,14 +213,14 @@ def main():
                                     n.send([butn.call])
                                 break
 
-                if event.type == pygame.MOUSEMOTION:
-                    for b in buttons.values():
-                        if b.isOver(pos):
-                            b.color = (0, 255, 0)
-                            b.text_color = (0, 0, 0)
-                        else:
-                            b.color = (0, 0, 0)
-                            b.text_color = (255, 255, 255)
-            redrawWindow(win, game, player, buttons)
+            if event.type == pygame.MOUSEMOTION:
+                for b in buttons.values():
+                    if b.isOver(pos):
+                        b.color = (0, 255, 0)
+                        b.text_color = (0, 0, 0)
+                    else:
+                        b.color = (0, 0, 0)
+                        b.text_color = (255, 255, 255)
+        redrawWindow(win, game, player, buttons)
 
 main()
