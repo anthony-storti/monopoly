@@ -1,23 +1,22 @@
 import pygame
 from tkinter import *
 from Controller import *
+from Game import *
 
 pygame.init()
-game = load_game()    # gets the tuple we pickled
-board = game[0]       # gets board from tuple
-comm_chest = game[1]  # gets shuffled deck of community chest cards
-chance = game[2]      # gets shuffled deck of chance cards
-create_player('player 1', 'Dog', board, 770, 825, "images/dog.png", False)
-create_player('player 1', 'Car', board, 770, 825, "images/car.png", False)
+game = Game(load_game()) # gets the tuple we pickled
+board = game.board      # gets board from tuple
+comm_chest = game.comm_chest # gets shuffled deck of community chest cards
+chance = game.chance      # gets shuffled deck of chance cards
 
 
-class Popup:
+
+class PropertyPopup:
     def __init__(self, master, player: Player, build: bool):
         self.master = master
-        self.done = False
         self.master.geometry("400x200")
         tile_dict = {}
-        master.title("Selector")
+        master.title("Property Selector")
         options = []
         self.clicked = StringVar()
         if build:
@@ -38,7 +37,7 @@ class Popup:
                 tile_dict["Select Property"] = ""
                 for prop in tile:
                     assert isinstance(prop, (Property, RailRoad, Utility))
-                    if prop.mortgaged:
+                    if not prop.mortgaged:
                         m = f"Mortgage for ${prop.mortgage}"
                     else:
                         m = f"Unmortgage for ${prop.mortgage}"
@@ -111,7 +110,7 @@ def redrawWindow(win, player, buttons):
     win.fill((255, 255, 255))
     win.blit(bg, (0, 0))
     for p in board.players:
-        win.blit(p.image, (p.x, p.y))
+        win.blit(pygame.image.load(p.image), (p.x, p.y))
     for b in buttons.values():
         b.draw(win)
     pygame.display.update()
@@ -146,7 +145,7 @@ def main():
                     if b.isOver(pos):
                         if b.call == "build":
                             root = Tk()
-                            my_gui = Popup(root, p1, True)
+                            my_gui = PropertyPopup(root, p1, True)
                             root.mainloop()
                         elif b.call == "rent":
                             pay_rent(p1, board.tiles[p1.location])
@@ -158,7 +157,7 @@ def main():
                             break
                         elif b.call == "mortgage":
                             root = Tk()
-                            my_gui = Popup(root, p1, False)
+                            my_gui = PropertyPopup(root, p1, False)
                             root.mainloop()
                         elif b.call == "roll":
                             roll_dice(p1, board)

@@ -7,6 +7,7 @@ class Board:
     current_player: int
     players: list
     cards: list
+    ready: bool
 
 
 @dataclass
