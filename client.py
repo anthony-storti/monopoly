@@ -114,10 +114,15 @@ def create_landson_buttons(instr, buttons):
 def redrawWindow(win, game, player, buttons):
     win.fill((0, 0, 0))
     win.blit(bg, (0, 0))
-    for button in buttons.values():
-        button.draw(win)
-    for player in game.board.players:
-        win.blit(pygame.image.load(player.image), (player.x, player.y))
+    if not game.ready:
+        font = pygame.font.SysFont("comicsans", 80)
+        text = font.render("Waiting for other players...", True, (255, 0, 0), True)
+        win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
+    else:
+        for button in buttons.values():
+            button.draw(win)
+        for player in game.board.players:
+            win.blit(pygame.image.load(player.image), (player.x, player.y))
     pygame.display.update()
 
 
@@ -165,6 +170,7 @@ def main():
                 run = False
                 pygame.quit()
             pos = pygame.mouse.get_pos()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if player == current_player:
                         for butn in buttons.values():
@@ -207,14 +213,14 @@ def main():
                                     n.send([butn.call])
                                 break
 
-            if event.type == pygame.MOUSEMOTION:
-                for b in buttons.values():
-                    if b.isOver(pos):
-                        b.color = (0, 255, 0)
-                        b.text_color = (0, 0, 0)
-                    else:
-                        b.color = (0, 0, 0)
-                        b.text_color = (255, 255, 255)
-        redrawWindow(win, game, player, buttons)
+                if event.type == pygame.MOUSEMOTION:
+                    for b in buttons.values():
+                        if b.isOver(pos):
+                            b.color = (0, 255, 0)
+                            b.text_color = (0, 0, 0)
+                        else:
+                            b.color = (0, 0, 0)
+                            b.text_color = (255, 255, 255)
+            redrawWindow(win, game, player, buttons)
 
 main()
