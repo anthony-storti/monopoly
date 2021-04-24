@@ -146,7 +146,6 @@ def main():
     print("You are Player", player)
 
     while run:
-        clock.tick(60)
         try:
             game = n.send(["get"])
         except:

@@ -11,12 +11,6 @@ class Game:
         create_player('player 1', 'Dog', self.board, 770, 825, "images/dog.png", False)
         create_player('player 2', 'Car', self.board, 770, 800, "images/car.png", False)
 
-    def connected(self):
-        if self.ready:
-            return True
-        else:
-            return False
-
     def process(self, player: int, call):
         p = self.board.players[player]
         assert isinstance(p, Player)
