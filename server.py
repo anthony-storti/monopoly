@@ -40,12 +40,13 @@ def threaded_client(conn, p, game_id):
                     print('not recieved')
                     break
                 else:
-
+                    print(data)
                     if data[0] != "get":
                         print(data)
                         print(game.process(p, data))
                     reply = game
                     conn.sendall(pickle.dumps(reply))
+                    print("sent")
             else:
                 break
         except:
