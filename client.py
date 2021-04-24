@@ -149,10 +149,9 @@ def main():
         clock.tick(60)
         try:
             game = n.send(["get"])
+            print('Success')
         except:
-            run = False
             print("Couldn't get Game")
-            break
         print(game.board.players)
         board = game.board
         p = game.board.players[player]
