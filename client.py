@@ -146,13 +146,14 @@ def main():
     print("You are Player", player)
 
     while run:
+        clock.tick(60)
         try:
             game = n.send(["get"])
         except:
             run = False
             print("Couldn't get Game")
             break
-
+        print(game.board.players)
         board = game.board
         p = game.board.players[player]
         players = game.board.players

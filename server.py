@@ -6,11 +6,11 @@ from Game import *
 import pickle
 import sys
 
-server = "165.227.184.113"
+server = socket.gethostbyname(socket.gethostname())
 port = 5555
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+print(server)
 try:
     s.bind((server, port))
 except socket.error as e:
