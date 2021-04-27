@@ -19,6 +19,8 @@ pygame.font.init()
 pygame.mixer.init()
 # butt = pygame.image.load('images/dice.png')
 roll_sound = pygame.mixer.Sound(os.path.join('sound', 'diceRolling.wav'))
+purchase_sound = pygame.mixer.Sound(os.path.join('sound', 'purchase.wav'))
+button_sound = pygame.mixer.Sound(os.path.join('sound', 'button.wav'))
 pygame.mixer.music.load(os.path.join('sound', 'soundtrack.wav'))
 
 class PropertyPopup:
@@ -197,7 +199,7 @@ def main():
     player = int(n.getP())
     print("You are Player", player)
     tokens = []
-    pygame.mixer.music.play()
+    # pygame.mixer.music.play()
     while run:
         clock.tick(60)
         try:
@@ -228,6 +230,7 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for token in tokens:
                     if token.isOver(pos):
+                        pygame.mixer.Sound.play(button_sound)
                         n.send(['choose_token', token.call])
                 if player == current_player:
                         for butn in buttons.values():
@@ -248,6 +251,7 @@ def main():
                                                      game.comm_chest, game.chance)
                                     buttons = create_landson_buttons(instr, buttons)
                                 elif butn.call == "end_turn":
+                                    pygame.mixer.Sound.play(button_sound)
                                     n.send([butn.call])
                                     if "purchase" in buttons:
                                         buttons.pop("purchase")
@@ -259,15 +263,17 @@ def main():
                                     if "rent" in buttons:
                                         buttons.pop('rent')
                                 elif butn.call == "purchase":
-                                    print("purchased")
+                                    pygame.mixer.Sound.play(purchase_sound)
                                     n.send([butn.call])
                                     buttons.pop('purchase')
                                 elif butn.call == "mortgage":
+                                    pygame.mixer.Sound.play(button_sound)
                                     root = Tk()
                                     my_gui = PropertyPopup(root, game.board.players[player], n,  False)
                                     root.mainloop()
                                     game = n.send(['get'])
                                 else:
+                                    pygame.mixer.Sound.play(button_sound)
                                     n.send([butn.call])
                                 break
 
