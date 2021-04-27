@@ -7,6 +7,7 @@ class Board:
     current_player: int
     players: list
     cards: list
+    pieces: list
 
 
 @dataclass
@@ -26,6 +27,8 @@ class Player:
     y: int
     image: pygame.image
     rolled: bool
+    picked: bool
+
 
 
 @dataclass
