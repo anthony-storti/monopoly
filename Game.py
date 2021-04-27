@@ -8,8 +8,8 @@ class Game:
         self.chance = game[2]
         self.ready = False
         self.connected = False
-        create_player('player 1', 'Dog', self.board, 770, 825, "images/dog.png", False)
-        create_player('player 2', 'Car', self.board, 770, 800, "images/car.png", False)
+        create_player('player 1', 'Dog', self.board, 770, 825, "", False)
+        create_player('player 2', 'Car', self.board, 770, 800, "", False)
 
     def process(self, player: int, call):
         p = self.board.players[player]
@@ -25,5 +25,9 @@ class Game:
             return purchase(p, tile)
         elif str(call[0]) == "mortgage":
             return mortgage(p.inventory[call[1]], p, call[1])
+        elif str(call[0]) == "choose_token":
+            p.image = str(call[1])
+            p.picked = True
+            self.board.pieces.remove(str(call[1]))
         else:
             pass

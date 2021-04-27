@@ -6,7 +6,7 @@ from Game import *
 import pickle
 import sys
 
-server = "165.227.184.113"
+server = "192.168.50.156"
 port = 5555
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,13 +40,10 @@ def threaded_client(conn, p, game_id):
                     print('not recieved')
                     break
                 else:
-                    print(data)
                     if data[0] != "get":
-                        print(data)
-                        print(game.process(p, data))
+                        game.process(p, data)
                     reply = game
                     conn.sendall(pickle.dumps(reply))
-                    print("sent")
             else:
                 break
         except:

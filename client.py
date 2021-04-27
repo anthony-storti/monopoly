@@ -1,17 +1,25 @@
 import pygame
 from network import Network
 import pickle
-pygame.font.init()
+import os
+import time
+
 from Controller import *
 from tkinter import *
 
+pygame.init()
+pygame.font.init()
+pygame.mixer.init()
 width = 855
 height = 900
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Monopoly")
 bg = pygame.image.load("images/bord.jpg")
 pygame.font.init()
-
+pygame.mixer.init()
+# butt = pygame.image.load('images/dice.png')
+roll_sound = pygame.mixer.Sound(os.path.join('sound', 'diceRolling.wav'))
+pygame.mixer.music.load(os.path.join('sound', 'soundtrack.wav'))
 
 class PropertyPopup:
     def __init__(self, master, player: Player, n: Network, build: bool):
@@ -92,6 +100,18 @@ class button():
             win.blit(text, (
             self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
 
+    def draw_tokens(self, win, outline=None):
+        # Call this method to draw the button on the screen
+        if outline:
+            pygame.draw.rect(win, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
+
+        pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), 0)
+
+        if self.text != '':
+            img = pygame.image.load(self.text)
+            win.blit(img, (
+                self.x + (self.width / 2 - 32 / 2), self.y + (self.height / 2 - 32 / 2)))
+
     def isOver(self, pos):
         # Pos is the mouse position or a tuple of (x,y) coordinates
         if pos[0] > self.x and pos[0] < self.x + self.width:
@@ -110,19 +130,51 @@ def create_landson_buttons(instr, buttons):
         count += 1
     return buttons
 
+def create_tokens_buttons(game, tokens):
+    tokens = []
+    button_x = 260
+    button_y = 500
+    for token in game.board.pieces:
+        if button_x <= 570:
+            tokens.append(button((191, 219, 174), button_x, button_y, 40, 40, token, token))
+            button_x += 150
+        else:
+            button_x = 260
+            button_y += 80
+            tokens.append(button((191, 219, 174), button_x, button_y, 40, 40, token, token))
+            button_x += 150
 
-def redrawWindow(win, game, player, buttons):
-    win.fill((0, 0, 0))
-    win.blit(bg, (0, 0))
-    if not game.ready:
+    return tokens
+
+
+def redrawWindow(win, game, player, buttons, tokens):
+    if not player.picked:
+        win.fill((191, 219, 174))
         font = pygame.font.SysFont("comicsans", 80)
-        text = font.render("Waiting for other players...", True, (255, 0, 0), True)
-        win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
+        text = font.render("2 Player Game", True, (199, 0, 0))
+        win.blit(text, (width / 2 - text.get_width() / 2, height / 2 - text.get_height() / 2 - 100))
+        font = pygame.font.SysFont("comicsans", 80)
+        text = font.render("Select Token", True, (199, 0, 0))
+        win.blit(text, (width / 2 - text.get_width() / 2, height / 2 - text.get_height() / 2))
+
+        for t in tokens:
+            t.draw_tokens(win)
     else:
-        for button in buttons.values():
-            button.draw(win)
-        for player in game.board.players:
-            win.blit(pygame.image.load(player.image), (player.x, player.y))
+        win.fill((0, 0, 0))
+        win.blit(bg, (0, 0))
+        # win.blit(butt, (200, 200))
+        if not game.ready:
+            font = pygame.font.SysFont("comicsans", 80)
+            text = font.render("Waiting for other players...", True, (255, 0, 0), True)
+            win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
+        else:
+            for button in buttons.values():
+                button.draw(win)
+            for player in game.board.players:
+                if player.image == "":
+                    pass
+                else:
+                    win.blit(pygame.image.load(player.image), (player.x, player.y))
     pygame.display.update()
 
 
@@ -144,19 +196,22 @@ def main():
     n = Network()
     player = int(n.getP())
     print("You are Player", player)
-
+    tokens = []
+    pygame.mixer.music.play()
     while run:
         clock.tick(60)
         try:
             game = n.send(["get"])
-            print('Success')
         except:
+            run = False
             print("Couldn't get Game")
-        print(game.board.players)
+            break
         board = game.board
         p = game.board.players[player]
         players = game.board.players
         current_player = game.board.current_player
+        if not p.picked:
+            tokens = create_tokens_buttons(game, tokens)
         assert isinstance(p, Player)
         if board.current_player == player:
             buttons = buttons_1
@@ -171,11 +226,15 @@ def main():
             pos = pygame.mouse.get_pos()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+                for token in tokens:
+                    if token.isOver(pos):
+                        n.send(['choose_token', token.call])
                 if player == current_player:
                         for butn in buttons.values():
                             if butn.isOver(pos):
                                 if butn.call == "roll" and not players[player].rolled:
                                     # kinda annoying to have to update all the variables mid loop
+                                    pygame.mixer.Sound.play(roll_sound)
                                     n.send([butn.call])
                                     game = n.send(['get'])
                                     board = game.board
@@ -220,6 +279,6 @@ def main():
                     else:
                         b.color = (0, 0, 0)
                         b.text_color = (255, 255, 255)
-        redrawWindow(win, game, player, buttons)
+        redrawWindow(win, game, p, buttons, tokens)
 
 main()

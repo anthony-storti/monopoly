@@ -2,7 +2,10 @@ from Model import *
 import csv
 import pickle
 
-board = Board(tiles=list(), current_player=0, players=list(), cards=list(), ready=False)
+board = Board(tiles=list(), current_player=0, players=list(), cards=list(), ready=False,
+              pieces=['images/car.png', 'images/hat.png', 'images/dog.png', 'images/thimble.png',
+                      'images/wheel.png', 'images/cat.png', 'images/ship.png', 'images/boot.png',
+                      'images/ship.png'])
 '''Create Board Object to all all the tiles to'''
 with open('monopoly_squares.csv') as csv_data_file:
     csv_reader = csv.reader(csv_data_file)
