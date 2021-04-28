@@ -111,8 +111,7 @@ class PopupPropertySelector:
         self.label_1 = Label(master, text=f"Wallet: ${player.wallet}").pack()
         self.drop = OptionMenu(self.master, self.clicked, *options).pack()
         if len(tile_dict) > 1:
-            self.select_button = Button(master, text="Select", command=lambda:
-                                        self.execute(tile_dict[self.clicked.get()], player)).pack()
+            self.select_button = Button(master, text="Select", command=lambda: self.execute(tile_dict[self.clicked.get()], player)).pack()
         self.close_button = Button(master, text="Close", command=master.destroy).pack()
 
     def execute(self, tile, player):
@@ -131,7 +130,7 @@ class PopupPropertySelector:
             self.master.destroy()
 
 
-class Button:
+class GameButton:
     def __init__(self, color, x, y, width, height, text='', call='', player=None):
         """
         Initializer - This will create a button object that can display text or image.
@@ -249,7 +248,7 @@ def create_landson_buttons(instr, buttons):
     button_x = 560
     count = 0
     for i in instr:
-        buttons[instr[count][1]] = Button((0, 0, 0), button_x, 855, 139, 45, instr[count][0], instr[count][1])
+        buttons[instr[count][1]] = GameButton((0, 0, 0), button_x, 855, 139, 45, instr[count][0], instr[count][1])
         button_x += 140
         count += 1
     return buttons
@@ -264,58 +263,80 @@ def create_tokens_buttons():
     button_y = 500
     for token in board.pieces:
         if button_x <= 570:
-            tokens.append(Button((191, 219, 174), button_x, button_y, 40, 40, token, token))
+            tokens.append(GameButton((191, 219, 174), button_x, button_y, 40, 40, token, token))
             button_x += 150
         else:
             button_x = 260
             button_y += 80
-            tokens.append(Button((191, 219, 174), button_x, button_y, 40, 40, token, token))
+            tokens.append(GameButton((191, 219, 174), button_x, button_y, 40, 40, token, token))
             button_x += 150
 
     return tokens
 
 
-
 def main():
-    buttons = {"Build": Button((0, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
-               "Mortgage": Button((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
-               "Roll": Button((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
-               "End Turn": Button((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
+    """
+    main - This call will run the main game window. All checks for events and and logic on events is handled here.
+    :return: nothing
+    """
+    #########################################
+    # Initialize Main Loop Constants
+    #########################################
+    buttons = {"Build": GameButton((0, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
+               "Mortgage": GameButton((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
+               "Roll": GameButton((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
+               "End Turn": GameButton((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
     pygame.mixer.music.play(-1)
-
-    player_btn = [Button((255, 255, 255), 0, 0, 40, 40), Button((255, 255, 255), 0, 0, 40, 40)]
+    player_btn = [GameButton((255, 255, 255), 0, 0, 40, 40), GameButton((255, 255, 255), 0, 0, 40, 40)]
     tokens = []
     run = True
     while run:
         p1 = board.players[board.current_player]
         assert isinstance(p1, Player)
+        #####################################################################
+        # Machine Logic Happens Here or is sent to machine algo in controller
+        #####################################################################
         if p1.machine_player:
             machine_algo(p1, board, comm_chest, chance)
-            player_btn[1] = Button((0, 255, 255), p1.x, p1.y, 40, 40, p1.image, p1.image, p1)
+            player_btn[1] = GameButton((0, 255, 255), p1.x, p1.y, 40, 40, p1.image, p1.image, p1)
         else:
             if not p1.picked:
-                tokens = create_tokens_buttons()
-
+                tokens = create_tokens_buttons()  # creates list of tokens if player has not picked token
+            ####################################
+            # Handles Closing Window
+            ####################################
             for event in pygame.event.get():
                 pos = pygame.mouse.get_pos()
                 if event.type == pygame.QUIT:
                     run = False
                     pygame.quit()
+                ########################################
+                # Handle Mouse Click Events
+                ########################################
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     assert isinstance(p1, Player)
+                    ########################################################
+                    # Here is where we pick the tokens on the opening screen
+                    ########################################################
                     for token in tokens:
                         if token.isOver(pos):
                             pygame.mixer.Sound.play(button_sound)
                             board.players[board.current_player].image = pygame.image.load(token.call)
                             board.pieces.remove(token.call)
-                            player_btn[0] = Button((0, 255, 255), p1.x, p1.y, 40, 40, token.call, token.call, p1)
+                            player_btn[0] = GameButton((0, 255, 255), p1.x, p1.y, 40, 40, token.call, token.call, p1)
                             board.players[board.current_player].picked = True
+                    ######################################################
+                    # Here is where we handle clicking on a players token
+                    ######################################################
                     for player_token in player_btn:
                         if player_token.isOver(pos):
                             pygame.mixer.Sound.play(button_sound)
-                            root = Tk()
-                            my_gui = PopupPlayer(root, player_token.player)
-                            root.mainloop()
+                            root = Tk()  # used to create root for tkinter window
+                            my_gui = PopupPlayer(root, player_token.player)  # create popup player object
+                            root.mainloop()  # run tkinter window until killed
+                    ###################################################################
+                    # Here is where we put our cases for handling clicking game buttons
+                    ###################################################################
                     for b in buttons.values():
                         if b.isOver(pos):
                             if b.call == "build":
@@ -355,10 +376,13 @@ def main():
                                 else:
                                     p1.rolled = False
                                     change_player(board)
-                                    buttons = {"Build": Button((0, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
-                                               "Mortgage": Button((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
-                                               "Roll": Button((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
-                                               "End Turn": Button((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
+                                    buttons = {"Build": GameButton((0, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
+                                               "Mortgage": GameButton((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
+                                               "Roll": GameButton((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
+                                               "End Turn": GameButton((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
+                ######################################################################################
+                # Handle Mouse Movement events for our purposes this is where the buttons change color
+                #######################################################################################
                 if event.type == pygame.MOUSEMOTION:
                     for b in buttons.values():
                         if b.isOver(pos):
@@ -367,7 +391,9 @@ def main():
                         else:
                             b.color = (0, 0, 0)
                             b.text_color = (255, 255, 255)
-
+        #############################################
+        # ***BELOW CODE MUST BE CALLED EVERY LOOP***
+        #############################################
         redrawWindow(win, p1, buttons, tokens, player_btn)
 
 
