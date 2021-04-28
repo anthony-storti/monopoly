@@ -247,7 +247,7 @@ def create_landson_buttons(instr, buttons):
     button_x = 560
     count = 0
     for i in instr:
-        buttons[i[1]] = GameButton((0, 0, 0), button_x, 855, 139, 45, i[0], i[1])
+        buttons[i[1]] = GameButton((199, 0, 0), button_x, 855, 139, 45, i[0], i[1])
         button_x += 140
         count += 1
     return buttons
@@ -282,10 +282,10 @@ def main():
     #########################################
     # Initialize Main Loop Constants
     #########################################
-    buttons = {"Build": GameButton((0, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
-               "Mortgage": GameButton((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
-               "Roll": GameButton((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
-               "End Turn": GameButton((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
+    buttons = {"Build": GameButton((199, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
+               "Mortgage": GameButton((199, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
+               "Roll": GameButton((199, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
+               "End Turn": GameButton((199, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
     pygame.mixer.music.play(-1)
     player_btn = [GameButton((255, 255, 255), 0, 0, 40, 40), GameButton((255, 255, 255), 0, 0, 40, 40)]
     tokens = []
@@ -390,10 +390,10 @@ def main():
                 if event.type == pygame.MOUSEMOTION:
                     for b in buttons.values():
                         if b.is_over(pos):
-                            b.color = (0, 255, 0)
+                            b.color = (191, 219, 174)
                             b.text_color = (0, 0, 0)
                         else:
-                            b.color = (0, 0, 0)
+                            b.color = (199, 0, 0)
                             b.text_color = (255, 255, 255)
         #############################################
         # ***BELOW CODE MUST BE CALLED EVERY LOOP***
