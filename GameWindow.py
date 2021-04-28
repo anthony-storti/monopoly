@@ -200,7 +200,19 @@ class Button:
 
 
 def redrawWindow(win, player, buttons, tokens, btn):
+    """
+    redraw window- This will display everything that is shown on the pygame surface
+    :param win: the pygame surface to display to
+    :param player: player object current game player
+    :param buttons: a list of buttons that hold the current instructions for the game
+    :param tokens: a list of tokens available for a user to choose from
+    :param btn: a list of button objects that represent a player
+    :return: nothing
+    """
     if not player.picked:
+        ######################################################################
+        # this is the initial display screen prompting a user to pick a token
+        ######################################################################
         win.fill((191, 219, 174))
         font = pygame.font.SysFont("comicsans", 80)
         text = font.render("You V. Machine", True, (199, 0, 0))
@@ -211,6 +223,9 @@ def redrawWindow(win, player, buttons, tokens, btn):
         for t in tokens:
             t.draw_tokens(win)
     else:
+        ######################################################################
+        # this is the main game loop display window
+        ######################################################################
         win.fill((255, 255, 255))
         win.blit(bg, (0, 0))
         for p in btn:
@@ -220,10 +235,17 @@ def redrawWindow(win, player, buttons, tokens, btn):
                 p.draw_tokens(win)
         for b in buttons.values():
             b.draw(win)
-    pygame.display.update()
+    pygame.display.update()  # this must be called no matter what
 
 
 def create_landson_buttons(instr, buttons):
+    """
+    create lands on buttons- This call will generate a dict of buttons that represent the instructions available to
+    a player on their given turn
+    :param instr: the list returned from calling lands_on()
+    :param buttons: a dict of buttons that already contain the instructions for roll, build, mortgage
+    :return: a dict of buttons
+    """
     button_x = 560
     count = 0
     for i in instr:
@@ -233,6 +255,10 @@ def create_landson_buttons(instr, buttons):
     return buttons
 
 def create_tokens_buttons():
+    """
+    create tokens buttons- This call will generate a list of buttons that represent all the tokens a player can choose
+    :return: a list of buttons
+    """
     tokens = []
     button_x = 260
     button_y = 500
