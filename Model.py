@@ -8,6 +8,7 @@ class Board:
     players: list
     cards: list
     pieces: list
+    trade: bool
 
 
 @dataclass
@@ -28,6 +29,7 @@ class Player:
     image: pygame.image
     rolled: bool
     picked: bool
+    trade_offered: bool
 
 
 

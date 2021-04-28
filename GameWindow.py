@@ -19,6 +19,28 @@ button_sound = pygame.mixer.Sound(os.path.join('sounds', 'button.wav'))
 pygame.mixer.music.load(os.path.join('sounds', 'soundtrack.wav'))
 
 
+class Popup_Player:
+    def __init__(self, master, player: Player):
+        self.master = master
+        self.done = False
+        self.master.geometry("400x200")
+        master.title(f"{player.name} Information")
+        # self.label = Label(master, text="Select A Property").pack()
+        self.label_1 = Label(master, text=f"Wallet: ${player.wallet}").pack()
+        self.close_button = Button(master, text="Close", command=master.destroy).pack()
+        tiles = {}
+        options = []
+        for tile in player.inventory:
+             tiles[tile.color] = []
+        for tile in player.inventory:
+            tiles[tile.color].append(tile)
+        for color, props in tiles.items():
+            self.label = Label(master, text=f"{color}", font='Helvetica 12 bold underline').pack()
+            for prop in props:
+                self.label = Label(master, text=f"{prop.name}").pack()
+
+
+
 
 
 class Popup:
@@ -49,9 +71,9 @@ class Popup:
                 for prop in tile:
                     assert isinstance(prop, (Property, RailRoad, Utility))
                     if prop.mortgaged:
-                        m = f"Mortgage for ${prop.mortgage}"
-                    else:
                         m = f"Unmortgage for ${prop.mortgage}"
+                    else:
+                        m = f"Mortgage for ${prop.mortgage}"
                     tile_dict[f"{prop.name} | {m}"] = prop
                     options.append(f"{prop.name} | {m}")
                     self.clicked.set(f"{prop.name} | {m}")
@@ -85,7 +107,7 @@ bg = pygame.image.load("images/bord.jpg")
 
 
 class button():
-    def __init__(self, color, x, y, width, height, text='', call=''):
+    def __init__(self, color, x, y, width, height, text='', call='', player=None):
         self.color = color
         self.x = x
         self.y = y
@@ -94,6 +116,8 @@ class button():
         self.text = text
         self.text_color = (255, 255, 255)
         self.call = call
+        self.player = player
+
 
     def draw(self, win, outline=None):
         # Call this method to draw the button on the screen
@@ -110,10 +134,10 @@ class button():
 
     def draw_tokens(self, win, outline=None):
         # Call this method to draw the button on the screen
-        if outline:
-            pygame.draw.rect(win, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
+        # if outline:
+            # pygame.draw.rect(win, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
 
-        pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), 0)
+        # pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), 0)
 
         if self.text != '':
             img = pygame.image.load(self.text)
@@ -129,7 +153,7 @@ class button():
         return False
 
 
-def redrawWindow(win, player, buttons, tokens):
+def redrawWindow(win, player, buttons, tokens, btn):
     if not player.picked:
         win.fill((191, 219, 174))
         font = pygame.font.SysFont("comicsans", 80)
@@ -145,11 +169,11 @@ def redrawWindow(win, player, buttons, tokens):
 
         win.fill((255, 255, 255))
         win.blit(bg, (0, 0))
-        for p in board.players:
-            if p.image is None:
+        for p in btn:
+            if p.call == "":
                 pass
             else:
-                win.blit(p.image, (p.x, p.y))
+                p.draw_tokens(win)
         for b in buttons.values():
             b.draw(win)
     pygame.display.update()
@@ -188,6 +212,8 @@ def main():
                "Roll": button((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
                "End Turn": button((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
     pygame.mixer.music.play()
+
+    player_btn = [button((255, 255, 255), 0, 0, 40, 40), button((255, 255, 255), 0, 0, 40, 40)]
     tokens = []
     run = True
     while run:
@@ -207,8 +233,14 @@ def main():
                         pygame.mixer.Sound.play(button_sound)
                         board.players[board.current_player].image = pygame.image.load(token.call)
                         board.pieces.remove(token.call)
+                        player_btn[board.current_player] = button((0, 255, 255), p1.x, p1.y, 40, 40, token.call, token.call, p1)
                         board.players[board.current_player].picked = True
-
+                for player_token in player_btn:
+                    if player_token.isOver(pos):
+                        pygame.mixer.Sound.play(button_sound)
+                        root = Tk()
+                        my_gui = Popup_Player(root, player_token.player)
+                        root.mainloop()
                 for b in buttons.values():
                     if b.isOver(pos):
                         if b.call == "build":
@@ -234,6 +266,8 @@ def main():
                         elif b.call == "roll":
                             pygame.mixer.Sound.play(roll_sound)
                             roll_dice(p1, board)
+                            player_btn[board.current_player].x = board.players[board.current_player].x
+                            player_btn[board.current_player].y = board.players[board.current_player].y
                             b.text = f"Roll: {p1.roll}"
                             buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance, comm_chest), buttons)
                             p1.rolled = True
@@ -258,7 +292,7 @@ def main():
                         b.color = (0, 0, 0)
                         b.text_color = (255, 255, 255)
 
-        redrawWindow(win, p1, buttons, tokens)
+        redrawWindow(win, p1, buttons, tokens, player_btn)
 
 
 main()
