@@ -1,4 +1,3 @@
-import pygame
 from tkinter import *
 from Controller import *
 import os
@@ -53,9 +52,8 @@ class PopupPlayer:
         self.label_1 = Label(master, text=f"Wallet: ${player.wallet}").pack()
         self.close_button = Button(master, text="Close", command=master.destroy).pack()
         tiles = {}
-        options = []
         for tile in player.inventory:
-             tiles[tile.color] = []
+            tiles[tile.color] = []
         for tile in player.inventory:
             tiles[tile.color].append(tile)
         for color, props in tiles.items():
@@ -66,13 +64,13 @@ class PopupPlayer:
 
 class PopupPropertySelector:
 
-    def __init__(self, master, player: Player, build: bool):
+    def __init__(self, master, player: Player, building: bool):
         """
-        Initializer - This will create a tkinter window that pops up displaying either properties to be mortgaged/mortgaged
-        or properties that can be build on
+        Initializer - This will create a tkinter window that pops up displaying either properties to be
+        mortgaged/mortgaged or properties that can be build on
         :param master: this is the tkinter tk() root
         :param player: Player object for inventory information
-        :param build: bool to indicate if purpose of window is to build or mortgage
+        :param building: bool to indicate if purpose of window is to build or mortgage
         :return: nothing
         """
         self.master = master
@@ -82,7 +80,7 @@ class PopupPropertySelector:
         master.title("Property Selector")
         options = []
         self.clicked = StringVar()
-        if build:
+        if building:
             tile = buildable(player)
             if len(tile) == 0:
                 options = ["No Buildable Inventory"]
@@ -101,7 +99,7 @@ class PopupPropertySelector:
                 for prop in tile:
                     assert isinstance(prop, (Property, RailRoad, Utility))
                     if prop.mortgaged:
-                        m = f"Unmortgage for ${prop.mortgage}"
+                        m = f"Un-mortgage for ${prop.mortgage}"
                     else:
                         m = f"Mortgage for ${prop.mortgage}"
                     tile_dict[f"{prop.name} | {m}"] = prop
@@ -111,7 +109,8 @@ class PopupPropertySelector:
         self.label_1 = Label(master, text=f"Wallet: ${player.wallet}").pack()
         self.drop = OptionMenu(self.master, self.clicked, *options).pack()
         if len(tile_dict) > 1:
-            self.select_button = Button(master, text="Select", command=lambda: self.execute(tile_dict[self.clicked.get()], player)).pack()
+            self.select_button = Button(master, text="Select", command=lambda:
+                                        self.execute(tile_dict[self.clicked.get()], player)).pack()
         self.close_button = Button(master, text="Close", command=master.destroy).pack()
 
     def execute(self, tile, player):
@@ -131,14 +130,14 @@ class PopupPropertySelector:
 
 
 class GameButton:
-    def __init__(self, color, x, y, width, height, text='', call='', player=None):
+    def __init__(self, color, x, y, button_width, button_height, text='', call='', player=None):
         """
         Initializer - This will create a button object that can display text or image.
         :param color: this is a RGB tuple to hold the color of the button
         :param x: this is the x coordinate for the button
         :param y: this is the y coordinate for the button
-        :param width: this is the width of the button in pixels
-        :param height: this is the height of the button in pixels
+        :param button_width: this is the width of the button in pixels
+        :param button_height: this is the height of the button in pixels
         :param text: this is a string of text to display or a file path for an image to display
         :param call: this is to hold a string that references a action to be taken when a button is clicked
         :parma player: this is a player object associated with a button. This is used for buttons that represent
@@ -148,60 +147,60 @@ class GameButton:
         self.color = color
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
+        self.width = button_width
+        self.height = button_height
         self.text = text
         self.text_color = (255, 255, 255)
         self.call = call
         self.player = player
 
-
-    def draw(self, win, outline=None):
+    def draw(self, window, outline=None):
         """
         draw - This will blit the button to the pygame surface and any text that is passed
-        :param win: this is the pygame surface to blit to
+        :param window: this is the pygame surface to blit to
         :param outline: default to none. This is for an outline of a button in pixels using ints, the outline will
         increase or decrease the height and width of a button by the supplied int of pixels
         :return: nothing
         """
         if outline:
-            pygame.draw.rect(win, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
+            pygame.draw.rect(window, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
 
-        pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), 0)
+        pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height), 0)
 
         if self.text != '':
             font = pygame.font.SysFont('comicsans', 25)
             text = font.render(self.text, True, self.text_color)
-            win.blit(text, (
-            self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
+            window.blit(text, (
+                        self.x + (self.width / 2 - text.get_width() / 2), self.y +
+                        (self.height / 2 - text.get_height() / 2)))
 
-    def draw_tokens(self, win):
+    def draw_tokens(self, window):
         """
         draw tokens- This will blit player tokens to a screen, it is similar to draw but used images instead of text
-        :param win: this is the pygame surface to blit to
+        :param window: this is the pygame surface to blit to
         :return: nothing
         """
         if self.text != '':
             img = pygame.image.load(self.text)
-            win.blit(img, (
+            window.blit(img, (
                 self.x + (self.width / 2 - 32 / 2), self.y + (self.height / 2 - 32 / 2)))
 
-    def isOver(self, pos):
+    def is_over(self, pos):
         """
         is over - This will tell if a mouse cursor x,y tuple is over a button object
         param: pos: this is a x,y tuple of a mouse cursor position
         :return: bool, indicating if pos is over button
         """
-        if pos[0] > self.x and pos[0] < self.x + self.width:
-            if pos[1] > self.y and pos[1] < self.y + self.height:
+        if self.x < pos[0] < self.x + self.width:
+            if self.y < pos[1] < self.y + self.height:
                 return True
         return False
 
 
-def redrawWindow(win, player, buttons, tokens, btn):
+def redraw_window(window, player, buttons, tokens, btn):
     """
     redraw window- This will display everything that is shown on the pygame surface
-    :param win: the pygame surface to display to
+    :param window: the pygame surface to display to
     :param player: player object current game player
     :param buttons: a list of buttons that hold the current instructions for the game
     :param tokens: a list of tokens available for a user to choose from
@@ -212,28 +211,28 @@ def redrawWindow(win, player, buttons, tokens, btn):
         ######################################################################
         # this is the initial display screen prompting a user to pick a token
         ######################################################################
-        win.fill((191, 219, 174))
+        window.fill((191, 219, 174))
         font = pygame.font.SysFont("comicsans", 80)
         text = font.render("You V. Machine", True, (199, 0, 0))
-        win.blit(text, (width / 2 - text.get_width() / 2, height / 2 - text.get_height() / 2 - 100))
+        window.blit(text, (width / 2 - text.get_width() / 2, height / 2 - text.get_height() / 2 - 100))
         font = pygame.font.SysFont("comicsans", 80)
         text = font.render("Select Token", True, (199, 0, 0))
-        win.blit(text, (width / 2 - text.get_width() / 2, height / 2 - text.get_height() / 2))
+        window.blit(text, (width / 2 - text.get_width() / 2, height / 2 - text.get_height() / 2))
         for t in tokens:
-            t.draw_tokens(win)
+            t.draw_tokens(window)
     else:
         ######################################################################
         # this is the main game loop display window
         ######################################################################
-        win.fill((255, 255, 255))
-        win.blit(bg, (0, 0))
+        window.fill((255, 255, 255))
+        window.blit(bg, (0, 0))
         for p in btn:
             if p.call == "":
                 pass
             else:
-                p.draw_tokens(win)
+                p.draw_tokens(window)
         for b in buttons.values():
-            b.draw(win)
+            b.draw(window)
     pygame.display.update()  # this must be called no matter what
 
 
@@ -248,10 +247,11 @@ def create_landson_buttons(instr, buttons):
     button_x = 560
     count = 0
     for i in instr:
-        buttons[instr[count][1]] = GameButton((0, 0, 0), button_x, 855, 139, 45, instr[count][0], instr[count][1])
+        buttons[i[1]] = GameButton((0, 0, 0), button_x, 855, 139, 45, i[0], i[1])
         button_x += 140
         count += 1
     return buttons
+
 
 def create_tokens_buttons():
     """
@@ -319,7 +319,7 @@ def main():
                     # Here is where we pick the tokens on the opening screen
                     ########################################################
                     for token in tokens:
-                        if token.isOver(pos):
+                        if token.is_over(pos):
                             pygame.mixer.Sound.play(button_sound)
                             board.players[board.current_player].image = pygame.image.load(token.call)
                             board.pieces.remove(token.call)
@@ -329,7 +329,7 @@ def main():
                     # Here is where we handle clicking on a players token
                     ######################################################
                     for player_token in player_btn:
-                        if player_token.isOver(pos):
+                        if player_token.is_over(pos):
                             pygame.mixer.Sound.play(button_sound)
                             root = Tk()  # used to create root for tkinter window
                             my_gui = PopupPlayer(root, player_token.player)  # create popup player object
@@ -338,7 +338,7 @@ def main():
                     # Here is where we put our cases for handling clicking game buttons
                     ###################################################################
                     for b in buttons.values():
-                        if b.isOver(pos):
+                        if b.is_over(pos):
                             if b.call == "build":
                                 pygame.mixer.Sound.play(button_sound)
                                 root = Tk()
@@ -366,7 +366,8 @@ def main():
                                     player_btn[0].x = board.players[0].x
                                     player_btn[0].y = board.players[0].y
                                     b.text = f"Roll: {p1.roll}"
-                                    buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance, comm_chest), buttons)
+                                    buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance,
+                                                                              comm_chest), buttons)
                                     p1.rolled = True
                                     break
                             elif b.call == "end_turn":
@@ -377,15 +378,18 @@ def main():
                                     p1.rolled = False
                                     change_player(board)
                                     buttons = {"Build": GameButton((0, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
-                                               "Mortgage": GameButton((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
-                                               "Roll": GameButton((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
-                                               "End Turn": GameButton((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
+                                               "Mortgage":
+                                                   GameButton((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
+                                               "Roll":
+                                                   GameButton((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
+                                               "End Turn":
+                                                   GameButton((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
                 ######################################################################################
                 # Handle Mouse Movement events for our purposes this is where the buttons change color
                 #######################################################################################
                 if event.type == pygame.MOUSEMOTION:
                     for b in buttons.values():
-                        if b.isOver(pos):
+                        if b.is_over(pos):
                             b.color = (0, 255, 0)
                             b.text_color = (0, 0, 0)
                         else:
@@ -394,7 +398,7 @@ def main():
         #############################################
         # ***BELOW CODE MUST BE CALLED EVERY LOOP***
         #############################################
-        redrawWindow(win, p1, buttons, tokens, player_btn)
+        redraw_window(win, p1, buttons, tokens, player_btn)
 
 
 main()
