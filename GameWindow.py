@@ -332,7 +332,7 @@ def main():
                         if player_token.is_over(pos):
                             pygame.mixer.Sound.play(button_sound)
                             root = Tk()  # used to create root for tkinter window
-                            my_gui = PopupPlayer(root, player_token.player)  # create popup player object
+                            player_window = PopupPlayer(root, player_token.player)  # create popup player object
                             root.mainloop()  # run tkinter window until killed
                     ###################################################################
                     # Here is where we put our cases for handling clicking game buttons
@@ -342,7 +342,7 @@ def main():
                             if b.call == "build":
                                 pygame.mixer.Sound.play(button_sound)
                                 root = Tk()
-                                my_gui = PopupPropertySelector(root, p1, True)
+                                build_window = PopupPropertySelector(root, p1, True)
                                 root.mainloop()
                             elif b.call == "rent":
                                 pygame.mixer.Sound.play(purchase_sound)
@@ -357,7 +357,7 @@ def main():
                             elif b.call == "mortgage":
                                 pygame.mixer.Sound.play(button_sound)
                                 root = Tk()
-                                my_gui = PopupPropertySelector(root, p1, False)
+                                mortgage_window = PopupPropertySelector(root, p1, False)
                                 root.mainloop()
                             elif b.call == "roll":
                                 if not p1.rolled:
