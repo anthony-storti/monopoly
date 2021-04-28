@@ -16,6 +16,8 @@ def roll_dice(player: Player, board: Board):
     if not player.rolled:
         roll1 = random.randint(1, 6)
         roll2 = random.randint(1, 6)
+        player.roll_1 = roll1
+        player.roll_2 = roll2
         player.roll = roll1 + roll2
         player.rolled = True
 
@@ -597,7 +599,8 @@ def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str
     """
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
                     inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0,
-                    extra_turn=False, x=x, y=y, image=None, rolled=False, picked=False, trade_offered=False)
+                    extra_turn=False, x=x, y=y, image=None, rolled=False, picked=False, trade_offered=False,
+                    roll_1=0, roll_2=0)
     board.players.append(player)
 
 

@@ -20,6 +20,8 @@ class Player:
     location: int
     inventory: list
     roll: int
+    roll_1: int
+    roll_2: int
     in_jail: bool
     jail_counter: int
     extra_turns: int

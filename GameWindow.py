@@ -27,7 +27,7 @@ pygame.mixer.music.load(os.path.join('sounds', 'soundtrack.wav'))
 ###############################
 # Pygame Window Initializers
 ###############################
-width = 855
+width = 905
 height = 900
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Monopoly")
@@ -174,7 +174,7 @@ class GameButton:
                         self.x + (self.width / 2 - text.get_width() / 2), self.y +
                         (self.height / 2 - text.get_height() / 2)))
 
-    def draw_tokens(self, window):
+    def draw_image(self, window):
         """
         draw tokens- This will blit player tokens to a screen, it is similar to draw but used images instead of text
         :param window: this is the pygame surface to blit to
@@ -197,7 +197,7 @@ class GameButton:
         return False
 
 
-def redraw_window(window, player, buttons, tokens, btn):
+def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs):
     """
     redraw window- This will display everything that is shown on the pygame surface
     :param window: the pygame surface to display to
@@ -219,7 +219,7 @@ def redraw_window(window, player, buttons, tokens, btn):
         text = font.render("Select Token", True, (199, 0, 0))
         window.blit(text, (width / 2 - text.get_width() / 2, height / 2 - text.get_height() / 2))
         for t in tokens:
-            t.draw_tokens(window)
+            t.draw_image(window)
     else:
         ######################################################################
         # this is the main game loop display window
@@ -230,9 +230,13 @@ def redraw_window(window, player, buttons, tokens, btn):
             if p.call == "":
                 pass
             else:
-                p.draw_tokens(window)
+                p.draw_image(window)
         for b in buttons.values():
             b.draw(window)
+        sound.draw_image(window)
+        if player.rolled:
+            for die in dice_imgs:
+                die.draw_image(window)
     pygame.display.update()  # this must be called no matter what
 
 
@@ -284,11 +288,16 @@ def main():
     #########################################
     buttons = {"Build": GameButton((199, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
                "Mortgage": GameButton((199, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
-               "Roll": GameButton((199, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
+               "Roll": GameButton((199, 0, 0), 0, 855, 139, 45, "Roll", 'roll'),
                "End Turn": GameButton((199, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
     pygame.mixer.music.play(-1)
+    volume_button = GameButton((0, 255, 255), 860, 25, 40, 40, 'images/volume.png', 'no')
+    die_1 = GameButton((0, 255, 255), 400, 500, 40, 40, 'images/die_1.png', 'no')
+    die_2 = GameButton((0, 255, 255), 430, 530, 40, 40, 'images/die_1.png', 'no')
+    dice = [die_1, die_2]
     player_btn = [GameButton((255, 255, 255), 0, 0, 40, 40), GameButton((255, 255, 255), 0, 0, 40, 40)]
     tokens = []
+    fx = True
     run = True
     while run:
         p1 = board.players[board.current_player]
@@ -334,44 +343,65 @@ def main():
                             root = Tk()  # used to create root for tkinter window
                             player_window = PopupPlayer(root, player_token.player)  # create popup player object
                             root.mainloop()  # run tkinter window until killed
+                    #################################################################
+                    # Pause Game Music and FX
+                    #################################################################
+                    if volume_button.is_over(pos):
+                        if volume_button.call == "no":
+                            fx = False
+                            pygame.mixer.music.pause()
+                            volume_button.call = "yes"
+                            volume_button.text = "images/mute.png"
+                        else:
+                            fx = True
+                            pygame.mixer.music.unpause()
+                            volume_button.call = "no"
+                            volume_button.text = "images/volume.png"
                     ###################################################################
                     # Here is where we put our cases for handling clicking game buttons
                     ###################################################################
                     for b in buttons.values():
                         if b.is_over(pos):
                             if b.call == "build":
-                                pygame.mixer.Sound.play(button_sound)
+                                if fx:
+                                    pygame.mixer.Sound.play(button_sound)
                                 root = Tk()
                                 build_window = PopupPropertySelector(root, p1, True)
                                 root.mainloop()
                             elif b.call == "rent":
-                                pygame.mixer.Sound.play(purchase_sound)
+                                if fx:
+                                    pygame.mixer.Sound.play(purchase_sound)
                                 pay_rent(p1, board.tiles[p1.location])
                                 buttons.pop('rent')
                                 break
                             elif b.call == "purchase":
-                                pygame.mixer.Sound.play(purchase_sound)
+                                if fx:
+                                    pygame.mixer.Sound.play(purchase_sound)
                                 purchase(p1, board.tiles[p1.location])
                                 buttons.pop("purchase")
                                 break
                             elif b.call == "mortgage":
-                                pygame.mixer.Sound.play(button_sound)
+                                if fx:
+                                    pygame.mixer.Sound.play(button_sound)
                                 root = Tk()
                                 mortgage_window = PopupPropertySelector(root, p1, False)
                                 root.mainloop()
                             elif b.call == "roll":
                                 if not p1.rolled:
-                                    pygame.mixer.Sound.play(roll_sound)
+                                    if fx:
+                                        pygame.mixer.Sound.play(roll_sound)
                                     roll_dice(p1, board)
+                                    dice[0].text = f"images/die_{p1.roll_1}.png"
+                                    dice[1].text = f"images/die_{p1.roll_2}.png"
                                     player_btn[0].x = board.players[0].x
                                     player_btn[0].y = board.players[0].y
-                                    b.text = f"Roll: {p1.roll}"
                                     buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance,
                                                                               comm_chest), buttons)
                                     p1.rolled = True
                                     break
                             elif b.call == "end_turn":
-                                pygame.mixer.Sound.play(button_sound)
+                                if fx:
+                                    pygame.mixer.Sound.play(button_sound)
                                 if not p1.rolled or "rent" in buttons:
                                     pass
                                 else:
@@ -381,7 +411,7 @@ def main():
                                                "Mortgage":
                                                    GameButton((199, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
                                                "Roll":
-                                                   GameButton((199, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
+                                                   GameButton((199, 0, 0), 0, 855, 139, 45, "Roll", 'roll'),
                                                "End Turn":
                                                    GameButton((199, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
                 ######################################################################################
@@ -398,7 +428,7 @@ def main():
         #############################################
         # ***BELOW CODE MUST BE CALLED EVERY LOOP***
         #############################################
-        redraw_window(win, p1, buttons, tokens, player_btn)
+        redraw_window(win, p1, buttons, tokens, player_btn, volume_button, dice)
 
 
 main()
