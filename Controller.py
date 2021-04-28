@@ -471,7 +471,7 @@ def change_player(board: Board):
     board.current_player = (board.current_player + 1) % len(board.players)
 
 
-def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad, Utility), builds: List[Property]) -> str:
+def machine_algo(player: Player, board: Board, cc, chance) -> str:
     """
     Machine Algo - After this call the machine player will return a choice based on available options passed in
     :param options: a Dict of available choices
@@ -479,22 +479,18 @@ def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad,
     :return: str: choice made by machine
     """
     # TODO: Implement a Real Machine Player ALGO
-    if "u" in options:
-        return "u"
-    elif "r" in options:
-        return "r"
-    elif "a" in options and player.wallet >= tile.cost:
-        return "a"
-    elif "c" in options:
-        return "c"
-    elif "g" in options:
-        return "g"
-    elif "p" in options:
-        return "p"
-    elif "b" in options and player.wallet > builds[0].house_cost:
-        return "b"
-    else:
-        return "q"
+    if not player.picked:
+        player.image = board.pieces[0]
+        player.picked = True
+    roll_dice(player, board)
+    tile = board.tiles[player.location]
+    instr = lands_on(tile, player, cc, chance)
+    if len(instr) == 1:
+        choice = instr[0][1]
+        if choice == "purchase" and player.wallet >= tile.cost:
+            purchase(player, tile)
+    change_player(board)
+    player.rolled = False
 
 
 def mortgage(tile: Tile, player: Player):

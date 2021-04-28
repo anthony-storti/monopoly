@@ -157,7 +157,7 @@ def redrawWindow(win, player, buttons, tokens, btn):
     if not player.picked:
         win.fill((191, 219, 174))
         font = pygame.font.SysFont("comicsans", 80)
-        text = font.render("2 Player Game", True, (199, 0, 0))
+        text = font.render("You V. Machine", True, (199, 0, 0))
         win.blit(text, (width / 2 - text.get_width() / 2, height / 2 - text.get_height() / 2 - 100))
         font = pygame.font.SysFont("comicsans", 80)
         text = font.render("Select Token", True, (199, 0, 0))
@@ -218,79 +218,86 @@ def main():
     run = True
     while run:
         p1 = board.players[board.current_player]
-        if not p1.picked:
-            tokens = create_tokens_buttons()
+        assert isinstance(p1, Player)
+        if p1.machine_player:
+            machine_algo(p1, board, comm_chest, chance)
+            player_btn[1] = button((0, 255, 255), p1.x, p1.y, 40, 40, p1.image, p1.image, p1)
+        else:
+            if not p1.picked:
+                tokens = create_tokens_buttons()
 
-        for event in pygame.event.get():
-            pos = pygame.mouse.get_pos()
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                assert isinstance(p1, Player)
-                for token in tokens:
-                    if token.isOver(pos):
-                        pygame.mixer.Sound.play(button_sound)
-                        board.players[board.current_player].image = pygame.image.load(token.call)
-                        board.pieces.remove(token.call)
-                        player_btn[board.current_player] = button((0, 255, 255), p1.x, p1.y, 40, 40, token.call, token.call, p1)
-                        board.players[board.current_player].picked = True
-                for player_token in player_btn:
-                    if player_token.isOver(pos):
-                        pygame.mixer.Sound.play(button_sound)
-                        root = Tk()
-                        my_gui = Popup_Player(root, player_token.player)
-                        root.mainloop()
-                for b in buttons.values():
-                    if b.isOver(pos):
-                        if b.call == "build":
+            for event in pygame.event.get():
+                pos = pygame.mouse.get_pos()
+                if event.type == pygame.QUIT:
+                    run = False
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    assert isinstance(p1, Player)
+                    for token in tokens:
+                        if token.isOver(pos):
+                            pygame.mixer.Sound.play(button_sound)
+                            board.players[board.current_player].image = pygame.image.load(token.call)
+                            board.pieces.remove(token.call)
+                            player_btn[0] = button((0, 255, 255), p1.x, p1.y, 40, 40, token.call, token.call, p1)
+                            board.players[board.current_player].picked = True
+                    for player_token in player_btn:
+                        if player_token.isOver(pos):
                             pygame.mixer.Sound.play(button_sound)
                             root = Tk()
-                            my_gui = Popup(root, p1, True)
+                            my_gui = Popup_Player(root, player_token.player)
                             root.mainloop()
-                        elif b.call == "rent":
-                            pygame.mixer.Sound.play(purchase_sound)
-                            pay_rent(p1, board.tiles[p1.location])
-                            buttons.pop('rent')
-                            break
-                        elif b.call == "purchase":
-                            pygame.mixer.Sound.play(purchase_sound)
-                            purchase(p1, board.tiles[p1.location])
-                            buttons.pop("purchase")
-                            break
-                        elif b.call == "mortgage":
-                            pygame.mixer.Sound.play(button_sound)
-                            root = Tk()
-                            my_gui = Popup(root, p1, False)
-                            root.mainloop()
-                        elif b.call == "roll":
-                            pygame.mixer.Sound.play(roll_sound)
-                            roll_dice(p1, board)
-                            player_btn[board.current_player].x = board.players[board.current_player].x
-                            player_btn[board.current_player].y = board.players[board.current_player].y
-                            b.text = f"Roll: {p1.roll}"
-                            buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance, comm_chest), buttons)
-                            p1.rolled = True
-                            break
-                        elif b.call == "end_turn":
-                            pygame.mixer.Sound.play(button_sound)
-                            if not p1.rolled or "rent" in buttons:
-                                pass
-                            else:
-                                p1.rolled = False
-                                change_player(board)
-                                buttons = {"Build": button((0, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
-                                           "Mortgage": button((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
-                                           "Roll": button((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
-                                           "End Turn": button((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
-            if event.type == pygame.MOUSEMOTION:
-                for b in buttons.values():
-                    if b.isOver(pos):
-                        b.color = (0, 255, 0)
-                        b.text_color = (0, 0, 0)
-                    else:
-                        b.color = (0, 0, 0)
-                        b.text_color = (255, 255, 255)
+                    for b in buttons.values():
+                        if b.isOver(pos):
+                            if b.call == "build":
+                                pygame.mixer.Sound.play(button_sound)
+                                root = Tk()
+                                my_gui = Popup(root, p1, True)
+                                root.mainloop()
+                            elif b.call == "rent":
+                                pygame.mixer.Sound.play(purchase_sound)
+                                pay_rent(p1, board.tiles[p1.location])
+                                buttons.pop('rent')
+                                break
+                            elif b.call == "purchase":
+                                pygame.mixer.Sound.play(purchase_sound)
+                                purchase(p1, board.tiles[p1.location])
+                                buttons.pop("purchase")
+                                break
+                            elif b.call == "mortgage":
+                                pygame.mixer.Sound.play(button_sound)
+                                root = Tk()
+                                my_gui = Popup(root, p1, False)
+                                root.mainloop()
+                            elif b.call == "roll":
+                                if not p1.rolled:
+                                    pygame.mixer.Sound.play(roll_sound)
+                                pygame.mixer.Sound.play(roll_sound)
+                                roll_dice(p1, board)
+                                player_btn[0].x = board.players[0].x
+                                player_btn[0].y = board.players[0].y
+                                b.text = f"Roll: {p1.roll}"
+                                buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance, comm_chest), buttons)
+                                p1.rolled = True
+                                break
+                            elif b.call == "end_turn":
+                                pygame.mixer.Sound.play(button_sound)
+                                if not p1.rolled or "rent" in buttons:
+                                    pass
+                                else:
+                                    p1.rolled = False
+                                    change_player(board)
+                                    buttons = {"Build": button((0, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
+                                               "Mortgage": button((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
+                                               "Roll": button((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
+                                               "End Turn": button((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
+                if event.type == pygame.MOUSEMOTION:
+                    for b in buttons.values():
+                        if b.isOver(pos):
+                            b.color = (0, 255, 0)
+                            b.text_color = (0, 0, 0)
+                        else:
+                            b.color = (0, 0, 0)
+                            b.text_color = (255, 255, 255)
 
         redrawWindow(win, p1, buttons, tokens, player_btn)
 
