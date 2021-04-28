@@ -211,7 +211,7 @@ def main():
                "Mortgage": button((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
                "Roll": button((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
                "End Turn": button((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
 
     player_btn = [button((255, 255, 255), 0, 0, 40, 40), button((255, 255, 255), 0, 0, 40, 40)]
     tokens = []
@@ -271,14 +271,13 @@ def main():
                             elif b.call == "roll":
                                 if not p1.rolled:
                                     pygame.mixer.Sound.play(roll_sound)
-                                pygame.mixer.Sound.play(roll_sound)
-                                roll_dice(p1, board)
-                                player_btn[0].x = board.players[0].x
-                                player_btn[0].y = board.players[0].y
-                                b.text = f"Roll: {p1.roll}"
-                                buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance, comm_chest), buttons)
-                                p1.rolled = True
-                                break
+                                    roll_dice(p1, board)
+                                    player_btn[0].x = board.players[0].x
+                                    player_btn[0].y = board.players[0].y
+                                    b.text = f"Roll: {p1.roll}"
+                                    buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance, comm_chest), buttons)
+                                    p1.rolled = True
+                                    break
                             elif b.call == "end_turn":
                                 pygame.mixer.Sound.play(button_sound)
                                 if not p1.rolled or "rent" in buttons:
