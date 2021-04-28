@@ -377,13 +377,13 @@ def main():
                                 else:
                                     p1.rolled = False
                                     change_player(board)
-                                    buttons = {"Build": GameButton((0, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
+                                    buttons = {"Build": GameButton((199, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
                                                "Mortgage":
-                                                   GameButton((0, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
+                                                   GameButton((199, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
                                                "Roll":
-                                                   GameButton((0, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
+                                                   GameButton((199, 0, 0), 0, 855, 139, 45, "Roll:", 'roll'),
                                                "End Turn":
-                                                   GameButton((0, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
+                                                   GameButton((199, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
                 ######################################################################################
                 # Handle Mouse Movement events for our purposes this is where the buttons change color
                 #######################################################################################
