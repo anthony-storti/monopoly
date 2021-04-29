@@ -135,7 +135,9 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         player.in_jail = True
         player.jail_counter = 3
         player.location = 10
-        return ret
+        player.x = 70
+        player.y = 770
+        return [["Go to Jail", "toJail"]]
     elif isinstance(tile, Go):
         '''
         if Go

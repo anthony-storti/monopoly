@@ -400,6 +400,13 @@ def main():
                                                                               comm_chest), buttons)
                                     p1.rolled = True
                                     break
+                            elif b.call == "toJail":
+                                if fx:
+                                    pygame.mixer.Sound.play(button_sound)
+                                player_btn[0].x = board.players[0].x
+                                player_btn[0].y = board.players[0].y
+                                buttons.pop("toJail")
+                                break
                             elif b.call == "end_turn":
                                 if fx:
                                     pygame.mixer.Sound.play(button_sound)
