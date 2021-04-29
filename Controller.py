@@ -2,34 +2,45 @@ from Model import *
 from typing import List, Dict
 import pickle
 import random
+import pygame
 
 
-def roll_dice(player: Player):
+def roll_dice(player: Player, board: Board):
     """
     Roll Dice - After this call player location will be updated, if a player passes or lands on go their
     wallet will be increased by $200.
     :param player: current player object from board
+    :param board: board object to get tile coordinates from
     :return: nothing
     """
-    roll1 = random.randint(1, 6)
-    roll2 = random.randint(1, 6)
-    player.roll = roll1 + roll2
-    if roll1 == roll2:
-        if player.extra_turns < 3:
-            player.extra_turns += 1
-            player.extra_turn = True
+    if not player.rolled:
+        roll1 = random.randint(1, 6)
+        roll2 = random.randint(1, 6)
+        player.roll_1 = roll1
+        player.roll_2 = roll2
+        player.roll = roll1 + roll2
+        player.rolled = True
+
+        if roll1 == roll2:
+            if player.extra_turns < 3:
+                player.extra_turns += 1
+                player.extra_turn = True
+            else:
+                player.in_jail = True
+                player.location = 10
+                player.jail_counter = 4
+                player.extra_turns = 0
         else:
-            player.in_jail = True
-            player.location = 10
-            player.jail_counter = 4
             player.extra_turns = 0
-    else:
-        player.extra_turns = 0
-    if player.roll + player.location < 40:
-        player.location += player.roll
-    else:
-        player.location = (player.roll + player.location) - 40
-        player.wallet += 200
+        if player.roll + player.location < 40:
+            player.location += player.roll
+        else:
+            player.location = (player.roll + player.location) - 40
+            player.wallet += 200
+
+        tile = board.tiles[player.location]
+        player.x = tile.x
+        player.y = tile.y
 
 
 def add_player(player: Player, board: Board):
@@ -77,7 +88,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
             prompt: To acquire tile for $cost press a
             function: purchase
             '''
-            return ["a", [f"To acquire {tile.name} for ${tile.cost} press -a-", purchase]]
+            return [[f"Purchase ${tile.cost}", "purchase"]]
         elif not tile.purchasable and tile.owner != player and not tile.mortgaged:
             '''
             if Property, Railroad or Utility and is owned by another player, and not mortgaged
@@ -86,7 +97,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
             function: pay_rent
             '''
             rent = get_rent(tile, player)
-            return ["p", [f"To pay ${rent} to {tile.owner.name} press -p-", pay_rent]]
+            return [[f"Rent Due ${get_rent(tile, player)}", "rent"]]
         else:
             return ret
     elif isinstance(tile, CardTile) and tile.name == "Community Chest":
@@ -99,7 +110,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         '''
         card = comm_chest.pop()
         comm_chest.insert(0, card)
-        return ["c", [f"{card.message} press -c- to play card: ", play_card, card]]
+        return [["Play Card", "card", card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
         '''
@@ -112,7 +123,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         card = chance.pop()
         if card.action != "special":
             chance.insert(0, card)
-        return ["c", [f"{card.message} press -c- to play card: ", play_card, card]]
+        return [["Play Card", "card", card]]
     elif isinstance(tile, GoToJail):
         '''
         if Go To Jail
@@ -154,11 +165,11 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                     player_net_worth += item.value
             player_net_worth = player_net_worth // 10
             if player_net_worth > 200:
-                return ["p", [f"To pay $200 in taxes press -p-", pay_tax]]
+                return [["Pay $200 Tax", "tax", pay_tax]]
             else:
-                return ["p", [f"To pay ${player_net_worth} in taxes press -p-", pay_tax]]
+                return [[f"Pay ${player_net_worth} Tax", "tax", pay_tax]]
         else:
-            return ["p", [f"To pay $75 in taxes press -p-", pay_tax]]
+            return [["pay $75 Tax", "tax", pay_tax]]
 
     elif isinstance(tile, FreeParking):
         '''
@@ -185,16 +196,16 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return ["u", [f"To use your Get out of Jail Free card press -u-", use_jail_card],
-                                    "r", [f"To try to roll doubles press -r-", jail_roll]]
-                return ["r", [f"To try to roll doubles press -r-", jail_roll],
-                        "p", [f"To pay $50 and get out of jail press -p-", pay_bail]]
+                            return [["Use GOOJF", "jail_card", use_jail_card],
+                                    ["Roll Doubles", "jail_roll", jail_roll]]
+                return [["Roll Doubles", "jail_roll", jail_roll],
+                        ["Pay $50 Bail", "bail",  pay_bail]]
             else:
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return ["u", [f"To use your Get out of Jail Free card press -u-", use_jail_card]]
-                return ["p", [f"To pay $50 and get out of jail press -p-", pay_bail]]
+                            return [["Use GOOJF", "jail_card", use_jail_card]]
+                return [["Pay $50 Bail", "bail",  pay_bail]]
         else:
             return ret
 
@@ -462,7 +473,7 @@ def change_player(board: Board):
     board.current_player = (board.current_player + 1) % len(board.players)
 
 
-def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad, Utility), builds: List[Property]) -> str:
+def machine_algo(player: Player, board: Board, cc, chance) -> str:
     """
     Machine Algo - After this call the machine player will return a choice based on available options passed in
     :param options: a Dict of available choices
@@ -470,22 +481,18 @@ def machine_algo(options: Dict, player: Player, tile: (Tile, Property, RailRoad,
     :return: str: choice made by machine
     """
     # TODO: Implement a Real Machine Player ALGO
-    if "u" in options:
-        return "u"
-    elif "r" in options:
-        return "r"
-    elif "a" in options and player.wallet >= tile.cost:
-        return "a"
-    elif "c" in options:
-        return "c"
-    elif "g" in options:
-        return "g"
-    elif "p" in options:
-        return "p"
-    elif "b" in options and player.wallet > builds[0].house_cost:
-        return "b"
-    else:
-        return "q"
+    if not player.picked:
+        player.image = board.pieces[0]
+        player.picked = True
+    roll_dice(player, board)
+    tile = board.tiles[player.location]
+    instr = lands_on(tile, player, cc, chance)
+    if len(instr) == 1:
+        choice = instr[0][1]
+        if choice == "purchase" and player.wallet >= tile.cost:
+            purchase(player, tile)
+    change_player(board)
+    player.rolled = False
 
 
 def mortgage(tile: Tile, player: Player):
@@ -581,7 +588,7 @@ def demolish(tile: Property, player: Player):
         return f"Demolished 1 house on {tile.name}"
 
 
-def create_player(name: str, token: str, board: Board, machine: bool = False):
+def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str, machine: bool = False):
     """
     Create Player - After this call a player object will be created and added to the game board
     :param name: str for player name
@@ -591,7 +598,9 @@ def create_player(name: str, token: str, board: Board, machine: bool = False):
     :return: nothing
     """
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
-                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0, extra_turn=False)
+                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0,
+                    extra_turn=False, x=x, y=y, image=None, rolled=False, picked=False, trade_offered=False,
+                    roll_1=0, roll_2=0)
     board.players.append(player)
 
 
