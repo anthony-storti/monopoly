@@ -130,7 +130,7 @@ class PopupPropertySelector:
 
 
 class GameButton:
-    def __init__(self, color, x, y, button_width, button_height, text='', call='', player=None):
+    def __init__(self, color, x, y, button_width, button_height, text='', call='', player=None, card=None):
         """
         Initializer - This will create a button object that can display text or image.
         :param color: this is a RGB tuple to hold the color of the button
@@ -153,6 +153,7 @@ class GameButton:
         self.text_color = (255, 255, 255)
         self.call = call
         self.player = player
+        self.card = card
 
     def draw(self, window, outline=None):
         """
@@ -197,7 +198,7 @@ class GameButton:
         return False
 
 
-def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs):
+def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs, card, is_card):
     """
     redraw window- This will display everything that is shown on the pygame surface
     :param window: the pygame surface to display to
@@ -237,6 +238,8 @@ def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs):
         if player.rolled:
             for die in dice_imgs:
                 die.draw_image(window)
+        if is_card:
+            card.draw(window)
     pygame.display.update()  # this must be called no matter what
 
 
@@ -252,6 +255,8 @@ def create_landson_buttons(instr, buttons):
     count = 0
     for i in instr:
         buttons[i[1]] = GameButton((199, 0, 0), button_x, 855, 139, 45, i[0], i[1])
+        if len(i) == 3:
+            buttons[i[1]].card = i[2]
         button_x += 140
         count += 1
     return buttons
@@ -293,6 +298,8 @@ def main():
     # pygame.mixer.music.play(-1)
     volume_button = GameButton((0, 255, 255), 860, 25, 40, 40, 'images/volume.png', 'no')
     die_1 = GameButton((0, 255, 255), 400, 500, 40, 40, 'images/die_1.png', 'no')
+    card = GameButton((0, 255, 255), 500, 500, 200, 100, 'this is a card')
+    is_card = False
     die_2 = GameButton((0, 255, 255), 430, 530, 40, 40, 'images/die_1.png', 'no')
     dice = [die_1, die_2]
     player_btn = [GameButton((255, 255, 255), 0, 0, 40, 40), GameButton((255, 255, 255), 0, 0, 40, 40)]
@@ -375,6 +382,12 @@ def main():
                                 pay_rent(p1, board.tiles[p1.location])
                                 buttons.pop('rent')
                                 break
+                            elif b.call == "card":
+                                if fx:
+                                    pygame.mixer.Sound.play(purchase_sound)
+                                is_card = True
+                                assert isinstance(b.card, Card)
+
                             elif b.call == "purchase":
                                 if fx:
                                     pygame.mixer.Sound.play(purchase_sound)
@@ -394,12 +407,23 @@ def main():
                                     roll_dice(p1, board)
                                     dice[0].text = f"images/die_{p1.roll_1}.png"
                                     dice[1].text = f"images/die_{p1.roll_2}.png"
-                                    player_btn[0].x = board.players[0].x
-                                    player_btn[0].y = board.players[0].y
+                                    if board.players[0].location == board.players[1].location:
+                                        player_btn[0].x = board.players[0].x
+                                        player_btn[0].y = board.players[0].y + 20
+                                    else:
+                                        player_btn[0].x = board.players[0].x
+                                        player_btn[0].y = board.players[0].y
                                     buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance,
                                                                               comm_chest), buttons)
                                     p1.rolled = True
                                     break
+                            elif b.call == "toJail":
+                                if fx:
+                                    pygame.mixer.Sound.play(button_sound)
+                                player_btn[0].x = board.players[0].x
+                                player_btn[0].y = board.players[0].y
+                                buttons.pop("toJail")
+                                break
                             elif b.call == "end_turn":
                                 if fx:
                                     pygame.mixer.Sound.play(button_sound)
@@ -429,7 +453,7 @@ def main():
         #############################################
         # ***BELOW CODE MUST BE CALLED EVERY LOOP***
         #############################################
-        redraw_window(win, p1, buttons, tokens, player_btn, volume_button, dice)
+        redraw_window(win, p1, buttons, tokens, player_btn, volume_button, dice, card, is_card)
 
 
 main()
