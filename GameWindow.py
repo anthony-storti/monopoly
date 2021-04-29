@@ -290,7 +290,7 @@ def main():
                "Mortgage": GameButton((199, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
                "Roll": GameButton((199, 0, 0), 0, 855, 139, 45, "Roll", 'roll'),
                "End Turn": GameButton((199, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
-    pygame.mixer.music.play(-1)
+    # pygame.mixer.music.play(-1)
     volume_button = GameButton((0, 255, 255), 860, 25, 40, 40, 'images/volume.png', 'no')
     die_1 = GameButton((0, 255, 255), 400, 500, 40, 40, 'images/die_1.png', 'no')
     die_2 = GameButton((0, 255, 255), 430, 530, 40, 40, 'images/die_1.png', 'no')
@@ -327,13 +327,14 @@ def main():
                     ########################################################
                     # Here is where we pick the tokens on the opening screen
                     ########################################################
-                    for token in tokens:
-                        if token.is_over(pos):
-                            pygame.mixer.Sound.play(button_sound)
-                            board.players[board.current_player].image = pygame.image.load(token.call)
-                            board.pieces.remove(token.call)
-                            player_btn[0] = GameButton((0, 255, 255), p1.x, p1.y, 40, 40, token.call, token.call, p1)
-                            board.players[board.current_player].picked = True
+                    if not p1.picked:
+                        for token in tokens:
+                            if token.is_over(pos):
+                                pygame.mixer.Sound.play(button_sound)
+                                board.players[board.current_player].image = pygame.image.load(token.call)
+                                board.pieces.remove(token.call)
+                                player_btn[0] = GameButton((0, 255, 255), p1.x, p1.y, 40, 40, token.call, token.call, p1)
+                                board.players[board.current_player].picked = True
                     ######################################################
                     # Here is where we handle clicking on a players token
                     ######################################################
