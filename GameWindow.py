@@ -409,7 +409,7 @@ def main():
                                     dice[1].text = f"images/die_{p1.roll_2}.png"
                                     if board.players[0].location == board.players[1].location:
                                         player_btn[0].x = board.players[0].x
-                                        player_btn[0].y = board.players[0].y + 20
+                                        player_btn[0].y = board.players[0].y
                                     else:
                                         player_btn[0].x = board.players[0].x
                                         player_btn[0].y = board.players[0].y
@@ -427,10 +427,11 @@ def main():
                             elif b.call == "end_turn":
                                 if fx:
                                     pygame.mixer.Sound.play(button_sound)
-                                if not p1.rolled or "rent" in buttons:
+                                if not p1.rolled or "rent" in buttons or "card" in buttons:
                                     pass
                                 else:
                                     p1.rolled = False
+                                    is_card = False
                                     change_player(board)
                                     buttons = {"Build": GameButton((199, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
                                                "Mortgage":
