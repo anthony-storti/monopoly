@@ -388,7 +388,8 @@ def main():
                                     pygame.mixer.Sound.play(purchase_sound)
                                 is_card = True
                                 assert isinstance(b.card, Card)
-
+                                buttons.pop('card')
+                                break
                             elif b.call == "purchase":
                                 if fx:
                                     pygame.mixer.Sound.play(purchase_sound)
@@ -410,7 +411,9 @@ def main():
                                     dice[1].text = f"images/die_{p1.roll_2}.png"
                                     if board.players[0].location == board.players[1].location:
                                         player_btn[0].x = board.players[0].x
-                                        player_btn[0].y = board.players[0].y
+                                        player_btn[0].y = board.players[0].y - 15
+                                        player_btn[1].x = board.players[1].x
+                                        player_btn[1].y = board.players[1].y + 15
                                     else:
                                         player_btn[0].x = board.players[0].x
                                         player_btn[0].y = board.players[0].y
