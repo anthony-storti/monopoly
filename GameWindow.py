@@ -46,12 +46,11 @@ class PopupPlayer:
         """
         self.master = master
         self.done = False
-        self.master.geometry("400x200")
         master.title(f"{player.name} Information")
         # self.label = Label(master, text="Select A Property").pack()
         self.label_1 = Label(master, text=f"Wallet: ${player.wallet}").pack()
-        self.close_button = Button(master, text="Close", command=master.destroy).pack()
         tiles = {}
+        h = 75
         for tile in player.inventory:
             tiles[tile.color] = []
         for tile in player.inventory:
@@ -60,7 +59,9 @@ class PopupPlayer:
             self.label = Label(master, text=f"{color}", font='Helvetica 12 bold underline').pack()
             for prop in props:
                 self.label = Label(master, text=f"{prop.name}").pack()
-
+                h += 40
+        self.close_button = Button(master, text="Close", command=master.destroy).pack()
+        self.master.geometry(f"400x{h}")
 
 class PopupPropertySelector:
 
