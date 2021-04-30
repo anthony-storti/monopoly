@@ -109,7 +109,8 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: returns card drawn
         '''
         card = comm_chest.pop()
-        comm_chest.insert(0, card)
+        if card.action != "special":
+            comm_chest.insert(0, card)
         return [["Play Card", "comChest", card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":

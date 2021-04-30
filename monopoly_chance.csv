@@ -6,7 +6,7 @@ chance,Advance token to the nearest Railroad ,move_to_closest,5;15;25;35
 chance,Bank pays you dividend of $50. ,Finance_1,50
 chance,Get out of Jail Free. ,special,0
 chance,Go Back Three Spaces.,move_steps,-3
-chance,Go to Jail,move_to,30;630;30
+chance,Go to Jail,move_to,30
 chance,"Make general repairs on all your property: For each house pay $25, For each hotel  $100.",Finance_house,-100
 chance,Pay poor tax of $15,Finance_1,-15
 chance,"Take a trip to Reading Railroad.  If you pass Go, collect $200. ",move_to,5
