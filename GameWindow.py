@@ -18,6 +18,14 @@ chance = game[2]      # gets shuffled deck of chance cards
 create_player('player 1', 'Dog', board, 770, 825, '', False)
 create_player('player 2', 'Car', board, 770, 800, '', True)
 ###############################
+# Global Variables
+###############################
+BoardLocationIndex = [[780, 800], [700, 800], [630, 800], [560, 800], [490, 800], [420, 800], [350, 800], [210, 800],
+                      [140, 800], [70, 825], [30, 700], [30, 560], [30, 490], [30, 420], [30, 350], [30, 280],
+                      [30, 210], [30, 140], [50, 40], [140, 30], [210, 30], [280, 30], [350, 30], [420, 30],
+                      [490, 30], [560, 30], [630, 30], [700, 30], [780, 40], [800, 140], [800, 210], [800, 280],
+                      [800, 350], [800, 420], [800, 490], [800, 560], [800, 630], [800, 700]]
+###############################
 # Sound Initializers
 ###############################
 roll_sound = pygame.mixer.Sound(os.path.join('sounds', 'diceRolling.wav'))
@@ -259,6 +267,7 @@ def create_landson_buttons(instr, buttons):
         buttons[i[1]] = GameButton((199, 0, 0), button_x, 855, 139, 45, i[0], i[1])
         if len(i) == 3:
             buttons[i[1]].card = i[2]
+            buttons[i[1]].text = buttons[i[1]].card.value
         button_x += 140
         count += 1
     return buttons
@@ -411,11 +420,20 @@ def main():
                                     dice[0].text = f"images/die_{p1.roll_1}.png"
                                     dice[1].text = f"images/die_{p1.roll_2}.png"
                                     if board.players[0].location == board.players[1].location:
+                                        for i in BoardLocationIndex:
+                                            if i[1] == board.players[0].x and i[2] == board.players[0].y:
+                                                player_btn[0].player.location = i
+                                                break
                                         player_btn[0].x = board.players[0].x
                                         player_btn[0].y = board.players[0].y - 15
                                         player_btn[1].x = board.players[1].x
                                         player_btn[1].y = board.players[1].y + 15
                                     else:
+                                        if board.players[0].location == board.players[1].location:
+                                            for i in BoardLocationIndex:
+                                                if i[1] == board.players[0].x and i[2] == board.players[0].y:
+                                                    player_btn[0].player.location = i
+                                                    break
                                         player_btn[0].x = board.players[0].x
                                         player_btn[0].y = board.players[0].y
                                     buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance,
