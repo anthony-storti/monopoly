@@ -230,14 +230,15 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         return "insufficient funds"
 
 
-def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player], tile_list: List[Tile]) -> str:
+def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player], tile_list: List[Tile], indexList: List[List[int]]) -> List[int]:
     """
     Play Card  - After this call whatever functionality of a community chest or chance card will be executed
     :param player: Player playing card
     :param card: the actual card from the deck to be executed
     :param player_list: all the players that is on the board
     :param tile_list: all the tiles that is on the board
-    :return: str: str informing user of what happened
+    :param indexList: the list contains all the tile locations on the board
+    :return: list[int]: the coordinates on the board for update location
     """
     # initialize values
     value_list = []
@@ -252,7 +253,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
             player.wallet += 200
             print("You have passed the go, collect $200 as reward")
         player.location = int(card.value)
-        return f"You have advanced to {tile_list[player.location].name}"
+        return indexList[player.location]
     elif card.action == "move_to_closest":
         smallest = int(value_list[0])
         for i in value_list:
@@ -263,37 +264,37 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
                 choice = random.randint(0, len(value_list))
                 smallest = int(value_list[choice])
         player.location = smallest
-        return f"You have advanced to {tile_list[player.location].name}"
+        return indexList[player.location]
     elif card.action == "Finance":
         player.wallet += int(card.value)
-        return f"You have gained ${int(card.value)}"
+        return [-1, -1]
     elif card.action == "Finance_1":
         if player.wallet + int(card.value) < 0:
-            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+            return [-1, -1]
         else:
             player.wallet += int(card.value)
         if int(card.value) < 0:
-            return f"You have paid ${abs(int(card.value))} for tax"
+            return [-1, -1]
         else:
-            return f"You have gained ${int(card.value)}"
+            return [-1, -1]
     elif card.action == "finance":
         if player.wallet + int(card.value) < 0:
-            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+            return [-1, -1]
         else:
             player.wallet += int(card.value)
         if int(card.value) < 0:
-            return f"You have paid ${abs(int(card.value))}"
+            return [-1, -1]
         else:
-            return f"You have gained ${int(card.value)}"
+            return [-1, -1]
     elif card.action == "finance_player":
         if player.wallet + int(card.value) * (len(player_list) - 1) < 0:
-            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+            return [-1, -1]
         else:
             player.wallet -= int(card.value) * (len(player_list) - 1)
             for p in player_list:
                 if p.name != player.name:
                     p.wallet -= int(card.value)
-            return f"You have paid ${int(card.value)} for each players in the game"
+            return [-1, -1]
     elif card.action == "Finance_house":
         houses = 0
         hotels = 0
@@ -302,17 +303,17 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
                 houses += i.house_count
                 hotels += i.hotel_count
         if player.wallet < (25 * houses + 50 * hotels):
-            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+            return [-1, -1]
         else:
             player.wallet -= (25 * houses + 50 * hotels)
-            return f"You have paid ${25 * houses} for repairing the houses and {50 * hotels} for repairing hotels"
+            return [-1, -1]
     elif card.action == "move_steps":
         player.location -= int(card.value)
-        return f"You have moved {abs(int(card.value))} steps back"
+        return indexList[player.location]
     elif card.action == "special":
         player.inventory.append(card)
-        return f"You have gained a jail card"
-    return "Card Played"
+        return [-1, -1]
+    return [-1, -1]
 
 
 def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):

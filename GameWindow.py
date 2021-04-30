@@ -398,6 +398,10 @@ def main():
                                     pygame.mixer.Sound.play(card_sound)
                                 is_card = True
                                 assert isinstance(b.card, Card)
+                                coord = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex)
+                                if coord[0] != -1 and coord[1] != -1:
+                                    player_btn[0].x = coord[0]
+                                    player_btn[0].y = coord[1]
                                 buttons.pop('card')
                                 break
                             elif b.call == "purchase":
