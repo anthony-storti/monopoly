@@ -21,7 +21,7 @@ create_player('player 2', 'Car', board, 770, 800, '', True)
 # Global Variables
 ###############################
 BoardLocationIndex = [[780, 800], [700, 800], [630, 800], [560, 800], [490, 800], [420, 800], [350, 800], [280, 800], [210, 800],
-                      [140, 800], [70, 825], [30, 700], [30, 560], [30, 490], [30, 420], [30, 350], [30, 280],
+                      [140, 800], [70, 825], [30, 700], [30, 630], [30, 560], [30, 490], [30, 420], [30, 350], [30, 280],
                       [30, 210], [30, 140], [50, 40], [140, 30], [210, 30], [280, 30], [350, 30], [420, 30],
                       [490, 30], [560, 30], [630, 30], [700, 30], [780, 40], [800, 140], [800, 210], [800, 280],
                       [800, 350], [800, 420], [800, 490], [800, 560], [800, 630], [800, 700]]
@@ -178,12 +178,24 @@ class GameButton:
 
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height), 0)
 
-        if self.text != '':
+        if self.text != '' and self.card is None:
             font = pygame.font.SysFont('comicsans', 25)
             text = font.render(self.text, True, self.text_color)
             window.blit(text, (
                         self.x + (self.width / 2 - text.get_width() / 2), self.y +
                         (self.height / 2 - text.get_height() / 2)))
+        if self.text == "Play Card":
+            font = pygame.font.SysFont('comicsans', 25)
+            text = font.render(self.text, True, self.text_color)
+            window.blit(text, (
+                self.x + (self.width / 2 - text.get_width() / 2), self.y +
+                (self.height / 2 - text.get_height() / 2)))
+        if not self.card is None and self.text != "Play Card":
+            font = pygame.font.SysFont('comicsans', 17)
+            text = font.render(self.text, True, self.text_color)
+            window.blit(text, (
+                self.x + (self.width / 2 - text.get_width() / 2), self.y +
+                (self.height / 2 - text.get_height() / 2)))
 
     def draw_image(self, window):
         """
@@ -474,11 +486,12 @@ def main():
                             elif b.call == "end_turn":
                                 if fx:
                                     pygame.mixer.Sound.play(button_sound)
-                                if not p1.rolled or "rent" in buttons or "card" in buttons:
+                                if not p1.rolled or "rent" in buttons or "chance" in buttons or "comChest" in buttons:
                                     pass
                                 else:
                                     p1.rolled = False
                                     is_card = False
+                                    is_chest = False
                                     change_player(board)
                                     buttons = {"Build": GameButton((199, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
                                                "Mortgage":
