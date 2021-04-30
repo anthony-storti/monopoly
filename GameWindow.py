@@ -20,7 +20,7 @@ create_player('player 2', 'Car', board, 770, 800, '', True)
 ###############################
 # Global Variables
 ###############################
-BoardLocationIndex = [[780, 800], [700, 800], [630, 800], [560, 800], [490, 800], [420, 800], [350, 800], [210, 800],
+BoardLocationIndex = [[780, 800], [700, 800], [630, 800], [560, 800], [490, 800], [420, 800], [350, 800], [280, 800], [210, 800],
                       [140, 800], [70, 825], [30, 700], [30, 560], [30, 490], [30, 420], [30, 350], [30, 280],
                       [30, 210], [30, 140], [50, 40], [140, 30], [210, 30], [280, 30], [350, 30], [420, 30],
                       [490, 30], [560, 30], [630, 30], [700, 30], [780, 40], [800, 140], [800, 210], [800, 280],
@@ -208,7 +208,7 @@ class GameButton:
         return False
 
 
-def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs, card, is_card):
+def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs, card, comChest, is_card, is_chest):
     """
     redraw window- This will display everything that is shown on the pygame surface
     :param window: the pygame surface to display to
@@ -250,6 +250,8 @@ def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs, card, 
                 die.draw_image(window)
         if is_card:
             card.draw(window)
+        if is_chest:
+            comChest.draw(window)
     pygame.display.update()  # this must be called no matter what
 
 
@@ -265,7 +267,7 @@ def create_landson_buttons(instr, buttons):
     count = 0
     for i in instr:
         buttons[i[1]] = GameButton((199, 0, 0), button_x, 855, 139, 45, i[0], i[1])
-        if i[1] == "card":
+        if i[1] == "chance" or i[1] == "comChest":
             buttons[i[1]].card = i[2]
         button_x += 140
         count += 1
@@ -308,8 +310,10 @@ def main():
     # pygame.mixer.music.play(-1)
     volume_button = GameButton((0, 255, 255), 860, 25, 40, 40, 'images/volume.png', 'no')
     die_1 = GameButton((0, 255, 255), 400, 500, 40, 40, 'images/die_1.png', 'no')
-    card = GameButton((0, 255, 255), 500, 500, 200, 100, 'this is a card')
+    card = GameButton((0, 255, 255), 500, 500, 200, 100, 'this is a chance card')
+    comChest = GameButton((0, 255, 255), 200, 200, 200, 100, 'this is a community chance card')
     is_card = False
+    is_chest = False
     die_2 = GameButton((0, 255, 255), 430, 530, 40, 40, 'images/die_1.png', 'no')
     dice = [die_1, die_2]
     player_btn = [GameButton((255, 255, 255), 0, 0, 40, 40), GameButton((255, 255, 255), 0, 0, 40, 40)]
@@ -392,7 +396,7 @@ def main():
                                 pay_rent(p1, board.tiles[p1.location])
                                 buttons.pop('rent')
                                 break
-                            elif b.call == "card":
+                            elif b.call == "chance":
                                 if fx:
                                     pygame.mixer.Sound.play(card_sound)
                                 is_card = True
@@ -403,7 +407,20 @@ def main():
                                 if coord[0] != -1 and coord[1] != -1:
                                     player_btn[0].x = coord[0]
                                     player_btn[0].y = coord[1]
-                                buttons.pop('card')
+                                buttons.pop('chance')
+                                break
+                            elif b.call == "comChest":
+                                if fx:
+                                    pygame.mixer.Sound.play(card_sound)
+                                is_chest = True
+                                assert isinstance(b.card, Card)
+                                coord, cardObj = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "comChest", comm_chest, chance)
+                                comChest.card = cardObj
+                                comChest.text = comChest.card.message
+                                if coord[0] != -1 and coord[1] != -1:
+                                    player_btn[0].x = coord[0]
+                                    player_btn[0].y = coord[1]
+                                buttons.pop('comChest')
                                 break
                             elif b.call == "purchase":
                                 if fx:
@@ -484,7 +501,7 @@ def main():
         #############################################
         # ***BELOW CODE MUST BE CALLED EVERY LOOP***
         #############################################
-        redraw_window(win, p1, buttons, tokens, player_btn, volume_button, dice, card, is_card)
+        redraw_window(win, p1, buttons, tokens, player_btn, volume_button, dice, card, comChest, is_card, is_chest)
 
 
 main()

@@ -110,7 +110,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         '''
         card = comm_chest.pop()
         comm_chest.insert(0, card)
-        return [["Play Card", "card", card]]
+        return [["Play Card", "comChest", card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
         '''
@@ -123,7 +123,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         card = chance.pop()
         if card.action != "special":
             chance.insert(0, card)
-        return [["Play Card", "card", card]]
+        return [["Play Card", "chance", card]]
     elif isinstance(tile, GoToJail):
         '''
         if Go To Jail
