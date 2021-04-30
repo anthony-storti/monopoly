@@ -265,9 +265,9 @@ def create_landson_buttons(instr, buttons):
     count = 0
     for i in instr:
         buttons[i[1]] = GameButton((199, 0, 0), button_x, 855, 139, 45, i[0], i[1])
-        if len(i) == 3:
+        if i[1] == "card":
             buttons[i[1]].card = i[2]
-            buttons[i[1]].text = buttons[i[1]].card.value
+            buttons[i[1]].text = i[2].message
         button_x += 140
         count += 1
     return buttons
@@ -425,7 +425,7 @@ def main():
                                     dice[1].text = f"images/die_{p1.roll_2}.png"
                                     if board.players[0].location == board.players[1].location:
                                         for i in BoardLocationIndex:
-                                            if i[1] == board.players[0].x and i[2] == board.players[0].y:
+                                            if i[0] == board.players[0].x and i[1] == board.players[0].y:
                                                 player_btn[0].player.location = i
                                                 break
                                         player_btn[0].x = board.players[0].x
@@ -435,7 +435,7 @@ def main():
                                     else:
                                         if board.players[0].location == board.players[1].location:
                                             for i in BoardLocationIndex:
-                                                if i[1] == board.players[0].x and i[2] == board.players[0].y:
+                                                if i[0] == board.players[0].x and i[1] == board.players[0].y:
                                                     player_btn[0].player.location = i
                                                     break
                                         player_btn[0].x = board.players[0].x
