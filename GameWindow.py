@@ -40,7 +40,7 @@ width = 905
 height = 900
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Monopoly")
-bg = pygame.image.load("images/bord.jpg")
+bg = pygame.image.load("images/bord1.jpg")
 
 
 class PopupPlayer:
@@ -322,8 +322,8 @@ def main():
     # pygame.mixer.music.play(-1)
     volume_button = GameButton((0, 255, 255), 860, 25, 40, 40, 'images/volume.png', 'no')
     die_1 = GameButton((0, 255, 255), 400, 500, 40, 40, 'images/die_1.png', 'no')
-    card = GameButton((0, 255, 255), 500, 500, 200, 100, 'this is a chance card')
-    comChest = GameButton((0, 255, 255), 200, 200, 200, 100, 'this is a community chance card')
+    card = GameButton((0, 255, 255), 500, 545, 200, 100, 'this is a chance card')
+    comChest = GameButton((0, 255, 255), 150, 175, 200, 100, 'this is a community chance card')
     is_card = False
     is_chest = False
     die_2 = GameButton((0, 255, 255), 430, 530, 40, 40, 'images/die_1.png', 'no')
