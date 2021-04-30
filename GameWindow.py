@@ -23,6 +23,7 @@ create_player('player 2', 'Car', board, 770, 800, '', True)
 roll_sound = pygame.mixer.Sound(os.path.join('sounds', 'diceRolling.wav'))
 purchase_sound = pygame.mixer.Sound(os.path.join('sounds', 'purchase.wav'))
 button_sound = pygame.mixer.Sound(os.path.join('sounds', 'button.wav'))
+card_sound = pygame.mixer.Sound(os.path.join('sounds', 'shuffleCards.wav'))
 pygame.mixer.music.load(os.path.join('sounds', 'soundtrack.wav'))
 ###############################
 # Pygame Window Initializers
@@ -385,7 +386,7 @@ def main():
                                 break
                             elif b.call == "card":
                                 if fx:
-                                    pygame.mixer.Sound.play(purchase_sound)
+                                    pygame.mixer.Sound.play(card_sound)
                                 is_card = True
                                 assert isinstance(b.card, Card)
                                 buttons.pop('card')
