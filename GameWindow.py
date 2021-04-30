@@ -267,7 +267,6 @@ def create_landson_buttons(instr, buttons):
         buttons[i[1]] = GameButton((199, 0, 0), button_x, 855, 139, 45, i[0], i[1])
         if i[1] == "card":
             buttons[i[1]].card = i[2]
-            buttons[i[1]].text = i[2].message
         button_x += 140
         count += 1
     return buttons
@@ -398,7 +397,9 @@ def main():
                                     pygame.mixer.Sound.play(card_sound)
                                 is_card = True
                                 assert isinstance(b.card, Card)
-                                coord = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex)
+                                coord, cardObj = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "chance", comm_chest, chance)
+                                card.card = cardObj
+                                card.text = card.card.message
                                 if coord[0] != -1 and coord[1] != -1:
                                     player_btn[0].x = coord[0]
                                     player_btn[0].y = coord[1]
@@ -424,20 +425,22 @@ def main():
                                     dice[0].text = f"images/die_{p1.roll_1}.png"
                                     dice[1].text = f"images/die_{p1.roll_2}.png"
                                     if board.players[0].location == board.players[1].location:
+                                        count = 0
                                         for i in BoardLocationIndex:
                                             if i[0] == board.players[0].x and i[1] == board.players[0].y:
-                                                player_btn[0].player.location = i
-                                                break
+                                                player_btn[0].player.location = count
+                                            count += 1
                                         player_btn[0].x = board.players[0].x
                                         player_btn[0].y = board.players[0].y - 15
                                         player_btn[1].x = board.players[1].x
                                         player_btn[1].y = board.players[1].y + 15
                                     else:
                                         if board.players[0].location == board.players[1].location:
+                                            count = 0
                                             for i in BoardLocationIndex:
                                                 if i[0] == board.players[0].x and i[1] == board.players[0].y:
-                                                    player_btn[0].player.location = i
-                                                    break
+                                                    player_btn[0].player.location = count
+                                                count += 1
                                         player_btn[0].x = board.players[0].x
                                         player_btn[0].y = board.players[0].y
                                     buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance,

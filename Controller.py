@@ -230,7 +230,14 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
         return "insufficient funds"
 
 
-def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player], tile_list: List[Tile], indexList: List[List[int]]) -> List[int]:
+def pick_card(command, comm_chest: List[CommunityChest], chance: List[Chance]):
+    if command == "chance":
+        return chance[-1]
+    else:
+        return comm_chest[-1]
+
+
+def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player], tile_list: List[Tile], indexList: List[List[int]], command, comm_chest: List[CommunityChest], chance: List[Chance]):
     """
     Play Card  - After this call whatever functionality of a community chest or chance card will be executed
     :param player: Player playing card
@@ -243,6 +250,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     # initialize values
     value_list = []
     small_value = 10000
+    card = pick_card(command, comm_chest, chance)
     card.value = card.value.rstrip('\n')
     if ";" in card.value:
         value_list = card.value.split(";")
@@ -253,7 +261,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
             player.wallet += 200
             print("You have passed the go, collect $200 as reward")
         player.location = int(card.value)
-        return indexList[player.location]
+        return indexList[player.location], card
     elif card.action == "move_to_closest":
         smallest = int(value_list[0])
         for i in value_list:
@@ -264,37 +272,37 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
                 choice = random.randint(0, len(value_list))
                 smallest = int(value_list[choice])
         player.location = smallest
-        return indexList[player.location]
+        return indexList[player.location], card
     elif card.action == "Finance":
         player.wallet += int(card.value)
-        return [-1, -1]
+        return [-1, -1], card
     elif card.action == "Finance_1":
         if player.wallet + int(card.value) < 0:
-            return [-1, -1]
+            return [-1, -1], card
         else:
             player.wallet += int(card.value)
         if int(card.value) < 0:
-            return [-1, -1]
+            return [-1, -1], card
         else:
-            return [-1, -1]
+            return [-1, -1], card
     elif card.action == "finance":
         if player.wallet + int(card.value) < 0:
-            return [-1, -1]
+            return [-1, -1], card
         else:
             player.wallet += int(card.value)
         if int(card.value) < 0:
-            return [-1, -1]
+            return [-1, -1], card
         else:
-            return [-1, -1]
+            return [-1, -1], card
     elif card.action == "finance_player":
         if player.wallet + int(card.value) * (len(player_list) - 1) < 0:
-            return [-1, -1]
+            return [-1, -1], card
         else:
             player.wallet -= int(card.value) * (len(player_list) - 1)
             for p in player_list:
                 if p.name != player.name:
                     p.wallet -= int(card.value)
-            return [-1, -1]
+            return [-1, -1], card
     elif card.action == "Finance_house":
         houses = 0
         hotels = 0
@@ -303,17 +311,17 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
                 houses += i.house_count
                 hotels += i.hotel_count
         if player.wallet < (25 * houses + 50 * hotels):
-            return [-1, -1]
+            return [-1, -1], card
         else:
             player.wallet -= (25 * houses + 50 * hotels)
-            return [-1, -1]
+            return [-1, -1], card
     elif card.action == "move_steps":
         player.location -= int(card.value)
-        return indexList[player.location]
+        return indexList[player.location], card
     elif card.action == "special":
         player.inventory.append(card)
-        return [-1, -1]
-    return [-1, -1]
+        return [-1, -1], card
+    return [-1, -1], card
 
 
 def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
