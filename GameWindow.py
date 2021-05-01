@@ -340,7 +340,7 @@ def main():
     tokens = []
     fx = True
     run = True
-    board.players[0].inventory.append(Chance("special", "0", "Get out of Jail Free. "))
+    # board.players[0].inventory.append(Chance("special", "0", "Get out of Jail Free. "))
     while run:
         p1 = board.players[board.current_player]
         assert isinstance(p1, Player)
