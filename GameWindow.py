@@ -420,7 +420,8 @@ def main():
                                     player_btn[0].x = coord[0]
                                     player_btn[0].y = coord[1]
                                 buttons.pop('chance')
-                                buttons = create_landson_buttons(instruction, buttons)
+                                if instruction != "":
+                                    buttons = create_landson_buttons(instruction, buttons)
                                 break
                             elif b.call == "comChest":
                                 if fx:
