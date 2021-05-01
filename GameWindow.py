@@ -417,6 +417,12 @@ def main():
                                 pay_rent(p1, board.tiles[p1.location])
                                 buttons.pop('rent')
                                 break
+                            elif b.call == "tax":
+                                if fx:
+                                    pygame.mixer.Sound.play(purchase_sound)
+                                pay_tax(p1, board.tiles[p1.location])
+                                buttons.pop("tax")
+                                break
                             elif b.call == "chance":
                                 if fx:
                                     pygame.mixer.Sound.play(card_sound)
@@ -461,7 +467,7 @@ def main():
                                 if not p1.rolled:
                                     if fx:
                                         pygame.mixer.Sound.play(roll_sound)
-                                    roll_dice(p1, board)
+                                    create_landson_buttons(roll_dice(p1, board), buttons)
                                     dice[0].text = f"images/die_{p1.roll_1}.png"
                                     dice[1].text = f"images/die_{p1.roll_2}.png"
                                     if board.players[0].location == board.players[1].location:
