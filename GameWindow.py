@@ -18,11 +18,20 @@ chance = game[2]      # gets shuffled deck of chance cards
 create_player('player 1', 'Dog', board, 770, 825, '', False)
 create_player('player 2', 'Car', board, 770, 800, '', True)
 ###############################
+# Global Variables
+###############################
+BoardLocationIndex = [[780, 800], [700, 800], [630, 800], [560, 800], [490, 800], [420, 800], [350, 800], [280, 800], [210, 800],
+                      [140, 800], [70, 825], [30, 700], [30, 630], [30, 560], [30, 490], [30, 420], [30, 350], [30, 280],
+                      [30, 210], [30, 140], [50, 40], [140, 30], [210, 30], [280, 30], [350, 30], [420, 30],
+                      [490, 30], [560, 30], [630, 30], [700, 30], [780, 40], [800, 140], [800, 210], [800, 280],
+                      [800, 350], [800, 420], [800, 490], [800, 560], [800, 630], [800, 700]]
+###############################
 # Sound Initializers
 ###############################
 roll_sound = pygame.mixer.Sound(os.path.join('sounds', 'diceRolling.wav'))
 purchase_sound = pygame.mixer.Sound(os.path.join('sounds', 'purchase.wav'))
 button_sound = pygame.mixer.Sound(os.path.join('sounds', 'button.wav'))
+card_sound = pygame.mixer.Sound(os.path.join('sounds', 'shuffleCards.wav'))
 pygame.mixer.music.load(os.path.join('sounds', 'soundtrack.wav'))
 ###############################
 # Pygame Window Initializers
@@ -31,7 +40,7 @@ width = 905
 height = 900
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Monopoly")
-bg = pygame.image.load("images/bord.jpg")
+bg = pygame.image.load("images/bord1.jpg")
 
 
 class PopupPlayer:
@@ -169,12 +178,24 @@ class GameButton:
 
         pygame.draw.rect(window, self.color, (self.x, self.y, self.width, self.height), 0)
 
-        if self.text != '':
+        if self.text != '' and self.card is None:
             font = pygame.font.SysFont('comicsans', 25)
             text = font.render(self.text, True, self.text_color)
             window.blit(text, (
                         self.x + (self.width / 2 - text.get_width() / 2), self.y +
                         (self.height / 2 - text.get_height() / 2)))
+        if self.text == "Play Card":
+            font = pygame.font.SysFont('comicsans', 25)
+            text = font.render(self.text, True, self.text_color)
+            window.blit(text, (
+                self.x + (self.width / 2 - text.get_width() / 2), self.y +
+                (self.height / 2 - text.get_height() / 2)))
+        if not self.card is None and self.text != "Play Card":
+            font = pygame.font.SysFont('comicsans', 17)
+            text = font.render(self.text, True, self.text_color)
+            window.blit(text, (
+                self.x + (self.width / 2 - text.get_width() / 2), self.y +
+                (self.height / 2 - text.get_height() / 2)))
 
     def draw_image(self, window):
         """
@@ -199,7 +220,7 @@ class GameButton:
         return False
 
 
-def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs, card, is_card):
+def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs, card, comChest, is_card, is_chest):
     """
     redraw window- This will display everything that is shown on the pygame surface
     :param window: the pygame surface to display to
@@ -241,6 +262,8 @@ def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs, card, 
                 die.draw_image(window)
         if is_card:
             card.draw(window)
+        if is_chest:
+            comChest.draw(window)
     pygame.display.update()  # this must be called no matter what
 
 
@@ -256,7 +279,7 @@ def create_landson_buttons(instr, buttons):
     count = 0
     for i in instr:
         buttons[i[1]] = GameButton((199, 0, 0), button_x, 855, 139, 45, i[0], i[1])
-        if len(i) == 3:
+        if i[1] == "chance" or i[1] == "comChest":
             buttons[i[1]].card = i[2]
         button_x += 140
         count += 1
@@ -299,8 +322,10 @@ def main():
     # pygame.mixer.music.play(-1)
     volume_button = GameButton((0, 255, 255), 860, 25, 40, 40, 'images/volume.png', 'no')
     die_1 = GameButton((0, 255, 255), 400, 500, 40, 40, 'images/die_1.png', 'no')
-    card = GameButton((0, 255, 255), 500, 500, 200, 100, 'this is a card')
+    card = GameButton((0, 255, 255), 500, 545, 200, 100, 'this is a chance card')
+    comChest = GameButton((0, 255, 255), 150, 175, 200, 100, 'this is a community chance card')
     is_card = False
+    is_chest = False
     die_2 = GameButton((0, 255, 255), 430, 530, 40, 40, 'images/die_1.png', 'no')
     dice = [die_1, die_2]
     player_btn = [GameButton((255, 255, 255), 0, 0, 40, 40), GameButton((255, 255, 255), 0, 0, 40, 40)]
@@ -383,12 +408,33 @@ def main():
                                 pay_rent(p1, board.tiles[p1.location])
                                 buttons.pop('rent')
                                 break
-                            elif b.call == "card":
+                            elif b.call == "chance":
                                 if fx:
-                                    pygame.mixer.Sound.play(purchase_sound)
+                                    pygame.mixer.Sound.play(card_sound)
                                 is_card = True
                                 assert isinstance(b.card, Card)
-                                buttons.pop('card')
+                                coord, cardObj, instruction = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "chance", comm_chest, chance)
+                                card.card = cardObj
+                                card.text = card.card.message
+                                if coord[0] != -1 and coord[1] != -1:
+                                    player_btn[0].x = coord[0]
+                                    player_btn[0].y = coord[1]
+                                buttons.pop('chance')
+                                if instruction != "":
+                                    buttons = create_landson_buttons(instruction, buttons)
+                                break
+                            elif b.call == "comChest":
+                                if fx:
+                                    pygame.mixer.Sound.play(card_sound)
+                                is_chest = True
+                                assert isinstance(b.card, Card)
+                                coord, cardObj, instr = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "comChest", comm_chest, chance)
+                                comChest.card = cardObj
+                                comChest.text = comChest.card.message
+                                if coord[0] != -1 and coord[1] != -1:
+                                    player_btn[0].x = coord[0]
+                                    player_btn[0].y = coord[1]
+                                buttons.pop('comChest')
                                 break
                             elif b.call == "purchase":
                                 if fx:
@@ -406,17 +452,37 @@ def main():
                                 if not p1.rolled:
                                     if fx:
                                         pygame.mixer.Sound.play(roll_sound)
-
                                     roll_dice(p1, board)
                                     dice[0].text = f"images/die_{p1.roll_1}.png"
                                     dice[1].text = f"images/die_{p1.roll_2}.png"
-
                                     if board.players[0].location == board.players[1].location:
-                                        player_btn[0].x = board.players[0].x
-                                        player_btn[0].y = board.players[0].y - 15
-                                        player_btn[1].x = board.players[1].x
-                                        player_btn[1].y = board.players[1].y + 15
+                                        count = 0
+                                        for i in BoardLocationIndex:
+                                            if i[0] == board.players[0].x and i[1] == board.players[0].y:
+                                                player_btn[0].player.location = count
+                                            count += 1
+                                        if board.players[0].x < 114 or board.players[0].x > 741:
+                                            player_btn[0].x = board.players[0].x
+                                            player_btn[0].y = board.players[0].y - 20
+                                            player_btn[1].x = board.players[1].x
+                                            player_btn[1].y = board.players[1].y + 20
+                                        elif board.players[0].y < 117 or board.players[0].y > 738:
+                                            player_btn[0].x = board.players[0].x - 25
+                                            player_btn[0].y = board.players[0].y
+                                            player_btn[1].x = board.players[1].x + 25
+                                            player_btn[1].y = board.players[1].y
+                                        elif board.players[0].x < 34 or board.players[0].y < 38:
+                                            player_btn[0].x = board.players[0].x - 25
+                                            player_btn[0].y = board.players[0].y
+                                            player_btn[1].x = board.players[1].x + 25
+                                            player_btn[1].y = board.players[1].y
                                     else:
+                                        if board.players[0].location != board.players[1].location:
+                                            count = 0
+                                            for i in BoardLocationIndex:
+                                                if i[0] == board.players[0].x and i[1] == board.players[0].y:
+                                                    player_btn[0].player.location = count
+                                                count += 1
                                         player_btn[0].x = board.players[0].x
                                         player_btn[0].y = board.players[0].y
                                     buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance,
@@ -433,11 +499,12 @@ def main():
                             elif b.call == "end_turn":
                                 if fx:
                                     pygame.mixer.Sound.play(button_sound)
-                                if not p1.rolled or "rent" in buttons or "card" in buttons or "tax" in buttons:
+                                if not p1.rolled or "rent" in buttons or "chance" in buttons or "commChest" or "tax" in buttons:
                                     pass
                                 else:
                                     p1.rolled = False
                                     is_card = False
+                                    is_chest = False
                                     if p1.extra_turn:
                                         p1.extra_turn = False
                                     else:
@@ -463,7 +530,7 @@ def main():
         #############################################
         # ***BELOW CODE MUST BE CALLED EVERY LOOP***
         #############################################
-        redraw_window(win, p1, buttons, tokens, player_btn, volume_button, dice, card, is_card)
+        redraw_window(win, p1, buttons, tokens, player_btn, volume_button, dice, card, comChest, is_card, is_chest)
 
 
 main()
