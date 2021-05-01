@@ -21,22 +21,33 @@ def roll_dice(player: Player, board: Board):
         player.roll = roll1 + roll2
         player.rolled = True
 
-        if roll1 == roll2:
-            if player.extra_turns < 3:
-                player.extra_turns += 1
-                player.extra_turn = True
+        if player.in_jail:
+            if roll1 == roll2:
+                player.in_jail = False
+                player.location += player.roll
+
             else:
-                player.in_jail = True
-                player.location = 10
-                player.jail_counter = 4
+                player.roll_1 = 0
+                player.roll_2 = 0
+                player.roll = 0
+
+        else:
+            if roll1 == roll2:
+                if player.extra_turns < 3:
+                    player.extra_turns += 1
+                    player.extra_turn = True
+                else:
+                    player.in_jail = True
+                    player.location = 10
+                    player.jail_counter = 4
+                    player.extra_turns = 0
+            else:
                 player.extra_turns = 0
-        else:
-            player.extra_turns = 0
-        if player.roll + player.location < 40:
-            player.location += player.roll
-        else:
-            player.location = (player.roll + player.location) - 40
-            player.wallet += 200
+            if player.roll + player.location < 40:
+                player.location += player.roll
+            else:
+                player.location = (player.roll + player.location) - 40
+                player.wallet += 200
 
         tile = board.tiles[player.location]
         player.x = tile.x
@@ -191,23 +202,11 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: The "in jail" functionality is handled here
         '''
         if player.in_jail:
-            if player.jail_counter == 4:
-                player.jail_counter -= 1
-            if player.jail_counter > 0:
-                player.jail_counter -= 1
-                for item in player.inventory:
-                    if isinstance(item, (CommunityChest, Chance)):
-                        if "Get out of Jail" in item.message:
-                            return [["Use GOOJF", "jail_card", use_jail_card],
-                                    ["Roll Doubles", "jail_roll", jail_roll]]
-                return [["Roll Doubles", "jail_roll", jail_roll],
-                        ["Pay $50 Bail", "bail",  pay_bail]]
-            else:
-                for item in player.inventory:
-                    if isinstance(item, (CommunityChest, Chance)):
-                        if "Get out of Jail" in item.message:
-                            return [["Use GOOJF", "jail_card", use_jail_card]]
-                return [["Pay $50 Bail", "bail",  pay_bail]]
+            for item in player.inventory:
+                if isinstance(item, (CommunityChest, Chance)):
+                    if "Get out of Jail" in item.message:
+                        return [["Use get out of jail free card", "jail_card", use_jail_card]]
+            return [["Pay $50 Bail", "bail",  pay_bail]]
         else:
             return ret
 
