@@ -41,6 +41,7 @@ def roll_dice(player: Player, board: Board):
                     player.location = 10
                     player.jail_counter = 4
                     player.extra_turns = 0
+                    return [["Go to Jail", "toJail"]]
             else:
                 player.extra_turns = 0
             if player.roll + player.location < 40:
