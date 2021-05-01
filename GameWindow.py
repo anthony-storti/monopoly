@@ -408,6 +408,12 @@ def main():
                                 pay_rent(p1, board.tiles[p1.location])
                                 buttons.pop('rent')
                                 break
+                            elif b.call == "tax":
+                                if fx:
+                                    pygame.mixer.Sound.play(purchase_sound)
+                                pay_tax(p1, board.tiles[p1.location])
+                                buttons.pop("tax")
+                                break
                             elif b.call == "chance":
                                 if fx:
                                     pygame.mixer.Sound.play(card_sound)
@@ -499,7 +505,7 @@ def main():
                             elif b.call == "end_turn":
                                 if fx:
                                     pygame.mixer.Sound.play(button_sound)
-                                if not p1.rolled or "rent" in buttons or "chance" in buttons or "commChest" or "tax" in buttons:
+                                if not p1.rolled or "rent" in buttons or "chance" in buttons or "commChest" in buttons or "tax" in buttons:
                                     pass
                                 else:
                                     p1.rolled = False

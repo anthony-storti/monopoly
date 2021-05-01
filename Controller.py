@@ -167,7 +167,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: pay_rent
         note: Income tax takes either $200 or 10% of the player's net worth, whichever is lower
         '''
-        if tile.name == "Income Tax":
+        if tile.name == "Income tax":
             player_net_worth = player.wallet
             for item in player.inventory:
                 if isinstance(item, (Property, RailRoad, Utility)):
@@ -176,7 +176,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                         player_net_worth += tile.house_cost * tile.house_count
                         player_net_worth += tile.house_cost * tile.hotel_count
                 else:
-                    player_net_worth += item.value
+                    player_net_worth += 50
             player_net_worth = player_net_worth // 10
             if player_net_worth > 200:
                 return [["Pay $200 Tax", "tax", pay_tax]]
