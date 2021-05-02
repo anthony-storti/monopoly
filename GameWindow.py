@@ -60,12 +60,20 @@ class PopupPlayer:
         self.label_1 = Label(master, text=f"Wallet: ${player.wallet}").pack()
         tiles = {}
         h = 75
+        self.label = Label(master, text="Inventory", font='Helvetica 12 bold underline').pack()
         for tile in player.inventory:
-            tiles[tile.color] = []
+            if isinstance(tile, Card):
+                self.label = Label(master, text="Get out of Jail Free Card").pack()
+                h += 40
+            else:
+                tiles[tile.color] = []
         for tile in player.inventory:
-            tiles[tile.color].append(tile)
+            if isinstance(tile, Card):
+                pass
+            else:
+                tiles[tile.color].append(tile)
         for color, props in tiles.items():
-            self.label = Label(master, text=f"{color}", font='Helvetica 12 bold underline').pack()
+            self.label = Label(master, text=f"{color}", font='Helvetica 10 underline').pack()
             for prop in props:
                 self.label = Label(master, text=f"{prop.name}").pack()
                 h += 40
@@ -322,8 +330,8 @@ def main():
     # pygame.mixer.music.play(-1)
     volume_button = GameButton((0, 255, 255), 860, 25, 40, 40, 'images/volume.png', 'no')
     die_1 = GameButton((0, 255, 255), 400, 500, 40, 40, 'images/die_1.png', 'no')
-    card = GameButton((0, 255, 255), 500, 545, 200, 100, 'this is a chance card')
-    comChest = GameButton((0, 255, 255), 150, 175, 200, 100, 'this is a community chance card')
+    card = GameButton((255, 103, 0), 500, 545, 200, 100, 'this is a chance card')
+    comChest = GameButton((255, 103, 0), 150, 175, 200, 100, 'this is a community chance card')
     is_card = False
     is_chest = False
     die_2 = GameButton((0, 255, 255), 430, 530, 40, 40, 'images/die_1.png', 'no')
@@ -332,6 +340,7 @@ def main():
     tokens = []
     fx = True
     run = True
+    # board.players[0].inventory.append(Chance("special", "0", "Get out of Jail Free. "))
     while run:
         p1 = board.players[board.current_player]
         assert isinstance(p1, Player)
@@ -521,14 +530,13 @@ def main():
                                 if (not p1.rolled or "rent" in buttons or "chance" in buttons or "commChest" in buttons or "tax" in buttons or
                                         "pay_bail_required" in buttons or "jail_card_required" in buttons):
                                     pass
+                                if p1.extra_turn:
+                                    p1.extra_turn = False
                                 else:
                                     p1.rolled = False
                                     is_card = False
                                     is_chest = False
-                                    if p1.extra_turn:
-                                        p1.extra_turn = False
-                                    else:
-                                        change_player(board)
+                                    change_player(board)
                                     buttons = {"Build": GameButton((199, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
                                                "Mortgage":
                                                    GameButton((199, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
