@@ -342,6 +342,8 @@ def main():
     dice = [die_1, die_2]
     player_btn = [GameButton((255, 255, 255), 0, 0, 40, 40), GameButton((255, 255, 255), 0, 0, 40, 40)]
     tokens = []
+    game_on = True
+    winner = ""
     fx = True
     run = True
     # board.players[0].inventory.append(Chance("special", "0", "Get out of Jail Free. "))
