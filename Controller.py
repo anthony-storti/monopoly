@@ -279,6 +279,8 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
             player.wallet += 200
             print("You have passed the go, collect $200 as reward")
         player.location = int(card.value)
+        if tile_list[player.location].purchasable:
+            card.cost = tile_list[player.location].cost
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "move_to_closest":
@@ -291,6 +293,8 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
                 choice = random.randint(0, len(value_list))
                 smallest = int(value_list[choice])
         player.location = smallest
+        if tile_list[player.location].purchasable:
+            card.cost = tile_list[player.location].cost
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "Finance":
@@ -336,7 +340,9 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
             player.wallet -= (25 * houses + 50 * hotels)
             return [-1, -1], card, instr
     elif card.action == "move_steps":
-        player.location -= int(abs(card.value))
+        player.location -= abs(int(card.value))
+        if tile_list[player.location].purchasable:
+            card.cost = tile_list[player.location].cost
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "special":

@@ -119,8 +119,10 @@ class Card:
 @dataclass
 class CommunityChest(Card):
     message: str
+    cost: int
 
 
 @dataclass
 class Chance(Card):
     message: str
+    cost: int
