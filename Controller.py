@@ -459,7 +459,7 @@ def get_rent(tile: (Property, RailRoad, Utility), player: Player):
         return rent
 
 
-def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
+def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> bool:
     """
     Pay Rent - After this call if a player has sufficient funds the owed rent will be deducted from their wallet
     :param player: Player paying the rent
@@ -468,14 +468,14 @@ def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> str:
     """
     rent = get_rent(tile, player)
     if player.wallet < rent:
-        return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+        return True
     else:
         player.wallet -= rent
         tile.owner.wallet += rent
-        return "Paid"
+        return False
 
 
-def pay_tax(player: Player, tile: Tax) -> str:
+def pay_tax(player: Player, tile: Tax) -> bool:
     """
     Pay Tax - After this call if a player has sufficient funds the owed tax will be deducted from their wallet
     :param player: The player paying the tax
@@ -495,22 +495,22 @@ def pay_tax(player: Player, tile: Tax) -> str:
         player_net_worth = player_net_worth // 10
         if player_net_worth > 200:
             if player.wallet < 200:
-                return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+                return True
             else:
                 player.wallet -= 200
-                return "Paid"
+                return False
         else:
             if player.wallet < player_net_worth:
-                return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+                return True
             else:
                 player.wallet -= player_net_worth
-                return "Paid"
+                return False
     else:
         if player.wallet < 75:
-            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+            return True
         else:
             player.wallet -= 75
-            return "Paid"
+            return False
 
 
 def change_player(board: Board):
@@ -522,7 +522,7 @@ def change_player(board: Board):
     board.current_player = (board.current_player + 1) % len(board.players)
 
 
-def machine_algo(player: Player, board: Board, cc, chance) -> str:
+def machine_algo(player: Player, board: Board, cc, chance):
     """
     Machine Algo - After this call the machine player will return a choice based on available options passed in
     :param options: a Dict of available choices
