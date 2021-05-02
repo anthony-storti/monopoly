@@ -125,9 +125,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
-        card = comm_chest.pop()
-        if card.action != "special":
-            comm_chest.insert(0, card)
+        card = comm_chest[0]
         return [["Play Card", "comChest", card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
@@ -138,9 +136,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
-        card = chance.pop()
-        if card.action != "special":
-            chance.insert(0, card)
+        card = chance[0]
         return [["Play Card", "chance", card]]
     elif isinstance(tile, GoToJail):
         '''
@@ -248,10 +244,15 @@ def purchase(player: Player, tile: (Property, RailRoad, Utility)) -> str:
 
 def pick_card(command, comm_chest: List[CommunityChest], chance: List[Chance]):
     if command == "chance":
-        return chance[-1]
+        card = chance.pop()
+        if card.action != "special":
+            chance.insert(0, card)
+        return card
     else:
-        return comm_chest[-1]
-
+        card = comm_chest.pop()
+        if card.action != "special":
+            chance.insert(0, card)
+        return card
 
 def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player], tile_list: List[Tile], indexList: List[List[int]], command, comm_chest: List[CommunityChest], chance: List[Chance]):
     """
@@ -333,9 +334,10 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
             return [-1, -1], card, instr
         else:
             player.wallet -= (25 * houses + 50 * hotels)
-            return [-1, -1], card
+            return [-1, -1], card, instr
     elif card.action == "move_steps":
-        player.location -= int(card.value)
+        player.location -= int(abs(card.value))
+        instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "special":
         player.inventory.append(card)

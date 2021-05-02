@@ -350,6 +350,22 @@ def main():
         if p1.machine_player:
             machine_algo(p1, board, comm_chest, chance)
             player_btn[1] = GameButton((0, 255, 255), p1.x, p1.y, 40, 40, p1.image, p1.image, p1)
+            if board.players[0].location == board.players[1].location:
+                if board.players[0].x < 114 or board.players[0].x > 741:
+                    player_btn[0].x = board.players[0].x
+                    player_btn[0].y = board.players[0].y - 20
+                    player_btn[1].x = board.players[1].x
+                    player_btn[1].y = board.players[1].y + 20
+                elif board.players[0].y < 117 or board.players[0].y > 738:
+                    player_btn[0].x = board.players[0].x - 25
+                    player_btn[0].y = board.players[0].y
+                    player_btn[1].x = board.players[1].x + 25
+                    player_btn[1].y = board.players[1].y
+                elif board.players[0].x < 34 or board.players[0].y < 38:
+                    player_btn[0].x = board.players[0].x - 25
+                    player_btn[0].y = board.players[0].y
+                    player_btn[1].x = board.players[1].x + 25
+                    player_btn[1].y = board.players[1].y
         else:
             if not p1.picked:
                 tokens = create_tokens_buttons()  # creates list of tokens if player has not picked token
@@ -427,8 +443,25 @@ def main():
                                 if fx:
                                     pygame.mixer.Sound.play(purchase_sound)
                                 pay_bail(p1, board.tiles[p1.location])
-                                player_btn[0].x = board.players[0].x
-                                player_btn[0].y = board.players[0].y
+                                if board.players[0].location == board.players[1].location:
+                                    if board.players[0].x < 114 or board.players[0].x > 741:
+                                        player_btn[0].x = board.players[0].x
+                                        player_btn[0].y = board.players[0].y - 20
+                                        player_btn[1].x = board.players[1].x
+                                        player_btn[1].y = board.players[1].y + 20
+                                    elif board.players[0].y < 117 or board.players[0].y > 738:
+                                        player_btn[0].x = board.players[0].x - 25
+                                        player_btn[0].y = board.players[0].y
+                                        player_btn[1].x = board.players[1].x + 25
+                                        player_btn[1].y = board.players[1].y
+                                    elif board.players[0].x < 34 or board.players[0].y < 38:
+                                        player_btn[0].x = board.players[0].x - 25
+                                        player_btn[0].y = board.players[0].y
+                                        player_btn[1].x = board.players[1].x + 25
+                                        player_btn[1].y = board.players[1].y
+                                else:
+                                    player_btn[0].x = board.players[0].x
+                                    player_btn[0].y = board.players[0].y
                                 buttons.pop("pay_bail_optional")
                                 buttons.pop("pay_bail_required")
                                 break
@@ -447,6 +480,27 @@ def main():
                                 if coord[0] != -1 and coord[1] != -1:
                                     player_btn[0].x = coord[0]
                                     player_btn[0].y = coord[1]
+                                    count = 0
+                                    for i in BoardLocationIndex:
+                                        if i[0] == board.players[0].x and i[1] == board.players[0].y:
+                                            player_btn[0].player.location = count
+                                        count += 1
+                                    if board.players[0].location == board.players[1].location:
+                                        if board.players[0].x < 114 or board.players[0].x > 741:
+                                            player_btn[0].x = board.players[0].x
+                                            player_btn[0].y = board.players[0].y - 20
+                                            player_btn[1].x = board.players[1].x
+                                            player_btn[1].y = board.players[1].y + 20
+                                        elif board.players[0].y < 117 or board.players[0].y > 738:
+                                            player_btn[0].x = board.players[0].x - 25
+                                            player_btn[0].y = board.players[0].y
+                                            player_btn[1].x = board.players[1].x + 25
+                                            player_btn[1].y = board.players[1].y
+                                        elif board.players[0].x < 34 or board.players[0].y < 38:
+                                            player_btn[0].x = board.players[0].x - 25
+                                            player_btn[0].y = board.players[0].y
+                                            player_btn[1].x = board.players[1].x + 25
+                                            player_btn[1].y = board.players[1].y
                                 buttons.pop('chance')
                                 if instruction != "":
                                     buttons = create_landson_buttons(instruction, buttons)
@@ -456,13 +510,36 @@ def main():
                                     pygame.mixer.Sound.play(card_sound)
                                 is_chest = True
                                 assert isinstance(b.card, Card)
-                                coord, cardObj, instr = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "comChest", comm_chest, chance)
+                                coord, cardObj, instruction = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "comChest", comm_chest, chance)
                                 comChest.card = cardObj
                                 comChest.text = comChest.card.message
                                 if coord[0] != -1 and coord[1] != -1:
                                     player_btn[0].x = coord[0]
                                     player_btn[0].y = coord[1]
+                                    count = 0
+                                    for i in BoardLocationIndex:
+                                        if i[0] == board.players[0].x and i[1] == board.players[0].y:
+                                            player_btn[0].player.location = count
+                                        count += 1
+                                    if board.players[0].location == board.players[1].location:
+                                        if board.players[0].x < 114 or board.players[0].x > 741:
+                                            player_btn[0].x = board.players[0].x
+                                            player_btn[0].y = board.players[0].y - 20
+                                            player_btn[1].x = board.players[1].x
+                                            player_btn[1].y = board.players[1].y + 20
+                                        elif board.players[0].y < 117 or board.players[0].y > 738:
+                                            player_btn[0].x = board.players[0].x - 25
+                                            player_btn[0].y = board.players[0].y
+                                            player_btn[1].x = board.players[1].x + 25
+                                            player_btn[1].y = board.players[1].y
+                                        elif board.players[0].x < 34 or board.players[0].y < 38:
+                                            player_btn[0].x = board.players[0].x - 25
+                                            player_btn[0].y = board.players[0].y
+                                            player_btn[1].x = board.players[1].x + 25
+                                            player_btn[1].y = board.players[1].y
                                 buttons.pop('comChest')
+                                if instruction != "":
+                                    buttons = create_landson_buttons(instruction, buttons)
                                 break
                             elif b.call == "purchase":
                                 if fx:
@@ -522,6 +599,27 @@ def main():
                                     pygame.mixer.Sound.play(button_sound)
                                 player_btn[0].x = board.players[0].x
                                 player_btn[0].y = board.players[0].y
+                                if board.players[0].location == board.players[1].location:
+                                    count = 0
+                                    for i in BoardLocationIndex:
+                                        if i[0] == board.players[0].x and i[1] == board.players[0].y:
+                                            player_btn[0].player.location = count
+                                        count += 1
+                                    if board.players[0].x < 114 or board.players[0].x > 741:
+                                        player_btn[0].x = board.players[0].x
+                                        player_btn[0].y = board.players[0].y - 20
+                                        player_btn[1].x = board.players[1].x
+                                        player_btn[1].y = board.players[1].y + 20
+                                    elif board.players[0].y < 117 or board.players[0].y > 738:
+                                        player_btn[0].x = board.players[0].x - 25
+                                        player_btn[0].y = board.players[0].y
+                                        player_btn[1].x = board.players[1].x + 25
+                                        player_btn[1].y = board.players[1].y
+                                    elif board.players[0].x < 34 or board.players[0].y < 38:
+                                        player_btn[0].x = board.players[0].x - 25
+                                        player_btn[0].y = board.players[0].y
+                                        player_btn[1].x = board.players[1].x + 25
+                                        player_btn[1].y = board.players[1].y
                                 buttons.pop("toJail")
                                 break
                             elif b.call == "end_turn":
