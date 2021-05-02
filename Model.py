@@ -59,6 +59,16 @@ class Property(Tile):
     mortgage: int
     house_count: int
     hotel_count: int
+    house_1_x: int
+    house_1_y: int
+    house_2_x: int
+    house_2_y: int
+    house_3_x: int
+    house_3_y: int
+    house_4_x: int
+    house_4_y: int
+    hotel_x: int
+    hotel_y: int
 
 
 @dataclass

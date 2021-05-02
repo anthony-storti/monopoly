@@ -128,20 +128,24 @@ class PopupPropertySelector:
         self.drop = OptionMenu(self.master, self.clicked, *options).pack()
         if len(tile_dict) > 1:
             self.select_button = Button(master, text="Select", command=lambda:
-                                        self.execute(tile_dict[self.clicked.get()], player)).pack()
+                                        self.execute(tile_dict[self.clicked.get()], player, building)).pack()
         self.close_button = Button(master, text="Close", command=master.destroy).pack()
 
-    def execute(self, tile, player):
+    def execute(self, tile, player, building: bool):
         """
         execute - This will either do nothing if the tile passed in was an empty string, or it will call mortgage
         on the tile passed in and destroy the tkinter window(this function is needed to call to commands from one
         button push in a tkinter window)
         :param tile: tile object to pass to mortgage
         :param player: Player object to pass to mortgage call
+        :param building: bool to indicate if player intends to build or mortgage
         :return: nothing
         """
         if tile == "":
             pass
+        elif building:
+            build(tile, player)
+            self.master.destroy()
         else:
             mortgage(tile, player)
             self.master.destroy()
