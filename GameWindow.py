@@ -443,6 +443,11 @@ def main():
                                 if fx:
                                     pygame.mixer.Sound.play(purchase_sound)
                                 pay_bail(p1, board.tiles[p1.location])
+                                count = 0
+                                for i in BoardLocationIndex:
+                                    if i[0] == board.players[0].x and i[1] == board.players[0].y:
+                                        player_btn[0].player.location = count
+                                    count += 1
                                 if board.players[0].location == board.players[1].location:
                                     if board.players[0].x < 114 or board.players[0].x > 741:
                                         player_btn[0].x = board.players[0].x
