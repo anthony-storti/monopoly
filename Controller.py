@@ -275,15 +275,18 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     value_list = [int(i) for i in value_list]
 
     if card.action == "move_to":
+        cardTileIndex = player.location
         if int(card.value) != 0 and player.location > int(card.value):
             player.wallet += 200
             print("You have passed the go, collect $200 as reward")
         player.location = int(card.value)
         if tile_list[player.location].purchasable:
             card.cost = tile_list[player.location].cost
+            tile_list[cardTileIndex].cost = tile_list[player.location].cost
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "move_to_closest":
+        cardTileIndex = player.location
         smallest = int(value_list[0])
         for i in value_list:
             if player.location - int(i) < small_value:
@@ -295,6 +298,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         player.location = smallest
         if tile_list[player.location].purchasable:
             card.cost = tile_list[player.location].cost
+            tile_list[cardTileIndex].cost = tile_list[player.location].cost
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "Finance":
@@ -340,9 +344,11 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
             player.wallet -= (25 * houses + 50 * hotels)
             return [-1, -1], card, instr
     elif card.action == "move_steps":
+        cardTileIndex = player.location
         player.location -= abs(int(card.value))
         if tile_list[player.location].purchasable:
             card.cost = tile_list[player.location].cost
+            tile_list[cardTileIndex].cost = tile_list[player.location].cost
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "special":

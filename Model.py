@@ -103,6 +103,7 @@ class Utility(Tile):
 @dataclass
 class CardTile(Tile):
     action: str
+    cost: int
 
 
 @dataclass
