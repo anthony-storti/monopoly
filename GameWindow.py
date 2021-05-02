@@ -414,6 +414,19 @@ def main():
                                 pay_tax(p1, board.tiles[p1.location])
                                 buttons.pop("tax")
                                 break
+                            elif b.call == "pay_bail_optional" or b.call == "pay_bail_required":
+                                if fx:
+                                    pygame.mixer.Sound.play(purchase_sound)
+                                pay_bail(p1, board.tiles[p1.location])
+                                player_btn[0].x = board.players[0].x
+                                player_btn[0].y = board.players[0].y
+                                buttons.pop("pay_bail_optional")
+                                buttons.pop("pay_bail_required")
+                                break
+                            elif b.call == "jail_card_optional" or b.call == "jail_card_required":
+                                if fx:
+                                    pygame.mixer.Sound.play(card_sound)
+                                use_jail_card(p1, board.tiles[p1.location], comm_chest, chance)
                             elif b.call == "chance":
                                 if fx:
                                     pygame.mixer.Sound.play(card_sound)
@@ -505,7 +518,8 @@ def main():
                             elif b.call == "end_turn":
                                 if fx:
                                     pygame.mixer.Sound.play(button_sound)
-                                if not p1.rolled or "rent" in buttons or "chance" in buttons or "commChest" in buttons or "tax" in buttons:
+                                if (not p1.rolled or "rent" in buttons or "chance" in buttons or "commChest" in buttons or "tax" in buttons or
+                                        "pay_bail_required" in buttons or "jail_card_required" in buttons):
                                     pass
                                 else:
                                     p1.rolled = False

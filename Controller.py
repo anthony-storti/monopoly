@@ -185,11 +185,11 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                     player_net_worth += 50
             player_net_worth = player_net_worth // 10
             if player_net_worth > 200:
-                return [["Pay $200 Tax", "tax", pay_tax]]
+                return [["Pay $200 Tax", "tax"]]
             else:
-                return [[f"Pay ${player_net_worth} Tax", "tax", pay_tax]]
+                return [[f"Pay ${player_net_worth} Tax", "tax"]]
         else:
-            return [["pay $75 Tax", "tax", pay_tax]]
+            return [["pay $75 Tax", "tax"]]
 
     elif isinstance(tile, FreeParking):
         '''
@@ -209,11 +209,21 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: The "in jail" functionality is handled here
         '''
         if player.in_jail:
-            for item in player.inventory:
-                if isinstance(item, (CommunityChest, Chance)):
-                    if "Get out of Jail" in item.message:
-                        return [["Use get out of jail free card", "jail_card", use_jail_card]]
-            return [["Pay $50 Bail", "bail",  pay_bail]]
+            if player.jail_counter == 4:
+                player.jail_counter -= 1
+            if player.jail_counter > 0:
+                player.jail_counter -= 1
+                for item in player.inventory:
+                    if isinstance(item, (CommunityChest, Chance)):
+                        if "Get out of Jail" in item.message:
+                            return [["Use Get out of jail free card (optional)", "jail_card_optional"]]
+                return [["Pay $50 bail (optional)", "pay_bail_optional"]]
+            else:
+                for item in player.inventory:
+                    if isinstance(item, (CommunityChest, Chance)):
+                        if "Get out of Jail" in item.message:
+                            return [["Use get out of jail free card (required)", "jail_card_required"]]
+                return [["Pay $50 bail (required)", "pay_bail_required"]]
         else:
             return ret
 
@@ -333,11 +343,12 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     return [-1, -1], card, instr
 
 
-def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
+def use_jail_card(player: Player, tile: Tile, comm_chest: List[CommunityChest], chance: List[Chance]):
     """
     Use Jail Card  - After this call a player will be freed from jail if they have a get out of jail free card
     in their inventory and the card will be returned to the appropriate deck
     :param player: Player object using card
+    :param tile: the Tile the player is on (should be the jail)
     :param comm_chest: deck to insert card into
     :param chance: deck to insert card into
     :return: str: confirmation of card played
@@ -352,6 +363,7 @@ def use_jail_card(player: Player, comm_chest: List[CommunityChest], chance: List
             player.inventory.remove(item)
             comm_chest.insert(0, item)
             break
+    player.x = tile.x
     return "You used your Get out of jail free card"
 
 
@@ -360,6 +372,7 @@ def pay_bail(player: Player, tile: Tile):
     Pay Bail  - After this call a player will be removed from Jail, their jail counter reset, wallet balance
     adjusted by 50
     :param player: Player object paying bail
+    :param tile: the Tile the Player is on (should be the jail tile)
     :return: str: confirmation of payment or notification of insufficient funds
     """
     if player.wallet < 50:
@@ -370,6 +383,8 @@ def pay_bail(player: Player, tile: Tile):
     else:
         player.wallet -= 50
         player.in_jail = False
+        player.x = tile.x
+        player.y = tile.y
         return "You paid bail and are out of jail"
 
 
