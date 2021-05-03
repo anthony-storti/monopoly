@@ -41,6 +41,8 @@ height = 900
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Monopoly")
 bg = pygame.image.load("images/bord1.jpg")
+house = pygame.image.load("images/house_2.png")
+hotel = pygame.image.load("images/hotel_2.png")
 
 
 class PopupPlayer:
@@ -276,6 +278,18 @@ def redraw_window(window, player, buttons, tokens, btn, sound, dice_imgs, card, 
             card.draw(window)
         if is_chest:
             comChest.draw(window)
+        for tile in player.inventory:
+            if isinstance(tile, Property):
+                if tile.hotel_count == 1:
+                    window.blit(hotel, (tile.hotel_x, tile.hotel_y))
+                elif tile.house_count >= 1:
+                    window.blit(house, (tile.house_1_x, tile.house_1_y))
+                    if tile.house_count >= 2:
+                        window.blit(house, (tile.house_2_x, tile.house_2_y))
+                    if tile.house_count >= 3:
+                        window.blit(house, (tile.house_3_x, tile.house_3_y))
+                    if tile.house_count >= 4:
+                        window.blit(house, (tile.house_4_x, tile.house_4_y))
     pygame.display.update()  # this must be called no matter what
 
 
@@ -482,7 +496,7 @@ def main():
                                         break
                                     else:
                                         buttons.pop("tax")
-                                    break
+                                        break
                                 elif b.call == "pay_bail_optional" or b.call == "pay_bail_required":
                                     if fx:
                                         pygame.mixer.Sound.play(purchase_sound)
