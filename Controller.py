@@ -28,8 +28,6 @@ def roll_dice(player: Player, board: Board):
                 player.location += player.roll
 
             else:
-                player.roll_1 = 0
-                player.roll_2 = 0
                 player.roll = 0
 
         else:
