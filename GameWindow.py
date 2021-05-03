@@ -547,7 +547,7 @@ def main():
                                             if i[0] == board.players[0].x and i[1] == board.players[0].y:
                                                 player_btn[0].player.location = count
                                             count += 1
-                                        if board.players[0].location == board.players[1].location:
+                                        if player_btn[0].x == player_btn[1].x and player_btn[0].y == player_btn[1].y:
                                             if board.players[0].y < 117 and board.players[0].x < 114:
                                                 player_btn[0].x = board.players[0].x - 25
                                                 player_btn[0].y = board.players[0].y
@@ -598,7 +598,7 @@ def main():
                                             if i[0] == board.players[0].x and i[1] == board.players[0].y:
                                                 player_btn[0].player.location = count
                                             count += 1
-                                        if board.players[0].location == board.players[1].location:
+                                        if player_btn[0].x == player_btn[1].x and player_btn[0].y == player_btn[1].y:
                                             if board.players[0].y < 117 and board.players[0].x < 114:
                                                 player_btn[0].x = board.players[0].x - 25
                                                 player_btn[0].y = board.players[0].y
