@@ -123,7 +123,12 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
-        card = comm_chest[0]
+        if not player.inventory is None:
+            for item in player.inventory:
+                if isinstance(item, Card):
+                    card = item
+        else:
+            card = comm_chest[0]
         return [["Play Card", "comChest", card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
@@ -134,7 +139,12 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
-        card = chance[0]
+        if not player.inventory is None:
+            for item in player.inventory:
+                if isinstance(item, Card):
+                    card = item
+        else:
+            card = chance[0]
         return [["Play Card", "chance", card]]
     elif isinstance(tile, GoToJail):
         '''
@@ -360,6 +370,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         return indexList[player.location], card, instr
     elif card.action == "special":
         player.inventory.append(card)
+        print(player.inventory[0].message)
         return [-1, -1], card, instr
     return [-1, -1], card, instr
 
@@ -677,7 +688,7 @@ def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str
     :return: nothing
     """
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
-                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0,
+                    inventory=[], roll=0, in_jail=False, jail_counter=0, extra_turns=0,
                     extra_turn=False, x=x, y=y, image=None, rolled=False, picked=False, trade_offered=False,
                     roll_1=0, roll_2=0)
     board.players.append(player)
