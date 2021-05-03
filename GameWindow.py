@@ -750,20 +750,21 @@ def main():
                                     if (not p1.rolled or "rent" in buttons or "chance" in buttons or "commChest" in buttons or "tax" in buttons or\
                                             "pay_bail_required" in buttons or "jail_card_required" in buttons):
                                         pass
-                                    if p1.extra_turn:
-                                        p1.extra_turn = False
                                     else:
-                                        p1.rolled = False
-                                        is_card = False
-                                        is_chest = False
-                                        change_player(board)
-                                        buttons = {"Build": GameButton((199, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
-                                                   "Mortgage":
-                                                       GameButton((199, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
-                                                   "Roll":
-                                                       GameButton((199, 0, 0), 0, 855, 139, 45, "Roll", 'roll'),
-                                                   "End Turn":
-                                                       GameButton((199, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
+                                        if p1.extra_turn:
+                                            p1.extra_turn = False
+                                        else:
+                                            p1.rolled = False
+                                            is_card = False
+                                            is_chest = False
+                                            change_player(board)
+                                            buttons = {"Build": GameButton((199, 0, 0), 140, 855, 139, 45, 'Build', 'build'),
+                                                       "Mortgage":
+                                                           GameButton((199, 0, 0), 280, 855, 139, 45, "Mortgage", 'mortgage'),
+                                                       "Roll":
+                                                           GameButton((199, 0, 0), 0, 855, 139, 45, "Roll", 'roll'),
+                                                       "End Turn":
+                                                           GameButton((199, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
                     ######################################################################################
                     # Handle Mouse Movement events for our purposes this is where the buttons change color
                     #######################################################################################
