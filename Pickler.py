@@ -16,7 +16,10 @@ with open('monopoly_squares.csv') as csv_data_file:
             tile = Property(purchasable=True, owner=None, mortgaged=False, name=row[2], color=row[5],
                             cost=int(row[6]), house_cost=int(row[7]), rent=int(row[8]), rent_1=int(row[9]),
                             rent_2=int(row[10]), rent_3=int(row[11]), rent_4=int(row[12]), rent_5=int(row[13]),
-                            mortgage=int(row[14]), house_count=0, hotel_count=0, x=int(row[15]), y=int(row[16]), house_x=int(row[17]), house_y=int(row[18]), hotel_x=int(row[19]), hotel_y=int(row[20]))
+                            mortgage=int(row[14]), house_count=0, hotel_count=0, x=int(row[15]), y=int(row[16]),
+                            house_1_x=int(row[17]), house_1_y=int(row[18]), house_2_x=int(row[19]), house_2_y=int(row[20]),
+                            house_3_x=int(row[21]), house_3_y=int(row[22]), house_4_x=int(row[23]), house_4_y=int(row[24]),
+                            hotel_x=int(row[25]), hotel_y=int(row[26]))
             board.tiles.append(tile)
         elif row[1] == "Card":
             tile = CardTile(name=row[2], purchasable=False, action=row[2], color=row[5], x=int(row[15]), y=int(row[16]), cost=0)
