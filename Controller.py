@@ -397,7 +397,7 @@ def pay_bail(player: Player, tile: Tile):
     """
     if player.wallet < 50:
         if player.jail_counter == 0:
-            return "Insufficient Funds Mortgage Property or Go Bankrupt \n"
+            return True
         else:
             return "Insufficient Funds"
     else:
