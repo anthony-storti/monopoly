@@ -265,8 +265,8 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     # initialize values
     value_list = []
     small_value = 10000
-    card = pick_card(command, comm_chest, chance)
-    card.value = card.value.rstrip('\n')
+    # card = pick_card(command, comm_chest, chance)
+    # card.value = card.value.rstrip('\n')
     instr = ""
     if ";" in card.value:
         value_list = card.value.split(";")
@@ -360,6 +360,7 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         return indexList[player.location], card, instr
     elif card.action == "special":
         player.inventory.append(card)
+        print(player.inventory[0].message)
         return [-1, -1], card, instr
     return [-1, -1], card, instr
 
@@ -654,7 +655,7 @@ def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str
     :return: nothing
     """
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
-                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0,
+                    inventory=[], roll=0, in_jail=False, jail_counter=0, extra_turns=0,
                     extra_turn=False, x=x, y=y, image=None, rolled=False, picked=False, trade_offered=False,
                     roll_1=0, roll_2=0)
     board.players.append(player)
