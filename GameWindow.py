@@ -383,10 +383,6 @@ def main():
     winner = ""
     fx = True
     run = True
-    p1 = board.players[board.current_player]
-    purchase(p1, board.tiles[6])
-    purchase(p1, board.tiles[8])
-    purchase(p1, board.tiles[9])
     # board.players[0].inventory.append(Chance("special", "0", "Get out of Jail Free. "))
     while run:
         if len(board.players) == 1:
