@@ -115,6 +115,13 @@ class CardTile(Tile):
     action: str
     cost: int
     rent: int
+    rent_1: int
+    rent_2: int
+    rent_3: int
+    rent_4: int
+    rent_5: int
+    house_count: int
+    hotel_count: int
 
 
 @dataclass
