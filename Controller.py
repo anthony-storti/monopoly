@@ -682,14 +682,9 @@ def demolish(tile: Property, player: Player):
     if tile.hotel_count > 0:
         tile.hotel_count -= 1
         player.wallet += tile.house_cost
-        return f"Demolished 1 hotel on {tile.name}"
     elif tile.house_count > 0:
-        for item in player.inventory:
-            if item.color == tile.color and item.name != tile.name and item.house_count < tile.house_count:
-                return
         tile.house_count -= 1
         player.wallet += tile.house_cost
-        return f"Demolished 1 house on {tile.name}"
 
 
 def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str, machine: bool = False):
