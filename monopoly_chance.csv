@@ -7,7 +7,7 @@ chance,Bank pays you dividend of $50. ,Finance_1,50
 chance,Get out of Jail Free. ,special,0
 chance,Go Back Three Spaces.,move_steps,-3
 chance,Go to Jail,move_to,30
-chance,"Repair your property: $25(house), $100(hotel).",Finance_house,-100
+chance,"Repair property: $25(house), $100(hotel).",Finance_house,-100
 chance,Pay poor tax of $15,Finance_1,-15
 chance,"Take a trip to Reading Railroad.",move_to,5
 chance,Take a walk on the Boardwalk.,move_to,39
