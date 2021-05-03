@@ -594,7 +594,7 @@ def main():
                                         pygame.mixer.Sound.play(card_sound)
                                     is_card = True
                                     assert isinstance(b.card, Card)
-                                    coord, cardObj, instruction = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "chance", comm_chest, chance)
+                                    coord, cardObj, instruction = play_card(board.players[0], player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "chance", comm_chest, chance)
                                     card.card = cardObj
                                     card.text = card.card.message
                                     if coord[0] != -1 and coord[1] != -1:
@@ -645,7 +645,7 @@ def main():
                                         pygame.mixer.Sound.play(card_sound)
                                     is_chest = True
                                     assert isinstance(b.card, Card)
-                                    coord, cardObj, instruction = play_card(player_btn[0].player, player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "comChest", comm_chest, chance)
+                                    coord, cardObj, instruction = play_card(board.players[0], player_btn[0].card, board.players, board.tiles, BoardLocationIndex, "comChest", comm_chest, chance)
                                     comChest.card = cardObj
                                     comChest.text = comChest.card.message
                                     if coord[0] != -1 and coord[1] != -1:

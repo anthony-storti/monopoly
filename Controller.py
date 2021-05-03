@@ -15,12 +15,12 @@ def roll_dice(player: Player, board: Board):
     """
     ret = []
     if not player.rolled:
-        if player.machine_player:
-            roll1 = random.randint(1, 6)
-            roll2 = random.randint(1, 6)
-        else:
-            roll1 = int(input("roll 1"))
-            roll2 = int(input("roll 2"))
+        # if player.machine_player:
+        roll1 = random.randint(1, 6)
+        roll2 = random.randint(1, 6)
+        # else:
+        #     roll1 = int(input("roll 1"))
+        #     roll2 = int(input("roll 2"))
 
         player.roll_1 = roll1
         player.roll_2 = roll2
@@ -389,7 +389,6 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         return indexList[player.location], card, instr
     elif card.action == "special":
         player.inventory.append(card)
-        print(player.inventory[0].message)
         return [-1, -1], card, instr
     return [-1, -1], card, instr
 
@@ -469,6 +468,7 @@ def get_rent(tile: (Property, RailRoad, Utility, CardTile), player: Player):
     :param player: Player object paying rent(to get dice roll for Utility)
     :return: int: calculated rent
     """
+    rent = 0
     if isinstance(tile, Property):
         rent = [tile.rent, tile.rent_1, tile.rent_2, tile.rent_3, tile.rent_4]
         if tile.hotel_count < 1:
@@ -500,6 +500,7 @@ def get_rent(tile: (Property, RailRoad, Utility, CardTile), player: Player):
             return rent[tile.house_count]
         else:
             return tile.rent_5
+    return rent
 
 
 def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> bool:
