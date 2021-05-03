@@ -482,7 +482,7 @@ def main():
                                         break
                                     else:
                                         buttons.pop("tax")
-                                    break
+                                        break
                                 elif b.call == "pay_bail_optional" or b.call == "pay_bail_required":
                                     if fx:
                                         pygame.mixer.Sound.play(purchase_sound)
