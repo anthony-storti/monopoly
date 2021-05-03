@@ -153,6 +153,8 @@ class PopupPropertySelector:
             pass
         elif building:
             build(tile, player)
+            for tile in player.inventory:
+                print(tile.house_count)
             self.master.destroy()
         else:
             mortgage(tile, player)
