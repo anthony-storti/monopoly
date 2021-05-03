@@ -39,7 +39,7 @@ def roll_dice(player: Player, board: Board):
                     player.extra_turn = True
                 else:
                     player.location = 10
-                    player.jail_counter = 4
+                    player.jail_counter = 5
                     player.extra_turns = 0
                     player.x = 70
                     player.y = 770
@@ -154,7 +154,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: the "in jail" functionality still has to be handled elsewhere
         '''
         player.in_jail = True
-        player.jail_counter = 3
+        player.jail_counter = 4
         player.location = 10
         player.x = 70
         player.y = 770
@@ -212,7 +212,7 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: The "in jail" functionality is handled here
         '''
         if player.in_jail:
-            if player.jail_counter == 4:
+            if player.jail_counter > 3:
                 player.jail_counter -= 1
             if player.jail_counter > 0 or not player.rolled:
                 player.jail_counter -= 1
@@ -225,7 +225,9 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
+                            player.rolled = False
                             return [["Use card (required)", "jail_card_required"]]
+                player.rolled = False
                 return [["$50 bail (required)", "pay_bail_required"]]
         else:
             return ret
