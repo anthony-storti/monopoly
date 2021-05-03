@@ -265,8 +265,8 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
     # initialize values
     value_list = []
     small_value = 10000
-    # card = pick_card(command, comm_chest, chance)
-    # card.value = card.value.rstrip('\n')
+    card = pick_card(command, comm_chest, chance)
+    card.value = card.value.rstrip('\n')
     instr = ""
     if ";" in card.value:
         value_list = card.value.split(";")
