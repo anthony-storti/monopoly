@@ -283,8 +283,9 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         if tile_list[player.location].purchasable:
             card.cost = tile_list[player.location].cost
             tile_list[cardTileIndex].cost = tile_list[player.location].cost
-        if not tile_list[player.location].purchasable and not tile_list[player.location] is None:
-            tile_list[cardTileIndex].rent = tile_list[player.location].rent
+        if not tile_list[player.location].purchasable and isinstance(tile_list[player.location], Property):
+            if not tile_list[player.location].owner is None:
+                tile_list[cardTileIndex].rent = tile_list[player.location].rent
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "move_to_closest":
@@ -301,8 +302,9 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         if tile_list[player.location].purchasable:
             card.cost = tile_list[player.location].cost
             tile_list[cardTileIndex].cost = tile_list[player.location].cost
-        if not tile_list[player.location].purchasable and not tile_list[player.location] is None:
-            tile_list[cardTileIndex].rent = tile_list[player.location].rent
+        if not tile_list[player.location].purchasable and isinstance(tile_list[player.location], Property):
+            if not tile_list[player.location].owner is None:
+                tile_list[cardTileIndex].rent = tile_list[player.location].rent
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "Finance":
@@ -353,8 +355,9 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         if tile_list[player.location].purchasable:
             card.cost = tile_list[player.location].cost
             tile_list[cardTileIndex].cost = tile_list[player.location].cost
-        if not tile_list[player.location].purchasable and not tile_list[player.location] is None:
-            tile_list[cardTileIndex].rent = tile_list[player.location].rent
+        if not tile_list[player.location].purchasable and isinstance(tile_list[player.location], Property):
+            if not tile_list[player.location].owner is None:
+                tile_list[cardTileIndex].rent = tile_list[player.location].rent
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "special":
