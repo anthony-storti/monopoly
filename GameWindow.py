@@ -525,60 +525,74 @@ def main():
                                         buttons.pop("tax")
                                         break
                                 elif b.call == "pay_bail_optional" or b.call == "pay_bail_required":
-                                    if fx:
-                                        pygame.mixer.Sound.play(purchase_sound)
-                                    bankrupt = pay_bail(p1, board.tiles[p1.location])
-                                    if bankrupt:
-                                        buttons["Bankrupt"] = GameButton((199, 0, 0), 140, 855, 139, 45, 'Go Bankrupt',
-                                                                         'bankrupt')
-                                        break
+                                    if p1.rolled or p1.jail_counter == 0:
+                                        pass
                                     else:
-                                        count = 0
-                                        for i in BoardLocationIndex:
-                                            if i[0] == board.players[0].x and i[1] == board.players[0].y:
-                                                player_btn[0].player.location = count
-                                            count += 1
-                                        if board.players[0].location == board.players[1].location:
-                                            if board.players[0].y < 117 and board.players[0].x < 114:
-                                                player_btn[0].x = board.players[0].x - 25
-                                                player_btn[0].y = board.players[0].y
-                                                player_btn[1].x = board.players[1].x + 25
-                                                player_btn[1].y = board.players[1].y
-                                            elif board.players[0].y < 117 and board.players[0].x > 741:
-                                                player_btn[0].x = board.players[0].x - 25
-                                                player_btn[0].y = board.players[0].y
-                                                player_btn[1].x = board.players[1].x + 25
-                                                player_btn[1].y = board.players[1].y
-                                            elif board.players[0].y > 738 and board.players[0].x > 741:
-                                                player_btn[0].x = board.players[0].x - 25
-                                                player_btn[0].y = board.players[0].y
-                                                player_btn[1].x = board.players[1].x + 25
-                                                player_btn[1].y = board.players[1].y
-                                            elif board.players[0].x < 34 or board.players[0].y < 38:
-                                                player_btn[0].x = board.players[0].x - 25
-                                                player_btn[0].y = board.players[0].y
-                                                player_btn[1].x = board.players[1].x + 25
-                                                player_btn[1].y = board.players[1].y
-                                            elif board.players[0].x < 114 or board.players[0].x > 741:
-                                                player_btn[0].x = board.players[0].x
-                                                player_btn[0].y = board.players[0].y - 20
-                                                player_btn[1].x = board.players[1].x
-                                                player_btn[1].y = board.players[1].y + 20
-                                            elif board.players[0].y < 117 or board.players[0].y > 738:
-                                                player_btn[0].x = board.players[0].x - 25
-                                                player_btn[0].y = board.players[0].y
-                                                player_btn[1].x = board.players[1].x + 25
-                                                player_btn[1].y = board.players[1].y
+                                        if fx:
+                                            pygame.mixer.Sound.play(purchase_sound)
+                                        bankrupt = pay_bail(p1, board.tiles[p1.location])
+                                        if bankrupt:
+                                            buttons["Bankrupt"] = GameButton((199, 0, 0), 140, 855, 139, 45, 'Go Bankrupt',
+                                                                             'bankrupt')
+                                            break
                                         else:
-                                            player_btn[0].x = board.players[0].x
-                                            player_btn[0].y = board.players[0].y
-                                        buttons.pop("pay_bail_optional")
-                                        buttons.pop("pay_bail_required")
-                                        break
+                                            p1.rolled = True
+                                            count = 0
+                                            for i in BoardLocationIndex:
+                                                if i[0] == board.players[0].x and i[1] == board.players[0].y:
+                                                    player_btn[0].player.location = count
+                                                count += 1
+                                            if board.players[0].location == board.players[1].location:
+                                                if board.players[0].y < 117 and board.players[0].x < 114:
+                                                    player_btn[0].x = board.players[0].x - 25
+                                                    player_btn[0].y = board.players[0].y
+                                                    player_btn[1].x = board.players[1].x + 25
+                                                    player_btn[1].y = board.players[1].y
+                                                elif board.players[0].y < 117 and board.players[0].x > 741:
+                                                    player_btn[0].x = board.players[0].x - 25
+                                                    player_btn[0].y = board.players[0].y
+                                                    player_btn[1].x = board.players[1].x + 25
+                                                    player_btn[1].y = board.players[1].y
+                                                elif board.players[0].y > 738 and board.players[0].x > 741:
+                                                    player_btn[0].x = board.players[0].x - 25
+                                                    player_btn[0].y = board.players[0].y
+                                                    player_btn[1].x = board.players[1].x + 25
+                                                    player_btn[1].y = board.players[1].y
+                                                elif board.players[0].x < 34 or board.players[0].y < 38:
+                                                    player_btn[0].x = board.players[0].x - 25
+                                                    player_btn[0].y = board.players[0].y
+                                                    player_btn[1].x = board.players[1].x + 25
+                                                    player_btn[1].y = board.players[1].y
+                                                elif board.players[0].x < 114 or board.players[0].x > 741:
+                                                    player_btn[0].x = board.players[0].x
+                                                    player_btn[0].y = board.players[0].y - 20
+                                                    player_btn[1].x = board.players[1].x
+                                                    player_btn[1].y = board.players[1].y + 20
+                                                elif board.players[0].y < 117 or board.players[0].y > 738:
+                                                    player_btn[0].x = board.players[0].x - 25
+                                                    player_btn[0].y = board.players[0].y
+                                                    player_btn[1].x = board.players[1].x + 25
+                                                    player_btn[1].y = board.players[1].y
+                                            else:
+                                                player_btn[0].x = board.players[0].x
+                                                player_btn[0].y = board.players[0].y
+                                            if b.call == "pay_bail_optional":
+                                                buttons.pop("pay_bail_optional")
+                                            else:
+                                                buttons.pop("pay_bail_required")
+                                            break
                                 elif b.call == "jail_card_optional" or b.call == "jail_card_required":
-                                    if fx:
-                                        pygame.mixer.Sound.play(card_sound)
-                                    use_jail_card(p1, board.tiles[p1.location], comm_chest, chance)
+                                    if p1.rolled:
+                                        pass
+                                    else:
+                                        if fx:
+                                            pygame.mixer.Sound.play(card_sound)
+                                        use_jail_card(p1, board.tiles[p1.location], comm_chest, chance)
+                                        p1.rolled = True
+                                        if b.call == "jail_card_optional":
+                                            buttons.pop("jail_card_optional")
+                                        else:
+                                            buttons.pop("jail_card_required")
                                 elif b.call == "chance":
                                     if fx:
                                         pygame.mixer.Sound.play(card_sound)
@@ -700,6 +714,14 @@ def main():
                                         create_landson_buttons(roll_dice(p1, board), buttons)
                                         dice[0].text = f"images/die_{p1.roll_1}.png"
                                         dice[1].text = f"images/die_{p1.roll_2}.png"
+                                        if "jail_roll_optional" in buttons:
+                                            buttons.pop("jail_roll_optional")
+                                        elif "jail_roll_required" in buttons:
+                                            buttons.pop("jail_roll_required")
+                                        elif "jail_card_optional" in buttons:
+                                            buttons.pop("jail_card_optional")
+                                        elif "jail_card_required" in buttons:
+                                            buttons.pop("jail_card_required")
                                         if board.players[0].location == board.players[1].location:
                                             count = 0
                                             for i in BoardLocationIndex:
@@ -745,13 +767,16 @@ def main():
                                                     count += 1
                                             player_btn[0].x = board.players[0].x
                                             player_btn[0].y = board.players[0].y
-                                        buttons = create_landson_buttons(lands_on(board.tiles[p1.location], p1, chance,
-                                                                                  comm_chest), buttons)
+                                        new_button = lands_on(board.tiles[p1.location], p1, chance,
+                                                              comm_chest)
+                                        if not p1.in_jail:
+                                            buttons = create_landson_buttons(new_button, buttons)
                                         p1.rolled = True
                                         break
                                 elif b.call == "toJail":
                                     if fx:
                                         pygame.mixer.Sound.play(button_sound)
+                                    p1.in_jail = True
                                     player_btn[0].x = board.players[0].x
                                     player_btn[0].y = board.players[0].y
                                     if board.players[0].location == board.players[1].location:
@@ -813,6 +838,8 @@ def main():
                                                            GameButton((199, 0, 0), 0, 855, 139, 45, "Roll", 'roll'),
                                                        "End Turn":
                                                            GameButton((199, 0, 0), 420, 855, 139, 45, "End Turn", 'end_turn')}
+                                            if p1.in_jail:
+                                                create_landson_buttons(lands_on(board.tiles[p1.location], p1, comm_chest, chance), buttons)
                     ######################################################################################
                     # Handle Mouse Movement events for our purposes this is where the buttons change color
                     #######################################################################################

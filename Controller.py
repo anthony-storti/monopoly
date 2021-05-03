@@ -15,8 +15,13 @@ def roll_dice(player: Player, board: Board):
     """
     ret = []
     if not player.rolled:
-        roll1 = random.randint(1, 6)
-        roll2 = random.randint(1, 6)
+        if player.machine_player:
+            roll1 = random.randint(1, 6)
+            roll2 = random.randint(1, 6)
+        else:
+            roll1 = int(input("roll 1"))
+            roll2 = int(input("roll 2"))
+
         player.roll_1 = roll1
         player.roll_2 = roll2
         player.roll = roll1 + roll2
@@ -29,14 +34,14 @@ def roll_dice(player: Player, board: Board):
 
             else:
                 player.roll = 0
+                return ret
 
         else:
             if roll1 == roll2:
-                if player.extra_turns < 3:
+                if player.extra_turns < 2:
                     player.extra_turns += 1
                     player.extra_turn = True
                 else:
-                    player.in_jail = True
                     player.location = 10
                     player.jail_counter = 4
                     player.extra_turns = 0
@@ -213,19 +218,19 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         if player.in_jail:
             if player.jail_counter == 4:
                 player.jail_counter -= 1
-            if player.jail_counter > 0:
+            if player.jail_counter > 0 or not player.rolled:
                 player.jail_counter -= 1
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return [["Use Get out of jail free card (optional)", "jail_card_optional"]]
-                return [["Pay $50 bail (optional)", "pay_bail_optional"]]
+                            return [["Use card (optional)", "jail_card_optional"]]
+                return [["$50 bail (optional)", "pay_bail_optional"]]
             else:
                 for item in player.inventory:
                     if isinstance(item, (CommunityChest, Chance)):
                         if "Get out of Jail" in item.message:
-                            return [["Use get out of jail free card (required)", "jail_card_required"]]
-                return [["Pay $50 bail (required)", "pay_bail_required"]]
+                            return [["Use card (required)", "jail_card_required"]]
+                return [["$50 bail (required)", "pay_bail_required"]]
         else:
             return ret
 
@@ -259,6 +264,7 @@ def pick_card(command, comm_chest: List[CommunityChest], chance: List[Chance]):
         if card.action != "special":
             chance.insert(0, card)
         return card
+
 
 def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[Player], tile_list: List[Tile], indexList: List[List[int]], command, comm_chest: List[CommunityChest], chance: List[Chance]):
     """
@@ -430,7 +436,7 @@ def pay_bail(player: Player, tile: Tile):
         player.in_jail = False
         player.x = tile.x
         player.y = tile.y
-        return "You paid bail and are out of jail"
+        return
 
 
 def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chance: List[Chance]):
