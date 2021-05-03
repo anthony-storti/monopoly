@@ -48,8 +48,28 @@
     
 - Sound Control
     - Clicking the speaker icon in the upper right corner will mute/un-mute all game sounds
-    
-> Credits
+   
+> Non Features
 
-- https://www.youtube.com/watch?v=4_9twnEduFA
-- <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+- Trading 
+    - For this iteration of the game trading has not been implemented
+- Auction 
+    - For this iteration of the game auctioning properties has not been implemented
+- Selling Houses 
+    -  For this iteration of the game selling houses has not been implemented
+> Acknowledgements
+
+- Buttons
+    - https://www.youtube.com/watch?v=4_9twnEduFA
+
+- Tokens and Icons    
+    - <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+- Sounds
+    - <a href="https://freesound.org/people/Jofae/" target="_top">Button Sound</a>
+    - <a href="https://freesound.org/people/kiddpark/sounds/201159/" target="_top">Cash Register</a>
+    - <a href="https://freesound.org/people/Migfus20/sounds/567112/" target="_top">Game Soundtrack</a>
+    - <a href="https://freesound.org/people/nettimato/sounds/353975/" target="_top">Dice Roll</a>
+    
+- *Initial* CSV Files
+  - <a href="https://github.com/hitchhiker744/monopoly_math/blob/main/chance_cards.csv" target="_top">CSV: Tiles & Cards</a>
