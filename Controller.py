@@ -123,12 +123,11 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
+        card = comm_chest[0]
         if not player.inventory is None:
             for item in player.inventory:
                 if isinstance(item, Card):
                     card = item
-        else:
-            card = comm_chest[0]
         return [["Play Card", "comChest", card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
@@ -139,12 +138,11 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         function: play_card
         note: returns card drawn
         '''
+        card = chance[0]
         if not player.inventory is None:
             for item in player.inventory:
                 if isinstance(item, Card):
                     card = item
-        else:
-            card = chance[0]
         return [["Play Card", "chance", card]]
     elif isinstance(tile, GoToJail):
         '''
