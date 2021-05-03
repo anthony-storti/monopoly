@@ -129,6 +129,10 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: returns card drawn
         '''
         card = comm_chest[0]
+        if not player.inventory is None:
+            for item in player.inventory:
+                if isinstance(item, Card):
+                    card = item
         return [["Play Card", "comChest", card]]
 
     elif isinstance(tile, CardTile) and tile.name == "Chance":
@@ -140,6 +144,10 @@ def lands_on(tile: Tile, player: Player, comm_chest: List[CommunityChest], chanc
         note: returns card drawn
         '''
         card = chance[0]
+        if not player.inventory is None:
+            for item in player.inventory:
+                if isinstance(item, Card):
+                    card = item
         return [["Play Card", "chance", card]]
     elif isinstance(tile, GoToJail):
         '''
@@ -290,6 +298,11 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         if not tile_list[player.location].purchasable and isinstance(tile_list[player.location], Property):
             if not tile_list[player.location].owner is None:
                 tile_list[cardTileIndex].rent = tile_list[player.location].rent
+                tile_list[cardTileIndex].rent_1 = tile_list[player.location].rent_1
+                tile_list[cardTileIndex].rent_2 = tile_list[player.location].rent_2
+                tile_list[cardTileIndex].rent_3 = tile_list[player.location].rent_3
+                tile_list[cardTileIndex].rent_4 = tile_list[player.location].rent_4
+                tile_list[cardTileIndex].rent_5 = tile_list[player.location].rent_5
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "move_to_closest":
@@ -309,6 +322,11 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         if not tile_list[player.location].purchasable and isinstance(tile_list[player.location], Property):
             if not tile_list[player.location].owner is None:
                 tile_list[cardTileIndex].rent = tile_list[player.location].rent
+                tile_list[cardTileIndex].rent_1 = tile_list[player.location].rent_1
+                tile_list[cardTileIndex].rent_2 = tile_list[player.location].rent_2
+                tile_list[cardTileIndex].rent_3 = tile_list[player.location].rent_3
+                tile_list[cardTileIndex].rent_4 = tile_list[player.location].rent_4
+                tile_list[cardTileIndex].rent_5 = tile_list[player.location].rent_5
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "Finance":
@@ -362,10 +380,16 @@ def play_card(player: Player, card: (CommunityChest, Chance), player_list: List[
         if not tile_list[player.location].purchasable and isinstance(tile_list[player.location], Property):
             if not tile_list[player.location].owner is None:
                 tile_list[cardTileIndex].rent = tile_list[player.location].rent
+                tile_list[cardTileIndex].rent_1 = tile_list[player.location].rent_1
+                tile_list[cardTileIndex].rent_2 = tile_list[player.location].rent_2
+                tile_list[cardTileIndex].rent_3 = tile_list[player.location].rent_3
+                tile_list[cardTileIndex].rent_4 = tile_list[player.location].rent_4
+                tile_list[cardTileIndex].rent_5 = tile_list[player.location].rent_5
         instr = lands_on(tile_list[player.location], player, comm_chest, chance)
         return indexList[player.location], card, instr
     elif card.action == "special":
         player.inventory.append(card)
+        print(player.inventory[0].message)
         return [-1, -1], card, instr
     return [-1, -1], card, instr
 
@@ -438,7 +462,7 @@ def jail_roll(tile: Tile, player: Player, comm_chest: List[CommunityChest], chan
         return "You did not get out of Jail"
 
 
-def get_rent(tile: (Property, RailRoad, Utility), player: Player):
+def get_rent(tile: (Property, RailRoad, Utility, CardTile), player: Player):
     """
     Get Rent  - After this call the rent value of Property, Railroad and Utility will be calculated
     :param tile: tile: Tile object to calculate rent on
@@ -470,6 +494,12 @@ def get_rent(tile: (Property, RailRoad, Utility), player: Player):
                 if rr > 1:
                     rent *= 2
         return rent
+    elif isinstance(tile, CardTile):
+        rent = [tile.rent, tile.rent_1, tile.rent_2, tile.rent_3, tile.rent_4]
+        if tile.hotel_count < 1:
+            return rent[tile.house_count]
+        else:
+            return tile.rent_5
 
 
 def pay_rent(player: Player, tile: (Property, RailRoad, Utility)) -> bool:
@@ -543,6 +573,14 @@ def machine_algo(player: Player, board: Board, cc, chance):
     :return: str: choice made by machine
     """
     # TODO: Implement a Real Machine Player ALGO
+    BoardLocationIndex = [[780, 800], [700, 800], [630, 800], [560, 800], [490, 800], [420, 800], [350, 800],
+                          [280, 800], [210, 800],
+                          [140, 800], [70, 825], [30, 700], [30, 630], [30, 560], [30, 490], [30, 420], [30, 350],
+                          [30, 280],
+                          [30, 210], [30, 140], [50, 40], [140, 30], [210, 30], [280, 30], [350, 30], [420, 30],
+                          [490, 30], [560, 30], [630, 30], [700, 30], [780, 40], [800, 140], [800, 210], [800, 280],
+                          [800, 350], [800, 420], [800, 490], [800, 560], [800, 630], [800, 700]]
+
     if not player.picked:
         player.image = board.pieces[0]
         player.picked = True
@@ -553,8 +591,23 @@ def machine_algo(player: Player, board: Board, cc, chance):
         choice = instr[0][1]
         if choice == "purchase" and player.wallet >= tile.cost:
             purchase(player, tile)
+        if choice == "rent":
+            bankrupt = pay_rent(player, board)
+            if bankrupt:
+                go_bankrupt(player, cc, chance)
+        if choice == "tax":
+            bankrupt = pay_tax(player, board.tiles[player.location])
+            if bankrupt:
+                go_bankrupt(player, cc, chance)
+        if len(buildable(player)) > 0:
+            build(buildable(player)[random.randint(0, len(buildable(player))-1)], player)
+        if choice == "comChest":
+            play_card(player, instr[0][2], board.players, board.tiles, BoardLocationIndex, "comchest", cc, chance)
+        if choice == "chance":
+            play_card(player, instr[0][2], board.players, board.tiles, BoardLocationIndex, "chance", cc, chance)
     change_player(board)
     player.rolled = False
+
 
 
 def mortgage(tile: Tile, player: Player):
@@ -660,7 +713,7 @@ def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str
     :return: nothing
     """
     player = Player(name=name, machine_player=machine, piece=token, location=0, wallet=1500,
-                    inventory=list(), roll=0, in_jail=False, jail_counter=0, extra_turns=0,
+                    inventory=[], roll=0, in_jail=False, jail_counter=0, extra_turns=0,
                     extra_turn=False, x=x, y=y, image=None, rolled=False, picked=False, trade_offered=False,
                     roll_1=0, roll_2=0)
     board.players.append(player)
