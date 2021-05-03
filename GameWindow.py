@@ -463,6 +463,7 @@ def main():
                                     if bankrupt:
                                         buttons["Bankrupt"] = GameButton((199, 0, 0), 140, 855, 139, 45, 'Go Bankrupt',
                                                                          'bankrupt')
+                                        break
                                     else:
                                         buttons.pop('rent')
                                         break
@@ -478,6 +479,7 @@ def main():
                                     if bankrupt:
                                         buttons["Bankrupt"] = GameButton((199, 0, 0), 140, 855, 139, 45, 'Go Bankrupt',
                                                                          'bankrupt')
+                                        break
                                     else:
                                         buttons.pop("tax")
                                     break
