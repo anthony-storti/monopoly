@@ -814,6 +814,6 @@ def main():
             text = font.render(f"{winner} won the game", True, (199, 0, 0))
             win.blit(text, (width / 2 - text.get_width() / 2 - 30, height / 2 - text.get_height() / 2 + 100))
             pygame.display.update()
-            
+
 
 main()
