@@ -393,17 +393,17 @@ def main():
                         player_btn[0].y = board.players[0].y
                         player_btn[1].x = board.players[1].x + 25
                         player_btn[1].y = board.players[1].y
+                    elif board.players[0].x < 34 or board.players[0].y < 38:
+                        player_btn[0].x = board.players[0].x - 25
+                        player_btn[0].y = board.players[0].y
+                        player_btn[1].x = board.players[1].x + 25
+                        player_btn[1].y = board.players[1].y
                     elif board.players[0].x < 114 or board.players[0].x > 741:
                         player_btn[0].x = board.players[0].x
                         player_btn[0].y = board.players[0].y - 20
                         player_btn[1].x = board.players[1].x
                         player_btn[1].y = board.players[1].y + 20
                     elif board.players[0].y < 117 or board.players[0].y > 738:
-                        player_btn[0].x = board.players[0].x - 25
-                        player_btn[0].y = board.players[0].y
-                        player_btn[1].x = board.players[1].x + 25
-                        player_btn[1].y = board.players[1].y
-                    elif board.players[0].x < 34 or board.players[0].y < 38:
                         player_btn[0].x = board.players[0].x - 25
                         player_btn[0].y = board.players[0].y
                         player_btn[1].x = board.players[1].x + 25
@@ -522,17 +522,17 @@ def main():
                                             player_btn[0].y = board.players[0].y
                                             player_btn[1].x = board.players[1].x + 25
                                             player_btn[1].y = board.players[1].y
+                                        elif board.players[0].x < 34 or board.players[0].y < 38:
+                                            player_btn[0].x = board.players[0].x - 25
+                                            player_btn[0].y = board.players[0].y
+                                            player_btn[1].x = board.players[1].x + 25
+                                            player_btn[1].y = board.players[1].y
                                         elif board.players[0].x < 114 or board.players[0].x > 741:
                                             player_btn[0].x = board.players[0].x
                                             player_btn[0].y = board.players[0].y - 20
                                             player_btn[1].x = board.players[1].x
                                             player_btn[1].y = board.players[1].y + 20
                                         elif board.players[0].y < 117 or board.players[0].y > 738:
-                                            player_btn[0].x = board.players[0].x - 25
-                                            player_btn[0].y = board.players[0].y
-                                            player_btn[1].x = board.players[1].x + 25
-                                            player_btn[1].y = board.players[1].y
-                                        elif board.players[0].x < 34 or board.players[0].y < 38:
                                             player_btn[0].x = board.players[0].x - 25
                                             player_btn[0].y = board.players[0].y
                                             player_btn[1].x = board.players[1].x + 25
@@ -579,17 +579,17 @@ def main():
                                                 player_btn[0].y = board.players[0].y
                                                 player_btn[1].x = board.players[1].x + 25
                                                 player_btn[1].y = board.players[1].y
+                                            elif board.players[0].x < 34 or board.players[0].y < 38:
+                                                player_btn[0].x = board.players[0].x - 25
+                                                player_btn[0].y = board.players[0].y
+                                                player_btn[1].x = board.players[1].x + 25
+                                                player_btn[1].y = board.players[1].y
                                             elif board.players[0].x < 114 or board.players[0].x > 741:
                                                 player_btn[0].x = board.players[0].x
                                                 player_btn[0].y = board.players[0].y - 20
                                                 player_btn[1].x = board.players[1].x
                                                 player_btn[1].y = board.players[1].y + 20
                                             elif board.players[0].y < 117 or board.players[0].y > 738:
-                                                player_btn[0].x = board.players[0].x - 25
-                                                player_btn[0].y = board.players[0].y
-                                                player_btn[1].x = board.players[1].x + 25
-                                                player_btn[1].y = board.players[1].y
-                                            elif board.players[0].x < 34 or board.players[0].y < 38:
                                                 player_btn[0].x = board.players[0].x - 25
                                                 player_btn[0].y = board.players[0].y
                                                 player_btn[1].x = board.players[1].x + 25
@@ -630,17 +630,17 @@ def main():
                                                 player_btn[0].y = board.players[0].y
                                                 player_btn[1].x = board.players[1].x + 25
                                                 player_btn[1].y = board.players[1].y
+                                            elif board.players[0].x < 34 or board.players[0].y < 38:
+                                                player_btn[0].x = board.players[0].x - 25
+                                                player_btn[0].y = board.players[0].y
+                                                player_btn[1].x = board.players[1].x + 25
+                                                player_btn[1].y = board.players[1].y
                                             elif board.players[0].x < 114 or board.players[0].x > 741:
                                                 player_btn[0].x = board.players[0].x
                                                 player_btn[0].y = board.players[0].y - 20
                                                 player_btn[1].x = board.players[1].x
                                                 player_btn[1].y = board.players[1].y + 20
                                             elif board.players[0].y < 117 or board.players[0].y > 738:
-                                                player_btn[0].x = board.players[0].x - 25
-                                                player_btn[0].y = board.players[0].y
-                                                player_btn[1].x = board.players[1].x + 25
-                                                player_btn[1].y = board.players[1].y
-                                            elif board.players[0].x < 34 or board.players[0].y < 38:
                                                 player_btn[0].x = board.players[0].x - 25
                                                 player_btn[0].y = board.players[0].y
                                                 player_btn[1].x = board.players[1].x + 25
@@ -689,17 +689,17 @@ def main():
                                                 player_btn[0].y = board.players[0].y
                                                 player_btn[1].x = board.players[1].x + 25
                                                 player_btn[1].y = board.players[1].y
+                                            elif board.players[0].x < 34 or board.players[0].y < 38:
+                                                player_btn[0].x = board.players[0].x - 25
+                                                player_btn[0].y = board.players[0].y
+                                                player_btn[1].x = board.players[1].x + 25
+                                                player_btn[1].y = board.players[1].y
                                             elif board.players[0].x < 114 or board.players[0].x > 741:
                                                 player_btn[0].x = board.players[0].x
                                                 player_btn[0].y = board.players[0].y - 20
                                                 player_btn[1].x = board.players[1].x
                                                 player_btn[1].y = board.players[1].y + 20
                                             elif board.players[0].y < 117 or board.players[0].y > 738:
-                                                player_btn[0].x = board.players[0].x - 25
-                                                player_btn[0].y = board.players[0].y
-                                                player_btn[1].x = board.players[1].x + 25
-                                                player_btn[1].y = board.players[1].y
-                                            elif board.players[0].x < 34 or board.players[0].y < 38:
                                                 player_btn[0].x = board.players[0].x - 25
                                                 player_btn[0].y = board.players[0].y
                                                 player_btn[1].x = board.players[1].x + 25
@@ -743,17 +743,17 @@ def main():
                                             player_btn[0].y = board.players[0].y
                                             player_btn[1].x = board.players[1].x + 25
                                             player_btn[1].y = board.players[1].y
+                                        elif board.players[0].x < 34 or board.players[0].y < 38:
+                                            player_btn[0].x = board.players[0].x - 25
+                                            player_btn[0].y = board.players[0].y
+                                            player_btn[1].x = board.players[1].x + 25
+                                            player_btn[1].y = board.players[1].y
                                         elif board.players[0].x < 114 or board.players[0].x > 741:
                                             player_btn[0].x = board.players[0].x
                                             player_btn[0].y = board.players[0].y - 20
                                             player_btn[1].x = board.players[1].x
                                             player_btn[1].y = board.players[1].y + 20
                                         elif board.players[0].y < 117 or board.players[0].y > 738:
-                                            player_btn[0].x = board.players[0].x - 25
-                                            player_btn[0].y = board.players[0].y
-                                            player_btn[1].x = board.players[1].x + 25
-                                            player_btn[1].y = board.players[1].y
-                                        elif board.players[0].x < 34 or board.players[0].y < 38:
                                             player_btn[0].x = board.players[0].x - 25
                                             player_btn[0].y = board.players[0].y
                                             player_btn[1].x = board.players[1].x + 25
