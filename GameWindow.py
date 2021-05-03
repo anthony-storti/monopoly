@@ -521,7 +521,7 @@ def main():
                                         buttons.pop("tax")
                                         break
                                 elif b.call == "pay_bail_optional" or b.call == "pay_bail_required":
-                                    if p1.rolled or p1.jail_counter == 0:
+                                    if p1.rolled and b.call != "pay_bail_required":
                                         pass
                                     else:
                                         if fx:
@@ -578,7 +578,7 @@ def main():
                                                 buttons.pop("pay_bail_required")
                                             break
                                 elif b.call == "jail_card_optional" or b.call == "jail_card_required":
-                                    if p1.rolled:
+                                    if p1.rolled and b.call != "jail_card_required":
                                         pass
                                     else:
                                         if fx:
@@ -765,8 +765,7 @@ def main():
                                             player_btn[0].y = board.players[0].y
                                         new_button = lands_on(board.tiles[p1.location], p1, chance,
                                                               comm_chest)
-                                        if not p1.in_jail:
-                                            buttons = create_landson_buttons(new_button, buttons)
+                                        buttons = create_landson_buttons(new_button, buttons)
                                         p1.rolled = True
                                         break
                                 elif b.call == "toJail":

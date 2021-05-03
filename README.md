@@ -5,8 +5,11 @@
 
 ![](https://www.worldofmonopoly.com/northamerica/usa/country/info/images/rules/1940/1940-star.jpg)
 
->>> ### Interacting with the Game UI
+> Starting the Game
 
+- Run GameWindow.py
+
+# Interacting with the Game UI
 
 > Select Token and Start Game
 - Starting the game will bring to you an initial screen where you will be prompted to select a token. Click on the token you wish to play. This action will start the game
