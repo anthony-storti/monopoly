@@ -114,6 +114,7 @@ class Utility(Tile):
 class CardTile(Tile):
     action: str
     cost: int
+    rent: int
 
 
 @dataclass

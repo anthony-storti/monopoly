@@ -22,7 +22,7 @@ with open('monopoly_squares.csv') as csv_data_file:
                             hotel_x=int(row[25]), hotel_y=int(row[26]))
             board.tiles.append(tile)
         elif row[1] == "Card":
-            tile = CardTile(name=row[2], purchasable=False, action=row[2], color=row[5], x=int(row[15]), y=int(row[16]), cost=0)
+            tile = CardTile(name=row[2], purchasable=False, action=row[2], color=row[5], x=int(row[15]), y=int(row[16]), cost=0, rent=0)
             board.tiles.append(tile)
         elif row[1] == "Go":
             tile = Go(purchasable=False, name=row[2], action=row[3], value=int(row[4]), color=row[5], x=int(row[15]), y=int(row[16]))
