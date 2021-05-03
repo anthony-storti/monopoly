@@ -82,6 +82,7 @@ class PopupPlayer:
         self.close_button = Button(master, text="Close", command=master.destroy).pack()
         self.master.geometry(f"400x{h}")
 
+
 class PopupPropertySelector:
 
     def __init__(self, master, player: Player, building: bool):
@@ -770,16 +771,16 @@ def main():
                                     buttons.pop("toJail")
                                     break
                                 elif b.call == "end_turn":
-                                    if fx:
-                                        pygame.mixer.Sound.play(button_sound)
-                                    if (not p1.rolled or "rent" in buttons or "chance" in buttons or "commChest" in buttons or "tax" in buttons or\
-                                            "pay_bail_required" in buttons or "jail_card_required" in buttons):
+                                    if (not p1.rolled or "rent" in buttons or "chance" in buttons or "commChest" in buttons or "tax" in buttons or
+                                            "pay_bail_required" in buttons or "jail_card_required" in buttons or "toJail" in buttons):
                                         pass
                                     else:
+                                        if fx:
+                                            pygame.mixer.Sound.play(button_sound)
+                                        p1.rolled = False
                                         if p1.extra_turn:
                                             p1.extra_turn = False
                                         else:
-                                            p1.rolled = False
                                             is_card = False
                                             is_chest = False
                                             change_player(board)
