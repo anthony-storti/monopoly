@@ -537,6 +537,14 @@ def machine_algo(player: Player, board: Board, cc, chance):
     :return: str: choice made by machine
     """
     # TODO: Implement a Real Machine Player ALGO
+    BoardLocationIndex = [[780, 800], [700, 800], [630, 800], [560, 800], [490, 800], [420, 800], [350, 800],
+                          [280, 800], [210, 800],
+                          [140, 800], [70, 825], [30, 700], [30, 630], [30, 560], [30, 490], [30, 420], [30, 350],
+                          [30, 280],
+                          [30, 210], [30, 140], [50, 40], [140, 30], [210, 30], [280, 30], [350, 30], [420, 30],
+                          [490, 30], [560, 30], [630, 30], [700, 30], [780, 40], [800, 140], [800, 210], [800, 280],
+                          [800, 350], [800, 420], [800, 490], [800, 560], [800, 630], [800, 700]]
+
     if not player.picked:
         player.image = board.pieces[0]
         player.picked = True
@@ -547,8 +555,23 @@ def machine_algo(player: Player, board: Board, cc, chance):
         choice = instr[0][1]
         if choice == "purchase" and player.wallet >= tile.cost:
             purchase(player, tile)
+        if choice == "rent":
+            bankrupt = pay_rent(player, board)
+            if bankrupt:
+                go_bankrupt(player, cc, chance)
+        if choice == "tax":
+            bankrupt = pay_tax(player, board.tiles[player.location])
+            if bankrupt:
+                go_bankrupt(player, cc, chance)
+        if len(buildable(player)) > 0:
+            build(buildable(player)[random.randint(0, len(buildable(player))-1)], player)
+        if choice == "comChest":
+            play_card(player, instr[0][2], board.players, board.tiles, BoardLocationIndex, "comchest", cc, chance)
+        if choice == "chance":
+            play_card(player, instr[0][2], board.players, board.tiles, BoardLocationIndex, "chance", cc, chance)
     change_player(board)
     player.rolled = False
+
 
 
 def mortgage(tile: Tile, player: Player):

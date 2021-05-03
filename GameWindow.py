@@ -138,6 +138,7 @@ class PopupPropertySelector:
                     self.select_button = Button(master, text="Select", command=lambda:
                                                 self.execute(tile_dict[self.clicked.get()], player, building)).pack()
         self.close_button = Button(master, text="Close", command=master.destroy).pack()
+
     def execute(self, tile, player, building: bool):
         """
         execute - This will either do nothing if the tile passed in was an empty string, or it will call mortgage
