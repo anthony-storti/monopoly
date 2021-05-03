@@ -465,6 +465,7 @@ def get_rent(tile: (Property, RailRoad, Utility, CardTile), player: Player):
     :param player: Player object paying rent(to get dice roll for Utility)
     :return: int: calculated rent
     """
+    rent = 0
     if isinstance(tile, Property):
         rent = [tile.rent, tile.rent_1, tile.rent_2, tile.rent_3, tile.rent_4]
         if tile.hotel_count < 1:
