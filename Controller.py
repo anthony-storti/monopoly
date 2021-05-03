@@ -683,16 +683,23 @@ def buildable(player: Player):
         :return can_built: a list of properties that can be built on
         """
     can_build = []
-    for item_check in player.inventory:
-        if isinstance(item_check, Property):
-            if not item_check.mortgaged and item_check.hotel_count == 0:
-                count = 0
-                for item in player.inventory:
-                    if isinstance(item, Property):
-                        if count == 3 or (count == 2 and (item_check.color == "brown" or item_check.color == "blue")):
-                            can_build.append(item_check)
-                            break
-                        elif item.color == item_check.color and not item.mortgaged:
-                            count += 1
+    tiles = {}
+    for tile in player.inventory:
+        if isinstance(tile, Card):
+            pass
+        else:
+            tiles[tile.color] = []
+    for tile in player.inventory:
+        if isinstance(tile, Card):
+            pass
+        else:
+            tiles[tile.color].append(tile)
+    for color, props in tiles.items():
+        if (color == "blue" or color == "brown" or color == "purple") and len(tiles[color]) == 2:
+            for t in tiles[color]:
+                can_build.append(t)
+        elif len(tiles[color]) == 3:
+            for t in tiles[color]:
+                can_build.append(t)
     return can_build
 
