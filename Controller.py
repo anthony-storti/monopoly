@@ -15,12 +15,8 @@ def roll_dice(player: Player, board: Board):
     """
     ret = []
     if not player.rolled:
-        if player.machine_player:
-            roll1 = random.randint(1, 6)
-            roll2 = random.randint(1, 6)
-        else:
-            roll1 = int(input("roll 1: "))
-            roll2 = int(input("roll 2: "))
+        roll1 = random.randint(1, 6)
+        roll2 = random.randint(1, 6)
 
         player.roll_1 = roll1
         player.roll_2 = roll2
@@ -594,7 +590,7 @@ def machine_algo(player: Player, board: Board, cc, chance):
         if choice == "purchase" and player.wallet >= tile.cost:
             purchase(player, tile)
         if choice == "rent":
-            bankrupt = pay_rent(player, board)
+            bankrupt = pay_rent(player, board.tiles[player.location])
             if bankrupt:
                 go_bankrupt(player, cc, chance)
         if choice == "tax":
@@ -607,6 +603,13 @@ def machine_algo(player: Player, board: Board, cc, chance):
             play_card(player, instr[0][2], board.players, board.tiles, BoardLocationIndex, "comchest", cc, chance)
         if choice == "chance":
             play_card(player, instr[0][2], board.players, board.tiles, BoardLocationIndex, "chance", cc, chance)
+        if choice == "jail_card_optional" or choice == "jail_card_required":
+            use_jail_card(player, board.tiles[player.location], chance, cc)
+        if choice == 'pay_bail_optional' or choice == 'pay_bail_required':
+            bankrupt = pay_bail(player, board.tiles[player.location])
+            if bankrupt:
+                go_bankrupt(player, cc, chance)
+
     change_player(board)
     player.rolled = False
 
@@ -665,25 +668,13 @@ def build(tile: Property, player: Player):
     :param player: Player object making call
     :return: str: information about action performed.
     """
-    count = 0
-    for item in player.inventory:
-        if isinstance(item, Property):
-            if count == 3 or count == 2 and (tile.color == "brown" or tile.color == "blue"):
-                if tile.house_count < 4 and player.wallet >= tile.house_cost:
-                    tile.house_count += 1
-                    player.wallet -= tile.house_cost
-                    return f"Built 1 house on {tile.name} for ${tile.house_cost}"
-                elif tile.house_count == 4 and tile.hotel_count < 1 and player.wallet >= tile.house_cost:
-                    tile.hotel_count += 1
-                    player.wallet -= tile.house_cost
-                    return f"Built 1 hotel on {tile.name} for ${tile.house_cost}"
-            elif item.color == tile.color and not item.mortgaged:
-                if item.name != tile.name and (item.house_count > tile.house_count or item.hotel_count > tile.hotel_count): # Does "item != tile" work the same way?
-                    break
-                count += 1
-    else:
-        return "You Must Own All Properties of a color to Build"
 
+    if tile.house_count < 4 and player.wallet >= tile.house_cost:
+        tile.house_count += 1
+        player.wallet -= tile.house_cost
+    elif tile.house_count == 4 and tile.hotel_count < 1 and player.wallet >= tile.house_cost:
+        tile.hotel_count += 1
+        player.wallet -= tile.house_cost
 
 def demolish(tile: Property, player: Player):
     """
@@ -695,14 +686,9 @@ def demolish(tile: Property, player: Player):
     if tile.hotel_count > 0:
         tile.hotel_count -= 1
         player.wallet += tile.house_cost
-        return f"Demolished 1 hotel on {tile.name}"
     elif tile.house_count > 0:
-        for item in player.inventory:
-            if item.color == tile.color and item.name != tile.name and item.house_count < tile.house_count:
-                return
         tile.house_count -= 1
         player.wallet += tile.house_cost
-        return f"Demolished 1 house on {tile.name}"
 
 
 def create_player(name: str, token: str, board: Board,  x: int, y: int, img: str, machine: bool = False):
