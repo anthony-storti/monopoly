@@ -129,11 +129,15 @@ class PopupPropertySelector:
         self.label = Label(master, text="Select A Property").pack()
         self.label_1 = Label(master, text=f"Wallet: ${player.wallet}").pack()
         self.drop = OptionMenu(self.master, self.clicked, *options).pack()
-        if len(tile_dict) > 1:
-            self.select_button = Button(master, text="Select", command=lambda:
+        if len(tile_dict) > 1 and building:
+            self.select_button = Button(master, text="Demolish", command=lambda:
+                                        self.demo(tile_dict[self.clicked.get()], player, building)).pack()
+            self.select_button = Button(master, text="Build", command=lambda:
                                         self.execute(tile_dict[self.clicked.get()], player, building)).pack()
+        elif len(tile_dict) > 1:
+                    self.select_button = Button(master, text="Select", command=lambda:
+                                                self.execute(tile_dict[self.clicked.get()], player, building)).pack()
         self.close_button = Button(master, text="Close", command=master.destroy).pack()
-
     def execute(self, tile, player, building: bool):
         """
         execute - This will either do nothing if the tile passed in was an empty string, or it will call mortgage
@@ -151,6 +155,21 @@ class PopupPropertySelector:
             self.master.destroy()
         else:
             mortgage(tile, player)
+            self.master.destroy()
+
+    def demo(self, tile, player, building: bool):
+        """
+        demo - This will either do nothing if the tile passed in was an empty string, or it will demolosh a home/hotel
+        from the tile passed in if one exists on that tile
+        :param tile: tile object to pass to demolish home/hotel
+        :param player: Player object who owns hotel
+        :param building: bool to indicate that we are in the build stage
+        :return: nothing
+        """
+        if tile == "":
+            pass
+        elif building:
+            demolish(tile, player)
             self.master.destroy()
 
 
