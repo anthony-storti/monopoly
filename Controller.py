@@ -15,12 +15,8 @@ def roll_dice(player: Player, board: Board):
     """
     ret = []
     if not player.rolled:
-        if player.machine_player:
-            roll1 = random.randint(1, 6)
-            roll2 = random.randint(1, 6)
-        else:
-            roll1 = int(input("roll 1"))
-            roll2 = int(input("roll 2"))
+        roll1 = random.randint(1, 6)
+        roll2 = random.randint(1, 6)
 
         player.roll_1 = roll1
         player.roll_2 = roll2
